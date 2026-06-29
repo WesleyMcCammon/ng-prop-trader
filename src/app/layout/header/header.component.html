@@ -1,0 +1,31 @@
+<header class="site-header">
+  <div class="header-inner container">
+    <a class="brand" routerLink="/" (click)="closeMenu()">
+      <span class="brand-icon">📈</span>
+      <span class="brand-name">MarketWatch</span>
+    </a>
+
+    <nav class="nav-desktop" aria-label="Main navigation">
+      <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Home</a>
+      <a routerLink="/about" routerLinkActive="active">About</a>
+      <a routerLink="/contact" routerLinkActive="active">Contact</a>
+    </nav>
+
+    <button
+      class="hamburger"
+      [class.open]="menuOpen()"
+      (click)="toggleMenu()"
+      aria-label="Toggle navigation"
+      [attr.aria-expanded]="menuOpen()">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+  </div>
+
+  <nav class="nav-mobile" [class.open]="menuOpen()" aria-label="Mobile navigation">
+    <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" (click)="closeMenu()">Home</a>
+    <a routerLink="/about" routerLinkActive="active" (click)="closeMenu()">About</a>
+    <a routerLink="/contact" routerLinkActive="active" (click)="closeMenu()">Contact</a>
+  </nav>
+</header>

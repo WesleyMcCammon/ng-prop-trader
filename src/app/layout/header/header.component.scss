@@ -1,0 +1,120 @@
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--color-surface);
+  border-bottom: 1px solid var(--color-border);
+  box-shadow: 0 1px 4px var(--color-shadow);
+}
+
+.header-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 64px;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  text-decoration: none;
+  font-weight: 700;
+  font-size: var(--font-size-lg);
+  color: var(--color-primary);
+
+  .brand-icon { font-size: 1.4rem; }
+  .brand-name { letter-spacing: -0.5px; }
+}
+
+.nav-desktop {
+  display: none;
+  gap: var(--space-1);
+
+  @media (min-width: 768px) {
+    display: flex;
+  }
+
+  a {
+    padding: var(--space-1) var(--space-3);
+    border-radius: var(--radius-md);
+    color: var(--color-text);
+    text-decoration: none;
+    font-weight: 500;
+    font-size: var(--font-size-sm);
+    transition: background 0.15s, color 0.15s;
+
+    &:hover {
+      background: var(--color-bg);
+      color: var(--color-primary);
+    }
+
+    &.active {
+      color: var(--color-primary);
+      background: var(--color-primary-light);
+    }
+  }
+}
+
+.hamburger {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 28px;
+  height: 20px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+
+  @media (min-width: 768px) {
+    display: none;
+  }
+
+  span {
+    display: block;
+    height: 2px;
+    background: var(--color-text);
+    border-radius: 2px;
+    transition: transform 0.25s, opacity 0.25s;
+  }
+
+  &.open {
+    span:nth-child(1) { transform: translateY(9px) rotate(45deg); }
+    span:nth-child(2) { opacity: 0; }
+    span:nth-child(3) { transform: translateY(-9px) rotate(-45deg); }
+  }
+}
+
+.nav-mobile {
+  display: none;
+  flex-direction: column;
+  background: var(--color-surface);
+  border-top: 1px solid var(--color-border);
+  padding: var(--space-2) 0;
+
+  &.open {
+    display: flex;
+  }
+
+  @media (min-width: 768px) {
+    display: none !important;
+  }
+
+  a {
+    padding: var(--space-3) var(--space-4);
+    color: var(--color-text);
+    text-decoration: none;
+    font-weight: 500;
+    border-left: 3px solid transparent;
+    transition: background 0.15s, border-color 0.15s;
+
+    &:hover { background: var(--color-bg); }
+
+    &.active {
+      border-left-color: var(--color-primary);
+      color: var(--color-primary);
+      background: var(--color-primary-light);
+    }
+  }
+}

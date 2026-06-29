@@ -1,0 +1,82 @@
+<main class="alerts-page">
+  <div class="container">
+
+    <div class="page-header">
+      <div class="header-left">
+        <a routerLink="/" class="back-link">← Home</a>
+        <h1>
+          <span class="pulse-dot"></span>
+          News Alerts
+        </h1>
+        <p>Real-time breaking news and market-moving events</p>
+      </div>
+      <div class="live-badge">
+        <span class="live-dot"></span>
+        LIVE
+      </div>
+    </div>
+
+    <!-- Filter bar -->
+    <div class="filter-bar">
+      @for (f of filters; track f.value) {
+        <button
+          class="filter-btn"
+          [class.active]="filter() === f.value"
+          [attr.data-severity]="f.value"
+          (click)="setFilter(f.value)">
+          {{ f.label }}
+          @if (f.value !== 'all') {
+            <span class="filter-count">
+              {{ countBySeverity(f.value) }}
+            </span>
+          }
+        </button>
+      }
+    </div>
+
+    @if (loading()) {
+      <app-spinner label="Loading alerts…" />
+    } @else if (error()) {
+      <div class="error-banner">{{ error() }}</div>
+    } @else {
+
+      <div class="alerts-count">
+        Showing <strong>{{ filtered().length }}</strong> alert{{ filtered().length !== 1 ? 's' : '' }}
+      </div>
+
+      <div class="alerts-list">
+        @for (alert of filtered(); track alert.id) {
+          <article class="alert-card" [attr.data-severity]="alert.severity">
+            <div class="alert-severity-bar"></div>
+            <div class="alert-body">
+              <div class="alert-meta">
+                <span class="severity-badge" [attr.data-severity]="alert.severity">
+                  {{ alert.severity | uppercase }}
+                </span>
+                <span class="alert-country" [title]="alert.country">
+                  <span class="fi" [class]="'fi-' + alert.countryCode.toLowerCase()"></span>
+                </span>
+                <time class="alert-time">{{ alert.timestamp }}</time>
+              </div>
+              <h2 class="alert-title">{{ alert.title | titlecase }}</h2>
+              <p class="alert-excerpt">{{ alert.body }}</p>
+            </div>
+            <div class="alert-actions">
+              <button class="action-btn" title="Bookmark">&#9825;</button>
+              <button class="action-btn" title="Share">&#8679;</button>
+            </div>
+          </article>
+        }
+
+        @if (filtered().length === 0) {
+          <div class="empty-state">
+            <span class="empty-icon">🔔</span>
+            <p>No alerts match the selected filter.</p>
+            <button class="btn btn--ghost" (click)="setFilter('all')">Show all alerts</button>
+          </div>
+        }
+      </div>
+    }
+
+  </div>
+</main>

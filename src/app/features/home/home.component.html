@@ -1,0 +1,118 @@
+<main class="home-page">
+
+  <!-- Hero / Breaking ticker -->
+  <div class="ticker-bar">
+    <span class="ticker-label">BREAKING</span>
+    <div class="ticker-track">
+      <span>S&amp;P 500 ▲ 0.42%</span>
+      <span>NASDAQ ▲ 0.67%</span>
+      <span>DOW ▼ 0.12%</span>
+      <span>BTC $67,240 ▲ 1.9%</span>
+      <span>EUR/USD 1.0842 ▼ 0.03%</span>
+      <span>Gold $2,318 ▲ 0.21%</span>
+    </div>
+  </div>
+
+  <div class="container">
+
+    <!-- Category nav -->
+    <nav class="category-nav" aria-label="Category navigation">
+      @for (cat of categories; track cat.label) {
+        @if (cat.route) {
+          <a class="cat-btn cat-btn--link" [routerLink]="cat.route">{{ cat.label }}</a>
+        } @else {
+          <button class="cat-btn">{{ cat.label }}</button>
+        }
+      }
+    </nav>
+
+    @if (loading()) {
+      <app-spinner label="Loading stories…" />
+    } @else if (error()) {
+      <div class="error-banner">{{ error() }}</div>
+    } @else {
+
+      <!-- Featured story -->
+      @for (post of featured(); track post.id) {
+        <section class="featured-section">
+          <div class="featured-image placeholder-img featured-img"></div>
+          <div class="featured-content">
+            <span class="tag">Featured</span>
+            <h1 class="featured-title">{{ post.title | titlecase }}</h1>
+            <p class="featured-body">{{ post.body }}</p>
+            <div class="featured-meta">
+              <span class="author">By Staff Reporter</span>
+              <span class="sep">·</span>
+              <time>June 29, 2026</time>
+            </div>
+          </div>
+        </section>
+      }
+
+      <!-- Top stories grid -->
+      <section class="section">
+        <h2 class="section-title">Top Stories</h2>
+        <div class="top-stories-grid">
+          @for (post of topStories(); track post.id) {
+            <article class="story-card">
+              <div class="placeholder-img card-img"></div>
+              <div class="card-body">
+                <span class="tag tag--sm">Markets</span>
+                <h3 class="card-title">{{ post.title | titlecase }}</h3>
+                <p class="card-excerpt">{{ excerpt(post.body) }}</p>
+                <div class="card-meta">
+                  <span class="author">Staff</span>
+                  <time>Jun 29</time>
+                </div>
+              </div>
+            </article>
+          }
+        </div>
+      </section>
+
+      <!-- Two-column: latest + opinion -->
+      <div class="two-col-layout">
+
+        <!-- Latest articles -->
+        <section class="section">
+          <h2 class="section-title">Latest</h2>
+          <div class="latest-list">
+            @for (post of latest(); track post.id) {
+              <article class="list-item">
+                <div class="placeholder-img list-img"></div>
+                <div class="list-body">
+                  <span class="tag tag--sm">Finance</span>
+                  <h3 class="list-title">{{ post.title | titlecase }}</h3>
+                  <p class="list-excerpt">{{ excerpt(post.body, 80) }}</p>
+                </div>
+              </article>
+            }
+          </div>
+        </section>
+
+        <!-- Opinion -->
+        <aside class="opinion-sidebar">
+          <h2 class="section-title">Opinion</h2>
+          @for (post of opinion(); track post.id) {
+            <article class="opinion-card">
+              <div class="opinion-avatar">{{ post.userId }}</div>
+              <div>
+                <h3 class="opinion-title">{{ post.title | titlecase }}</h3>
+                <p class="opinion-author">Columnist · Jun 29</p>
+              </div>
+            </article>
+          }
+
+          <!-- Newsletter CTA -->
+          <div class="newsletter-box">
+            <h3>Get the daily briefing</h3>
+            <p>Top stories delivered to your inbox every morning.</p>
+            <a routerLink="/contact" class="btn btn--primary">Subscribe</a>
+          </div>
+        </aside>
+
+      </div>
+
+    }
+  </div>
+</main>

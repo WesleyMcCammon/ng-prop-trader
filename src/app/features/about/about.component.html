@@ -1,0 +1,87 @@
+<main class="about-page">
+
+  <!-- Hero -->
+  <section class="about-hero">
+    <div class="container hero-inner">
+      <div class="hero-text">
+        <span class="eyebrow">Our Story</span>
+        <h1>Journalism that moves markets</h1>
+        <p>
+          Founded in 2010, MarketWatch has grown from a scrappy financial blog to one
+          of the most trusted names in market news. We combine rigorous reporting with
+          real-time data to keep professionals and everyday investors alike fully informed.
+        </p>
+      </div>
+      <div class="hero-image placeholder-img"></div>
+    </div>
+  </section>
+
+  <div class="container">
+
+    <!-- Mission -->
+    <section class="mission-section">
+      <h2 class="section-title">Our Mission</h2>
+      <p class="mission-text">
+        To empower every reader with accurate, timely, and insightful financial news
+        so they can make confident decisions — whether they manage a portfolio of one
+        or a trillion.
+      </p>
+    </section>
+
+    <!-- Values -->
+    <section class="values-section">
+      <h2 class="section-title">What We Stand For</h2>
+      <div class="values-grid">
+        @for (v of values; track v.label) {
+          <div class="value-card">
+            <span class="value-icon">{{ v.icon }}</span>
+            <h3>{{ v.label }}</h3>
+            <p>{{ v.desc }}</p>
+          </div>
+        }
+      </div>
+    </section>
+
+    <!-- Stats -->
+    <section class="stats-section">
+      <div class="stats-grid">
+        <div class="stat">
+          <span class="stat-number">14M+</span>
+          <span class="stat-label">Monthly Readers</span>
+        </div>
+        <div class="stat">
+          <span class="stat-number">40+</span>
+          <span class="stat-label">Countries</span>
+        </div>
+        <div class="stat">
+          <span class="stat-number">200+</span>
+          <span class="stat-label">Journalists</span>
+        </div>
+        <div class="stat">
+          <span class="stat-number">16</span>
+          <span class="stat-label">Years of Trust</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Team -->
+    <section class="team-section">
+      <h2 class="section-title">Meet the Team</h2>
+      @if (loading()) {
+        <app-spinner label="Loading team…" />
+      } @else {
+        <div class="team-grid">
+          @for (user of users().slice(0, 6); track user.id) {
+            <div class="team-card">
+              <div class="avatar">{{ user.name.charAt(0) }}</div>
+              <h3 class="member-name">{{ user.name }}</h3>
+              <p class="member-role">{{ user.company.name }}</p>
+              <a class="member-email" href="mailto:{{ user.email }}">{{ user.email }}</a>
+            </div>
+          }
+        </div>
+      }
+    </section>
+
+  </div>
+</main>

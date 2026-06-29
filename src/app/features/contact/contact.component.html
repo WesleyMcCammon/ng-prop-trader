@@ -1,0 +1,147 @@
+<main class="contact-page">
+  <div class="container">
+
+    <div class="page-header">
+      <span class="eyebrow">Get In Touch</span>
+      <h1>Contact Us</h1>
+      <p>Have a tip, feedback, or press inquiry? We'd love to hear from you.</p>
+    </div>
+
+    <div class="contact-layout">
+
+      <!-- Form -->
+      <div class="form-panel">
+        @if (submitted()) {
+          <div class="success-card">
+            <span class="success-icon">✓</span>
+            <h2>Message Sent!</h2>
+            <p>Thank you for reaching out. Our team will get back to you within 1–2 business days.</p>
+            <button class="btn btn--secondary" (click)="reset()">Send Another</button>
+          </div>
+        } @else {
+          <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate class="contact-form">
+
+            <div class="field-group two-col">
+              <!-- Name -->
+              <div class="field" [class.invalid]="name.invalid && name.touched">
+                <label for="name">Full Name <span class="required">*</span></label>
+                <input id="name" type="text" formControlName="name" placeholder="Jane Smith" autocomplete="name" />
+                @if (name.touched && name.hasError('required')) {
+                  <span class="error-msg">Name is required.</span>
+                } @else if (name.touched && name.hasError('minlength')) {
+                  <span class="error-msg">Name must be at least 2 characters.</span>
+                }
+              </div>
+
+              <!-- Email -->
+              <div class="field" [class.invalid]="email.invalid && email.touched">
+                <label for="email">Email Address <span class="required">*</span></label>
+                <input id="email" type="email" formControlName="email" placeholder="jane@example.com" autocomplete="email" />
+                @if (email.touched && email.hasError('required')) {
+                  <span class="error-msg">Email is required.</span>
+                } @else if (email.touched && email.hasError('email')) {
+                  <span class="error-msg">Please enter a valid email address.</span>
+                }
+              </div>
+            </div>
+
+            <!-- Subject -->
+            <div class="field" [class.invalid]="subject.invalid && subject.touched">
+              <label for="subject">Subject <span class="required">*</span></label>
+              <select id="subject" formControlName="subject">
+                <option value="" disabled selected>Select a topic…</option>
+                <option value="tip">News Tip</option>
+                <option value="feedback">Reader Feedback</option>
+                <option value="press">Press Inquiry</option>
+                <option value="advertising">Advertising</option>
+                <option value="other">Other</option>
+              </select>
+              @if (subject.touched && subject.hasError('required')) {
+                <span class="error-msg">Please select a subject.</span>
+              }
+            </div>
+
+            <!-- Message -->
+            <div class="field" [class.invalid]="message.invalid && message.touched">
+              <label for="message">Message <span class="required">*</span></label>
+              <textarea
+                id="message"
+                formControlName="message"
+                placeholder="Tell us what's on your mind…"
+                rows="6">
+              </textarea>
+              @if (message.touched && message.hasError('required')) {
+                <span class="error-msg">Message is required.</span>
+              } @else if (message.touched && message.hasError('minlength')) {
+                <span class="error-msg">Message must be at least 10 characters.</span>
+              }
+              <span class="char-hint">{{ message.value?.length || 0 }} characters</span>
+            </div>
+
+            <div class="form-footer">
+              <p class="privacy-note">
+                We respect your privacy. Your information will never be sold or shared.
+              </p>
+              <button
+                type="submit"
+                class="btn btn--primary"
+                [disabled]="form.invalid">
+                Send Message
+              </button>
+            </div>
+
+          </form>
+        }
+      </div>
+
+      <!-- Info sidebar -->
+      <aside class="info-sidebar">
+        <div class="info-card">
+          <h2>Other Ways to Reach Us</h2>
+
+          <div class="contact-item">
+            <span class="contact-icon">📍</span>
+            <div>
+              <strong>Headquarters</strong>
+              <p>1 Market Plaza, Suite 1800<br>New York, NY 10004</p>
+            </div>
+          </div>
+
+          <div class="contact-item">
+            <span class="contact-icon">📞</span>
+            <div>
+              <strong>Phone</strong>
+              <p>+1 (212) 555-0100</p>
+            </div>
+          </div>
+
+          <div class="contact-item">
+            <span class="contact-icon">✉️</span>
+            <div>
+              <strong>Email</strong>
+              <p>editorial&#64;marketwatch.example</p>
+            </div>
+          </div>
+
+          <div class="contact-item">
+            <span class="contact-icon">🕐</span>
+            <div>
+              <strong>Response Time</strong>
+              <p>1–2 business days</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="social-card">
+          <h3>Follow Us</h3>
+          <div class="social-links">
+            <span class="social-btn">𝕏 Twitter</span>
+            <span class="social-btn">in LinkedIn</span>
+            <span class="social-btn">f Facebook</span>
+          </div>
+        </div>
+      </aside>
+
+    </div>
+  </div>
+</main>
