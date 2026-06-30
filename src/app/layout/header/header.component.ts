@@ -19,7 +19,6 @@ export class HeaderComponent {
   currentUser = this.auth.currentUser;
 
   logout(): void {
-    debugger;
     this.auth.logout();
     this.closeMenu();
   }

@@ -40,7 +40,6 @@ export class AuthService {
   }
 
   logout(): void {
-    debugger;
     this.currentUser.set(null);
   }
 }
