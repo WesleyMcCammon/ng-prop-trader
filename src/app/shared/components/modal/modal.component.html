@@ -1,0 +1,15 @@
+@if (modal.config()) {
+  <div class="modal-backdrop" (click)="modal.dismiss()">
+    <div class="modal-box" role="dialog" aria-modal="true" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <span class="modal-icon">⚠</span>
+        <h2 class="modal-title">{{ modal.config()!.title }}</h2>
+        <button class="modal-close" (click)="modal.dismiss()" aria-label="Close">✕</button>
+      </div>
+      <p class="modal-message">{{ modal.config()!.message }}</p>
+      <div class="modal-footer">
+        <button class="modal-btn" (click)="modal.dismiss()">OK</button>
+      </div>
+    </div>
+  </div>
+}
