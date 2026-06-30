@@ -1,6 +1,7 @@
-import { Component, signal, HostListener } from '@angular/core';
+import { Component, signal, inject, HostListener } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { AuthService } from '../../core/services/auth.service';
 
 @Component({
   selector: 'app-header',
@@ -10,7 +11,17 @@ import { CommonModule } from '@angular/common';
   styleUrl: './header.component.scss'
 })
 export class HeaderComponent {
+  private auth = inject(AuthService);
+
   menuOpen = signal(false);
+  isLoggedIn = this.auth.isLoggedIn;
+  isAdmin = this.auth.isAdmin;
+  currentUser = this.auth.currentUser;
+
+  logout(): void {
+    this.auth.logout();
+    this.closeMenu();
+  }
 
   toggleMenu(): void {
     this.menuOpen.update(v => !v);

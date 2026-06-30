@@ -7,6 +7,16 @@ export const routes: Routes = [
       import('./features/home/home.component').then(m => m.HomeComponent)
   },
   {
+    path: 'dashboard',
+    loadComponent: () =>
+      import('./features/dashboard/dashboard.component').then(m => m.DashboardComponent)
+  },
+  {
+    path: 'login',
+    loadComponent: () =>
+      import('./features/login/login.component').then(m => m.LoginComponent)
+  },
+  {
     path: 'about',
     loadComponent: () =>
       import('./features/about/about.component').then(m => m.AboutComponent)
@@ -20,6 +30,16 @@ export const routes: Routes = [
     path: 'news-alerts',
     loadComponent: () =>
       import('./features/news-alerts/news-alerts.component').then(m => m.NewsAlertsComponent)
+  },
+  {
+    path: 'admin',
+    loadComponent: () =>
+      import('./features/admin/admin.component').then(m => m.AdminComponent)
+  },
+  {
+    path: 'settings',
+    loadComponent: () =>
+      import('./features/settings/settings.component').then(m => m.SettingsComponent)
   },
   {
     path: '**',
