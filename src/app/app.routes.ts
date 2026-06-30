@@ -1,4 +1,5 @@
 import { Routes } from '@angular/router';
+import { adminGuard } from './core/guards/admin.guard';
 
 export const routes: Routes = [
   {
@@ -33,6 +34,7 @@ export const routes: Routes = [
   },
   {
     path: 'admin',
+    canActivate: [adminGuard],
     loadComponent: () =>
       import('./features/admin/admin.component').then(m => m.AdminComponent)
   },
@@ -40,6 +42,11 @@ export const routes: Routes = [
     path: 'settings',
     loadComponent: () =>
       import('./features/settings/settings.component').then(m => m.SettingsComponent)
+  },
+  {
+    path: 'not-found',
+    loadComponent: () =>
+      import('./features/not-found/not-found.component').then(m => m.NotFoundComponent)
   },
   {
     path: '**',
