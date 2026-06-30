@@ -35,6 +35,27 @@
   100% { transform: translateX(-50%); }
 }
 
+/* ── Login CTA ──────────────────────────────────────── */
+.login-cta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  background: var(--color-primary-light);
+  border: 1px solid var(--color-primary);
+  border-radius: var(--radius-lg);
+  padding: var(--space-3) var(--space-5);
+  margin-top: var(--space-5);
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  color: var(--color-primary-dark);
+
+  @media (max-width: 480px) {
+    flex-direction: column;
+    text-align: center;
+  }
+}
+
 /* ── Category nav ───────────────────────────────────── */
 .category-nav {
   display: flex;

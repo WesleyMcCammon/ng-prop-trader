@@ -10,9 +10,20 @@
       <a routerLink="/dashboard" routerLinkActive="active">Dashboard</a>
       <a routerLink="/about" routerLinkActive="active">About</a>
       <a routerLink="/contact" routerLinkActive="active">Contact</a>
-      <a routerLink="/settings" routerLinkActive="active">Settings</a>
-      <a routerLink="/admin" routerLinkActive="active">Admin</a>
+      @if (isAdmin()) {
+        <a routerLink="/settings" routerLinkActive="active">Settings</a>
+        <a routerLink="/admin" routerLinkActive="active">Admin</a>
+      }
     </nav>
+
+    <div class="nav-auth">
+      @if (isLoggedIn()) {
+        <span class="nav-user">{{ currentUser()?.name }}</span>
+        <button class="btn-logout" (click)="logout()">Log Out</button>
+      } @else {
+        <a routerLink="/login" class="btn-login">Log In</a>
+      }
+    </div>
 
     <button
       class="hamburger"
@@ -31,7 +42,14 @@
     <a routerLink="/dashboard" routerLinkActive="active" (click)="closeMenu()">Dashboard</a>
     <a routerLink="/about" routerLinkActive="active" (click)="closeMenu()">About</a>
     <a routerLink="/contact" routerLinkActive="active" (click)="closeMenu()">Contact</a>
-    <a routerLink="/settings" routerLinkActive="active" (click)="closeMenu()">Settings</a>
-    <a routerLink="/admin" routerLinkActive="active" (click)="closeMenu()">Admin</a>
+    @if (isAdmin()) {
+      <a routerLink="/settings" routerLinkActive="active" (click)="closeMenu()">Settings</a>
+      <a routerLink="/admin" routerLinkActive="active" (click)="closeMenu()">Admin</a>
+    }
+    @if (isLoggedIn()) {
+      <button class="btn-logout" (click)="logout()">Log Out</button>
+    } @else {
+      <a routerLink="/login" class="btn-login" (click)="closeMenu()">Log In</a>
+    }
   </nav>
 </header>
