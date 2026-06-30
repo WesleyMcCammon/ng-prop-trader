@@ -7,8 +7,11 @@
 
     <nav class="nav-desktop" aria-label="Main navigation">
       <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Home</a>
+      <a routerLink="/dashboard" routerLinkActive="active">Dashboard</a>
       <a routerLink="/about" routerLinkActive="active">About</a>
       <a routerLink="/contact" routerLinkActive="active">Contact</a>
+      <a routerLink="/settings" routerLinkActive="active">Settings</a>
+      <a routerLink="/admin" routerLinkActive="active">Admin</a>
     </nav>
 
     <button
@@ -25,7 +28,10 @@
 
   <nav class="nav-mobile" [class.open]="menuOpen()" aria-label="Mobile navigation">
     <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" (click)="closeMenu()">Home</a>
+    <a routerLink="/dashboard" routerLinkActive="active" (click)="closeMenu()">Dashboard</a>
     <a routerLink="/about" routerLinkActive="active" (click)="closeMenu()">About</a>
     <a routerLink="/contact" routerLinkActive="active" (click)="closeMenu()">Contact</a>
+    <a routerLink="/settings" routerLinkActive="active" (click)="closeMenu()">Settings</a>
+    <a routerLink="/admin" routerLinkActive="active" (click)="closeMenu()">Admin</a>
   </nav>
 </header>
