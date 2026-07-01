@@ -1,4 +1,4 @@
-<main class="home-page">
+﻿<main class="home-page">
 
   <!-- Hero / Breaking ticker -->
   <div class="ticker-bar">
@@ -61,7 +61,7 @@
           <h2 class="section-title">Markets</h2>
           <div class="pinned-grid">
             @for (i of pinnedInstruments(); track i.symbol) {
-              <app-instrument-card [instrument]="i" [showType]="true" />
+              <app-instrument-card [instrument]="i" [showType]="true" [showPin]="false" />
             }
           </div>
         </section>

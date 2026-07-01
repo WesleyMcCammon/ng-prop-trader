@@ -15,6 +15,7 @@ import { PinService } from '../../../core/services/pin.service';
 export class InstrumentCardComponent {
   @Input({ required: true }) instrument!: FuturesContract;
   @Input() showType       = false;
+  @Input() showPin        = true;
   @Input() hideAllLevels  = false;
 
   readonly hideLevels = signal(false);

@@ -26,9 +26,7 @@
       <div class="section-header">
         <h2 class="section-title">
           <span class="type-badge type-badge--futures">futures</span>
-          Futures Contracts
         </h2>
-        <span class="count">{{ futuresInstruments().length }}</span>
         @if (showAll) {
           <button class="expand-ctrl-btn" (click)="toggleSection(futuresInstruments())">
             {{ isSectionExpanded(futuresInstruments()) ? 'Collapse All' : 'Expand All' }}
@@ -125,9 +123,7 @@
       <div class="section-header">
         <h2 class="section-title">
           <span class="type-badge type-badge--forex">forex</span>
-          Forex
         </h2>
-        <span class="count">{{ forexInstruments().length }}</span>
         @if (showAll) {
           <button class="expand-ctrl-btn" (click)="toggleSection(forexInstruments())">
             {{ isSectionExpanded(forexInstruments()) ? 'Collapse All' : 'Expand All' }}
@@ -213,9 +209,7 @@
       <div class="section-header">
         <h2 class="section-title">
           <span class="type-badge type-badge--cfd">cfd</span>
-          CFDs
         </h2>
-        <span class="count">{{ cfdInstruments().length }}</span>
         @if (showAll) {
           <button class="expand-ctrl-btn" (click)="toggleSection(cfdInstruments())">
             {{ isSectionExpanded(cfdInstruments()) ? 'Collapse All' : 'Expand All' }}

@@ -33,7 +33,7 @@ function loadOrder(key: string): string[] {
 @Component({
   selector: 'app-market',
   standalone: true,
-  imports: [RouterLink, InstrumentCardComponent, PinnedInstrumentsComponent, DragDropModule],
+  imports: [InstrumentCardComponent, PinnedInstrumentsComponent, DragDropModule],
   templateUrl: './market.component.html',
   styleUrl: './market.component.scss'
 })

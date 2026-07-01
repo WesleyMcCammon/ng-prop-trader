@@ -5,9 +5,11 @@
       @if (showType) {
         <span class="type-badge type-badge--{{ instrument.type }}">{{ instrument.type }}</span>
       }
-      <button class="pin-btn" [class.pin-btn--active]="pinService.isPinned(instrument.symbol)" (click)="pinService.toggle(instrument.symbol)" [title]="pinService.isPinned(instrument.symbol) ? 'Unpin' : 'Pin'">
-        {{ pinService.isPinned(instrument.symbol) ? '📍' : '📌' }}
-      </button>
+      @if (showPin) {
+        <button class="pin-btn" [class.pin-btn--active]="pinService.isPinned(instrument.symbol)" (click)="pinService.toggle(instrument.symbol)" [title]="pinService.isPinned(instrument.symbol) ? 'Unpin' : 'Pin'">
+          {{ pinService.isPinned(instrument.symbol) ? '📍' : '📌' }}
+        </button>
+      }
     </span>
   </div>
   <div class="card-name">{{ instrument.name }}</div>
