@@ -20,4 +20,23 @@
       </span>
     </div>
   </div>
+
+  @if (activeLevels().length > 0) {
+    <div class="levels-list">
+      <div class="level-row level-row--header">
+        <span class="level-label">Level</span>
+        <span class="level-value">Value</span>
+        <span class="level-delta">Δ Bid</span>
+      </div>
+      @for (lv of activeLevels(); track lv.levelId) {
+        <div class="level-row">
+          <span class="level-label">{{ lv.label }}</span>
+          <span class="level-value">{{ lv.value | priceFormat:instrument.tickSize }}</span>
+          <span class="level-delta" [class.positive]="lv.delta > 0" [class.negative]="lv.delta < 0">
+            {{ lv.delta > 0 ? '+' : '' }}{{ lv.delta | priceFormat:instrument.tickSize }}
+          </span>
+        </div>
+      }
+    </div>
+  }
 </div>

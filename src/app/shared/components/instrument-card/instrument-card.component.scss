@@ -86,3 +86,56 @@
 
 .positive { color: #16a34a; font-weight: 600; }
 .negative { color: #dc2626; font-weight: 600; }
+
+.levels-list {
+  margin-top: 0.4rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid var(--color-border);
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.level-row {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  gap: 0.4rem;
+  align-items: baseline;
+  font-size: 0.75rem;
+  font-variant-numeric: tabular-nums;
+
+  &--header {
+    padding-bottom: 0.2rem;
+    margin-bottom: 0.1rem;
+    border-bottom: 1px solid var(--color-border);
+
+    .level-label,
+    .level-value,
+    .level-delta {
+      font-size: 0.62rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--color-text-muted);
+    }
+  }
+}
+
+.level-label {
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--color-text-muted);
+}
+
+.level-value {
+  color: var(--color-text);
+  font-weight: 500;
+}
+
+.level-delta {
+  font-weight: 600;
+  min-width: 4rem;
+  text-align: right;
+}

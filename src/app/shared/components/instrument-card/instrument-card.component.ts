@@ -1,7 +1,8 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FuturesContract } from '../../model/instrument.model';
 import { PriceFormatPipe } from '../../pipes/price-format.pipe';
+import { IndicatorService, ActiveLevelDisplay } from '../../../core/services/indicator.service';
 
 @Component({
   selector: 'app-instrument-card',
@@ -12,4 +13,12 @@ import { PriceFormatPipe } from '../../pipes/price-format.pipe';
 })
 export class InstrumentCardComponent {
   @Input({ required: true }) instrument!: FuturesContract;
+
+  private indicatorService = inject(IndicatorService);
+
+  activeLevels(): ActiveLevelDisplay[] {
+    return this.indicatorService
+      .getActiveLevelsForInstrument(this.instrument.symbol, this.instrument.bid)
+      .slice(0, 10);
+  }
 }

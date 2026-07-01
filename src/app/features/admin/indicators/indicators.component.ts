@@ -1,6 +1,7 @@
-﻿import { Component, computed, inject, signal } from '@angular/core';
+﻿import { Component, inject, signal } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { RouterLink } from '@angular/router';
+import { IndicatorService } from '../../../core/services/indicator.service';
 
 interface IndicatorLevel {
   id: string;
@@ -97,67 +98,39 @@ const GROUPS_DEF: Omit<IndicatorGroup, 'show'>[] = [
   styleUrl: './indicators.component.scss',
 })
 export class IndicatorsComponent {
+  readonly svc = inject(IndicatorService);
   readonly groups: IndicatorGroup[] = GROUPS_DEF.map(g => ({ ...g, show: signal(true) }));
-
-  activeGroups = signal<Set<string>>(new Set());
-  activeLevels = signal<Set<string>>(new Set());
-  totalActive  = computed(() => this.activeLevels().size);
 
   constructor() {
     inject(Title).setTitle('Indicators – MarketWatch');
   }
 
   isGroupEnabled(groupId: string): boolean {
-    return this.activeGroups().has(groupId);
+    return this.svc.isGroupEnabled(groupId);
   }
 
   toggleGroupEnabled(group: IndicatorGroup): void {
-    const enabling = !this.isGroupEnabled(group.id);
-    this.activeGroups.update(set => {
-      const next = new Set(set);
-      enabling ? next.add(group.id) : next.delete(group.id);
-      return next;
-    });
-    if (!enabling) {
-      this.activeLevels.update(set => {
-        const next = new Set(set);
-        group.levels.forEach(l => next.delete(l.id));
-        return next;
-      });
-    }
+    this.svc.toggleGroupEnabled(group.id, group.levels.map(l => l.id));
   }
 
-  isActive(id: string): boolean {
-    return this.activeLevels().has(id);
+  isActive(levelId: string): boolean {
+    return this.svc.isLevelActive(levelId);
   }
 
   toggleLevel(groupId: string, levelId: string): void {
-    if (!this.isGroupEnabled(groupId)) return;
-    this.activeLevels.update(set => {
-      const next = new Set(set);
-      next.has(levelId) ? next.delete(levelId) : next.add(levelId);
-      return next;
-    });
+    this.svc.toggleLevel(groupId, levelId);
   }
 
   isGroupAllActive(group: IndicatorGroup): boolean {
-    const active = this.activeLevels();
-    return group.levels.length > 0 && group.levels.every(l => active.has(l.id));
+    return this.svc.isGroupAllActive(group.levels.map(l => l.id));
   }
 
   toggleGroup(group: IndicatorGroup): void {
-    if (!this.isGroupEnabled(group.id)) return;
-    const selectAll = !this.isGroupAllActive(group);
-    this.activeLevels.update(set => {
-      const next = new Set(set);
-      group.levels.forEach(l => selectAll ? next.add(l.id) : next.delete(l.id));
-      return next;
-    });
+    this.svc.toggleGroupLevels(group.id, group.levels.map(l => l.id));
   }
 
   activeInGroup(group: IndicatorGroup): number {
-    const active = this.activeLevels();
-    return group.levels.filter(l => active.has(l.id)).length;
+    return this.svc.countActiveLevels(group.levels.map(l => l.id));
   }
 }
 
