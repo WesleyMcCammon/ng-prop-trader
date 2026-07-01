@@ -6,11 +6,12 @@ import { CategoryService } from '../../core/services/category.service';
 import { PriceFeedService } from '../../core/services/price-feed.service';
 import { InstrumentCategory } from '../../shared/model/instrument.model';
 import { InstrumentCardComponent } from '../../shared/components/instrument-card/instrument-card.component';
+import { PinnedInstrumentsComponent } from './pinned-instruments/pinned-instruments.component';
 
 @Component({
   selector: 'app-market',
   standalone: true,
-  imports: [RouterLink, InstrumentCardComponent],
+  imports: [RouterLink, InstrumentCardComponent, PinnedInstrumentsComponent],
   templateUrl: './market.component.html',
   styleUrl: './market.component.scss'
 })

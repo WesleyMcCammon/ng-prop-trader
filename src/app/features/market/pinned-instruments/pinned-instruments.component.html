@@ -1,0 +1,13 @@
+@if (pinned().length > 0) {
+  <section class="pinned-section">
+    <div class="pinned-header">
+      <span class="pinned-title">Pinned</span>
+      <span class="pinned-count">{{ pinned().length }}</span>
+    </div>
+    <div class="pinned-grid">
+      @for (i of pinned(); track i.symbol) {
+        <app-instrument-card [instrument]="i" />
+      }
+    </div>
+  </section>
+}

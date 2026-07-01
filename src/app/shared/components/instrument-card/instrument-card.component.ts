@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FuturesContract } from '../../model/instrument.model';
 import { PriceFormatPipe } from '../../pipes/price-format.pipe';
 import { IndicatorService, ActiveLevelDisplay } from '../../../core/services/indicator.service';
+import { PinService } from '../../../core/services/pin.service';
 
 @Component({
   selector: 'app-instrument-card',
@@ -15,6 +16,7 @@ export class InstrumentCardComponent {
   @Input({ required: true }) instrument!: FuturesContract;
 
   private indicatorService = inject(IndicatorService);
+  readonly pinService      = inject(PinService);
 
   activeLevels(): ActiveLevelDisplay[] {
     return this.indicatorService
