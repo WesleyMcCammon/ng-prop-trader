@@ -34,14 +34,13 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   pinnedInstruments = computed(() => {
     const symbols = this.pinService.pinnedSymbols();
-    return this.instrumentService.instruments()
-      .filter(i => symbols.has(i.symbol))
-      .slice(0, 5);
+    const items   = this.instrumentService.instruments().filter(i => symbols.has(i.symbol));
+    return this.pinService.applyOrder(items).slice(0, 5);
   });
 
   readonly categories: Array<{ label: string; route?: string }> = [
-    { label: 'Markets' },
-    { label: 'Tech' },
+    { label: 'Markets', route: '/market' },
+    { label: 'Instruments', route: '/instruments' },
     { label: 'Economy' },
     { label: 'Finance' },
     { label: 'World' },
