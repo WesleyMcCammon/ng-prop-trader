@@ -1,9 +1,24 @@
-import { Injectable, computed, signal } from '@angular/core';
+import { Injectable, computed, effect, signal } from '@angular/core';
+
+const STORAGE_PINS = 'mw.pinnedSymbols';
+
+function loadPins(): Set<string> {
+  try {
+    const raw = localStorage.getItem(STORAGE_PINS);
+    return raw ? new Set<string>(JSON.parse(raw)) : new Set();
+  } catch {
+    return new Set();
+  }
+}
 
 @Injectable({ providedIn: 'root' })
 export class PinService {
-  readonly pinnedSymbols = signal<Set<string>>(new Set());
+  readonly pinnedSymbols = signal<Set<string>>(loadPins());
   readonly count = computed(() => this.pinnedSymbols().size);
+
+  constructor() {
+    effect(() => localStorage.setItem(STORAGE_PINS, JSON.stringify([...this.pinnedSymbols()])));
+  }
 
   isPinned(symbol: string): boolean {
     return this.pinnedSymbols().has(symbol);

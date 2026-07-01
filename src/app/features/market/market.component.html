@@ -1,4 +1,4 @@
-<main class="market-page">
+﻿<main class="market-page">
   <div class="container">
 
     <div class="page-header">
@@ -8,11 +8,14 @@
           <button class="view-toggle-btn" [class.view-toggle-btn--active]="viewMode() === 'categorized'" (click)="viewMode.set('categorized')">By Category</button>
           <button class="view-toggle-btn" [class.view-toggle-btn--active]="viewMode() === 'all'" (click)="viewMode.set('all')">All</button>
         </div>
+        <button class="view-toggle-btn hide-levels-btn" [class.view-toggle-btn--active]="hideAllLevels()" (click)="hideAllLevels.set(!hideAllLevels())">
+          {{ hideAllLevels() ? 'Show Levels' : 'Hide Levels' }}
+        </button>
         <a routerLink="/dashboard" class="btn-back">‹ Back to Dashboard</a>
       </div>
     </div>
 
-    <app-pinned-instruments />
+    <app-pinned-instruments [hideAllLevels]="hideAllLevels()" />
 
     @if (viewMode() === 'all') {
       <section class="market-section">
@@ -22,7 +25,7 @@
         </div>
         <div class="cards-grid" cdkDropList [cdkDropListData]="orderedAll()" (cdkDropListDropped)="onAllDrop($event)">
           @for (i of orderedAll(); track i.symbol) {
-            <app-instrument-card [instrument]="i" [showType]="true" cdkDrag />
+            <app-instrument-card [instrument]="i" [showType]="true" [hideAllLevels]="hideAllLevels()" cdkDrag />
           }
         </div>
       </section>
@@ -50,7 +53,7 @@
         </div>
         <div class="cards-grid" cdkDropList [cdkDropListData]="orderedFutures()" (cdkDropListDropped)="onFuturesDrop($event)">
           @for (i of orderedFutures(); track i.symbol) {
-            <app-instrument-card [instrument]="i" cdkDrag />
+            <app-instrument-card [instrument]="i" [hideAllLevels]="hideAllLevels()" cdkDrag />
           }
         </div>
       }
@@ -76,7 +79,7 @@
         </div>
         <div class="cards-grid" cdkDropList [cdkDropListData]="orderedForex()" (cdkDropListDropped)="onForexDrop($event)">
           @for (i of orderedForex(); track i.symbol) {
-            <app-instrument-card [instrument]="i" cdkDrag />
+            <app-instrument-card [instrument]="i" [hideAllLevels]="hideAllLevels()" cdkDrag />
           }
         </div>
       }
@@ -97,7 +100,7 @@
       @if (showCfds()) {
         <div class="cards-grid" cdkDropList [cdkDropListData]="orderedCfds()" (cdkDropListDropped)="onCfdsDrop($event)">
           @for (i of orderedCfds(); track i.symbol) {
-            <app-instrument-card [instrument]="i" cdkDrag />
+            <app-instrument-card [instrument]="i" [hideAllLevels]="hideAllLevels()" cdkDrag />
           }
         </div>
       }

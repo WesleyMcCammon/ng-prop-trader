@@ -1,4 +1,4 @@
-import { Component, Input, inject } from '@angular/core';
+import { Component, Input, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FuturesContract } from '../../model/instrument.model';
 import { PriceFormatPipe } from '../../pipes/price-format.pipe';
@@ -14,7 +14,10 @@ import { PinService } from '../../../core/services/pin.service';
 })
 export class InstrumentCardComponent {
   @Input({ required: true }) instrument!: FuturesContract;
-  @Input() showType = false;
+  @Input() showType       = false;
+  @Input() hideAllLevels  = false;
+
+  readonly hideLevels = signal(false);
 
   private indicatorService = inject(IndicatorService);
   readonly pinService      = inject(PinService);

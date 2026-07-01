@@ -1,4 +1,4 @@
-.instrument-card {
+﻿.instrument-card {
   background: var(--color-surface);
   border: 1px solid var(--color-border);
   border-radius: 10px;
@@ -107,6 +107,27 @@
 .positive { color: #16a34a; font-weight: 600; }
 .negative { color: #dc2626; font-weight: 600; }
 
+
+.levels-footer {
+  display: flex;
+  justify-content: flex-end;
+  border-top: 1px solid var(--color-border);
+  padding-top: 0.35rem;
+  margin-top: 0.4rem;
+}
+
+.levels-toggle-btn {
+  background: none;
+  border: none;
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+
+  &:hover { color: var(--color-primary); }
+}
 .levels-list {
   margin-top: 0.4rem;
   padding-top: 0.5rem;

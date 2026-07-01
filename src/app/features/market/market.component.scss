@@ -1,4 +1,4 @@
-.market-page {
+﻿.market-page {
   padding: 2rem 0 4rem;
 }
 
@@ -48,6 +48,11 @@
     background: var(--color-primary);
     color: #fff;
   }
+}
+
+.hide-levels-btn {
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
 }
 
 .btn-back {

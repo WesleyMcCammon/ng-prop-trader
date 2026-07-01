@@ -1,4 +1,4 @@
-﻿<div class="instrument-card">
+<div class="instrument-card">
   <div class="card-header">
     <span class="symbol">{{ instrument.symbol }}</span>
     <span class="card-header-right">
@@ -29,31 +29,38 @@
   </div>
 
   @if (activeLevels().length > 0) {
-    <div class="levels-list">
-      <div class="level-row level-row--header">
-        <span class="level-line1">
-          <span>Indicator</span>
-          <span>Level</span>
-        </span>
-        <span class="level-line2">
-          <span>Value</span>
-          <span>Δ Bid</span>
-        </span>
-      </div>
-      @for (lv of activeLevels(); track lv.levelId) {
-        <div class="level-row">
+    <div class="levels-footer">
+      <button class="levels-toggle-btn" (click)="hideLevels.set(!hideLevels())">
+        Levels {{ (hideLevels() || hideAllLevels) ? '▸' : '▾' }}
+      </button>
+    </div>
+    @if (!hideLevels() && !hideAllLevels) {
+      <div class="levels-list">
+        <div class="level-row level-row--header">
           <span class="level-line1">
-            <span class="level-group">{{ lv.groupName }}</span>
-            <span class="level-name">{{ lv.label }}</span>
+            <span>Indicator</span>
+            <span>Level</span>
           </span>
           <span class="level-line2">
-            <span class="level-value">{{ lv.value | priceFormat:instrument.tickSize }}</span>
-            <span class="level-delta" [class.positive]="lv.delta > 0" [class.negative]="lv.delta < 0">
-              {{ lv.delta > 0 ? '+' : '' }}{{ lv.delta | priceFormat:instrument.tickSize }}
-            </span>
+            <span>Value</span>
+            <span>Δ Bid</span>
           </span>
         </div>
-      }
-    </div>
+        @for (lv of activeLevels(); track lv.levelId) {
+          <div class="level-row">
+            <span class="level-line1">
+              <span class="level-group">{{ lv.groupName }}</span>
+              <span class="level-name">{{ lv.label }}</span>
+            </span>
+            <span class="level-line2">
+              <span class="level-value">{{ lv.value | priceFormat:instrument.tickSize }}</span>
+              <span class="level-delta" [class.positive]="lv.delta > 0" [class.negative]="lv.delta < 0">
+                {{ lv.delta > 0 ? '+' : '' }}{{ lv.delta | priceFormat:instrument.tickSize }}
+              </span>
+            </span>
+          </div>
+        }
+      </div>
+    }
   }
 </div>

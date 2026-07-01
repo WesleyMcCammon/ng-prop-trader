@@ -1,7 +1,27 @@
-import { Component, computed, inject, OnDestroy, signal } from '@angular/core';
+﻿import { Component, computed, effect, inject, OnDestroy, signal } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { RouterLink } from '@angular/router';
 import { CdkDragDrop, DragDropModule, moveItemInArray } from '@angular/cdk/drag-drop';
+
+const STORAGE_VIEW_MODE     = 'mw.viewMode';
+const STORAGE_ORDER_FUTURES = 'mw.order.futures';
+const STORAGE_ORDER_FOREX   = 'mw.order.forex';
+const STORAGE_ORDER_CFDS    = 'mw.order.cfds';
+const STORAGE_ORDER_ALL     = 'mw.order.all';
+
+function loadViewMode(): 'categorized' | 'all' {
+  const v = localStorage.getItem(STORAGE_VIEW_MODE);
+  return v === 'all' ? 'all' : 'categorized';
+}
+
+function loadOrder(key: string): string[] {
+  try {
+    const raw = localStorage.getItem(key);
+    return raw ? JSON.parse(raw) : [];
+  } catch {
+    return [];
+  }
+}
 import { InstrumentService } from '../../core/services/instrument.service';
 import { CategoryService } from '../../core/services/category.service';
 import { PriceFeedService } from '../../core/services/price-feed.service';
@@ -26,7 +46,8 @@ export class MarketComponent implements OnDestroy {
   readonly futuresCategories: InstrumentCategory[] = this.categoryService.byType('futures');
   readonly forexCategories:   InstrumentCategory[] = this.categoryService.byType('forex');
 
-  viewMode    = signal<'categorized' | 'all'>('categorized');
+  viewMode      = signal<'categorized' | 'all'>(loadViewMode());
+  hideAllLevels = signal(false);
 
   showFutures = signal(true);
   showForex   = signal(true);
@@ -54,10 +75,10 @@ export class MarketComponent implements OnDestroy {
 
   all = computed(() => this.instruments());
 
-  private futuresOrder = signal<string[]>([]);
-  private forexOrder   = signal<string[]>([]);
-  private cfdsOrder    = signal<string[]>([]);
-  private allOrder     = signal<string[]>([]);
+  private futuresOrder = signal<string[]>(loadOrder(STORAGE_ORDER_FUTURES));
+  private forexOrder   = signal<string[]>(loadOrder(STORAGE_ORDER_FOREX));
+  private cfdsOrder    = signal<string[]>(loadOrder(STORAGE_ORDER_CFDS));
+  private allOrder     = signal<string[]>(loadOrder(STORAGE_ORDER_ALL));
 
   orderedFutures = computed(() => this.applyOrder(this.futures(), this.futuresOrder()));
   orderedForex   = computed(() => this.applyOrder(this.forex(),   this.forexOrder()));
@@ -75,6 +96,11 @@ export class MarketComponent implements OnDestroy {
   constructor() {
     inject(Title).setTitle('Market – MarketWatch');
     this.priceFeed.start();
+    effect(() => localStorage.setItem(STORAGE_VIEW_MODE,     this.viewMode()));
+    effect(() => localStorage.setItem(STORAGE_ORDER_FUTURES, JSON.stringify(this.futuresOrder())));
+    effect(() => localStorage.setItem(STORAGE_ORDER_FOREX,   JSON.stringify(this.forexOrder())));
+    effect(() => localStorage.setItem(STORAGE_ORDER_CFDS,    JSON.stringify(this.cfdsOrder())));
+    effect(() => localStorage.setItem(STORAGE_ORDER_ALL,     JSON.stringify(this.allOrder())));
   }
 
   ngOnDestroy(): void {
