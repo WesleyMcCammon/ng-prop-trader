@@ -15,11 +15,17 @@
         </h2>
         <span class="count">{{ futures().length }}</span>
         <div class="section-actions">
-          <button class="filter-btn" [class.filter-btn--active]="showMicro()" (click)="showMicro.set(!showMicro())">Micro</button>
           <button class="collapse-btn" (click)="showFutures.set(!showFutures())">{{ showFutures() ? '▼' : '▶' }}</button>
         </div>
       </div>
       @if (showFutures()) {
+        <div class="category-toggles">
+          @for (cat of futuresCategories; track cat) {
+            <button class="cat-toggle" [class.cat-toggle--active]="activeF().has(cat)" (click)="toggleFutures(cat)">{{ cat }}</button>
+          }
+          <span class="filter-divider"></span>
+          <button class="cat-toggle" [class.cat-toggle--active]="showMicro()" (click)="showMicro.set(!showMicro())">Micro</button>
+        </div>
         <div class="cards-grid">
           @for (i of futures(); track i.symbol) {
             <app-instrument-card [instrument]="i" />
@@ -41,6 +47,11 @@
         </div>
       </div>
       @if (showForex()) {
+        <div class="category-toggles">
+          @for (cat of forexCategories; track cat) {
+            <button class="cat-toggle" [class.cat-toggle--active]="activeFx().has(cat)" (click)="toggleForex(cat)">{{ cat }}</button>
+          }
+        </div>
         <div class="cards-grid">
           @for (i of forex(); track i.symbol) {
             <app-instrument-card [instrument]="i" />
