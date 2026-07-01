@@ -1,4 +1,4 @@
-import { Component, computed, inject } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { RouterLink } from '@angular/router';
 import { InstrumentService } from '../../core/services/instrument.service';
@@ -16,9 +16,19 @@ export class MarketComponent {
 
   instruments = this.instrumentService.instruments;
 
-  futures = computed(() => this.instruments().filter(i => i.type === 'futures'));
-  forex   = computed(() => this.instruments().filter(i => i.type === 'forex'));
-  cfds    = computed(() => this.instruments().filter(i => i.type === 'cfd'));
+  showFutures = signal(true);
+  showForex   = signal(true);
+  showCfds    = signal(true);
+  showMicro   = signal(true);
+
+  futures = computed(() => {
+    const micro = this.showMicro();
+    return this.instruments().filter(i =>
+      i.type === 'futures' && (micro || !i.name.startsWith('Micro'))
+    );
+  });
+  forex = computed(() => this.instruments().filter(i => i.type === 'forex'));
+  cfds  = computed(() => this.instruments().filter(i => i.type === 'cfd'));
 
   constructor() {
     inject(Title).setTitle('Market – MarketWatch');
