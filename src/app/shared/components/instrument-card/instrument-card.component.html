@@ -1,4 +1,4 @@
-<div class="instrument-card">
+﻿<div class="instrument-card">
   <div class="card-header">
     <span class="symbol">{{ instrument.symbol }}</span>
     <span class="card-header-right">
@@ -23,7 +23,7 @@
     <div class="data-item data-item--change">
       <span class="data-label">Chg %</span>
       <span class="data-value" [class.positive]="instrument.changePct >= 0" [class.negative]="instrument.changePct < 0">
-        {{ instrument.changePct >= 0 ? '+' : '' }}{{ instrument.changePct }}%
+        {{ instrument.changePct >= 0 ? '+' : '' }}{{ instrument.changePct | number:'1.2-2' }}%
       </span>
     </div>
   </div>

@@ -1,4 +1,4 @@
-import { Injectable, computed, signal } from '@angular/core';
+import { Injectable, computed, effect, signal } from '@angular/core';
 import { INDICATORS, INDICATORS_MAP, LEVEL_VALUES } from '../../data/indicators.data';
 import { InstrumentIndicators } from '../../shared/model/indicator.model';
 
@@ -39,6 +39,18 @@ const LEVEL_GROUPS: Record<string, string> = {
   'wk.open': 'Weekly', 'wk.high': 'Weekly', 'wk.low': 'Weekly', 'wk.close': 'Weekly',
 };
 
+const STORAGE_GROUPS = 'mw.activeGroups';
+const STORAGE_LEVELS = 'mw.activeLevels';
+
+function loadSet(key: string): Set<string> {
+  try {
+    const raw = localStorage.getItem(key);
+    return raw ? new Set<string>(JSON.parse(raw)) : new Set();
+  } catch {
+    return new Set();
+  }
+}
+
 @Injectable({ providedIn: 'root' })
 export class IndicatorService {
   private readonly _indicators = signal<InstrumentIndicators[]>(INDICATORS);
@@ -48,9 +60,14 @@ export class IndicatorService {
   readonly weekDates: string[] = INDICATORS[0]?.weeklyOHLC.map(w => w.weekOf) ?? [];
 
   // ── Selection state (shared with indicators admin and market overview) ──────
-  readonly activeGroups = signal<Set<string>>(new Set());
-  readonly activeLevels = signal<Set<string>>(new Set());
+  readonly activeGroups = signal<Set<string>>(loadSet(STORAGE_GROUPS));
+  readonly activeLevels = signal<Set<string>>(loadSet(STORAGE_LEVELS));
   readonly totalActive  = computed(() => this.activeLevels().size);
+
+  constructor() {
+    effect(() => localStorage.setItem(STORAGE_GROUPS, JSON.stringify([...this.activeGroups()])));
+    effect(() => localStorage.setItem(STORAGE_LEVELS, JSON.stringify([...this.activeLevels()])));
+  }
 
   // ── Selection methods ────────────────────────────────────────────────────────
   isGroupEnabled(groupId: string): boolean {
