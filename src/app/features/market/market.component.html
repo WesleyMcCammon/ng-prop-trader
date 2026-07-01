@@ -4,11 +4,16 @@
     <div class="page-header">
       <h1 class="page-title">Market Overview</h1>
       <div class="page-header-actions">
-        <div class="view-toggle">
-          <button class="view-toggle-btn" [class.view-toggle-btn--active]="viewMode() === 'categorized'" (click)="viewMode.set('categorized')">By Category</button>
-          <button class="view-toggle-btn" [class.view-toggle-btn--active]="viewMode() === 'all'" (click)="viewMode.set('all')">All</button>
-        </div>
-        <button class="view-toggle-btn hide-levels-btn" [class.view-toggle-btn--active]="hideAllLevels()" (click)="hideAllLevels.set(!hideAllLevels())">
+        @if (visibleTypeCount() > 1) {
+          <div class="view-toggle">
+            <button class="view-toggle-btn" [class.view-toggle-btn--active]="viewMode() === 'categorized'"
+              (click)="viewMode.set('categorized')">By Category</button>
+            <button class="view-toggle-btn" [class.view-toggle-btn--active]="viewMode() === 'all'"
+              (click)="viewMode.set('all')">All</button>
+          </div>
+        }
+        <button class="view-toggle-btn hide-levels-btn" [class.view-toggle-btn--active]="hideAllLevels()"
+          (click)="hideAllLevels.set(!hideAllLevels())">
           {{ hideAllLevels() ? 'Show Levels' : 'Hide Levels' }}
         </button>
         <a routerLink="/dashboard" class="btn-back">‹ Back to Dashboard</a>
@@ -18,94 +23,101 @@
     <app-pinned-instruments [hideAllLevels]="hideAllLevels()" />
 
     @if (viewMode() === 'all') {
-      <section class="market-section">
-        <div class="section-header">
-          <h2 class="section-title">All Instruments</h2>
-          <span class="count">{{ orderedAll().length }}</span>
-        </div>
-        <div class="cards-grid" cdkDropList [cdkDropListData]="orderedAll()" (cdkDropListDropped)="onAllDrop($event)">
-          @for (i of orderedAll(); track i.symbol) {
-            <app-instrument-card [instrument]="i" [showType]="true" [hideAllLevels]="hideAllLevels()" cdkDrag />
-          }
-        </div>
-      </section>
+    <section class="market-section">
+      <div class="section-header">
+        <h2 class="section-title">All Instruments</h2>
+        <span class="count">{{ orderedAll().length }}</span>
+      </div>
+      <div class="cards-grid" cdkDropList [cdkDropListData]="orderedAll()" (cdkDropListDropped)="onAllDrop($event)">
+        @for (i of orderedAll(); track i.symbol) {
+        <app-instrument-card [instrument]="i" [showType]="true" [hideAllLevels]="hideAllLevels()" cdkDrag />
+        }
+      </div>
+    </section>
     } @else {
 
     <!-- Futures -->
+     @if(orderedFutures().length > 0) {
     <section class="market-section">
       <div class="section-header">
         <h2 class="section-title">
           <span class="type-badge type-badge--futures">futures</span>
-          Futures Contracts
         </h2>
-        <span class="count">{{ orderedFutures().length }}</span>
+        <!-- <span class="count">{{ orderedFutures().length }}</span> -->
         <div class="section-actions">
-          <button class="collapse-btn" (click)="showFutures.set(!showFutures())">{{ showFutures() ? '▼' : '▶' }}</button>
+          <button class="collapse-btn" (click)="showFutures.set(!showFutures())">{{ showFutures() ? '▼' : '▶'
+            }}</button>
         </div>
       </div>
       @if (showFutures()) {
-        <div class="category-toggles">
-          @for (cat of futuresCategories; track cat) {
-            <button class="cat-toggle" [class.cat-toggle--active]="activeF().has(cat)" (click)="toggleFutures(cat)">{{ cat }}</button>
-          }
-          <span class="filter-divider"></span>
-          <button class="cat-toggle" [class.cat-toggle--active]="showMicro()" (click)="showMicro.set(!showMicro())">Micro</button>
-        </div>
-        <div class="cards-grid" cdkDropList [cdkDropListData]="orderedFutures()" (cdkDropListDropped)="onFuturesDrop($event)">
-          @for (i of orderedFutures(); track i.symbol) {
-            <app-instrument-card [instrument]="i" [hideAllLevels]="hideAllLevels()" cdkDrag />
-          }
-        </div>
+        <!-- wbm only show if more than 1 category is available -->
+      <!-- <div class="category-toggles">
+        @for (cat of futuresCategories; track cat) {
+        <button class="cat-toggle" [class.cat-toggle--active]="activeF().has(cat)" (click)="toggleFutures(cat)">{{ cat
+          }}</button>
+        }
+        <span class="filter-divider"></span>
+        <button class="cat-toggle" [class.cat-toggle--active]="showMicro()"
+          (click)="showMicro.set(!showMicro())">Micro</button>
+      </div> -->
+      <div class="cards-grid" cdkDropList [cdkDropListData]="orderedFutures()"
+        (cdkDropListDropped)="onFuturesDrop($event)">
+        @for (i of orderedFutures(); track i.symbol) {
+        <app-instrument-card [instrument]="i" [hideAllLevels]="hideAllLevels()" cdkDrag />
+        }
+      </div>
       }
     </section>
-
+  }
     <!-- Forex -->
+    @if(orderedForex().length > 0) {
     <section class="market-section">
       <div class="section-header">
         <h2 class="section-title">
           <span class="type-badge type-badge--forex">forex</span>
-          Forex
         </h2>
-        <span class="count">{{ orderedForex().length }}</span>
+        <!-- <span class="count">{{ orderedForex().length }}</span> -->
         <div class="section-actions">
           <button class="collapse-btn" (click)="showForex.set(!showForex())">{{ showForex() ? '▼' : '▶' }}</button>
         </div>
       </div>
       @if (showForex()) {
-        <div class="category-toggles">
-          @for (cat of forexCategories; track cat) {
-            <button class="cat-toggle" [class.cat-toggle--active]="activeFx().has(cat)" (click)="toggleForex(cat)">{{ cat }}</button>
-          }
-        </div>
-        <div class="cards-grid" cdkDropList [cdkDropListData]="orderedForex()" (cdkDropListDropped)="onForexDrop($event)">
-          @for (i of orderedForex(); track i.symbol) {
-            <app-instrument-card [instrument]="i" [hideAllLevels]="hideAllLevels()" cdkDrag />
-          }
-        </div>
+        <!-- wbm only show if more than 1 category is available -->
+      <!-- <div class="category-toggles">
+        @for (cat of forexCategories; track cat) {
+        <button class="cat-toggle" [class.cat-toggle--active]="activeFx().has(cat)" (click)="toggleForex(cat)">{{ cat
+          }}</button>
+        }
+      </div> -->
+      <div class="cards-grid" cdkDropList [cdkDropListData]="orderedForex()" (cdkDropListDropped)="onForexDrop($event)">
+        @for (i of orderedForex(); track i.symbol) {
+        <app-instrument-card [instrument]="i" [hideAllLevels]="hideAllLevels()" cdkDrag />
+        }
+      </div>
       }
     </section>
-
+    }
     <!-- CFDs -->
+     @if(orderedCfds().length > 0) {
     <section class="market-section">
       <div class="section-header">
         <h2 class="section-title">
           <span class="type-badge type-badge--cfd">cfd</span>
-          CFDs
         </h2>
-        <span class="count">{{ orderedCfds().length }}</span>
+        <!-- <span class="count">{{ orderedCfds().length }}</span> -->
         <div class="section-actions">
           <button class="collapse-btn" (click)="showCfds.set(!showCfds())">{{ showCfds() ? '▼' : '▶' }}</button>
         </div>
       </div>
       @if (showCfds()) {
-        <div class="cards-grid" cdkDropList [cdkDropListData]="orderedCfds()" (cdkDropListDropped)="onCfdsDrop($event)">
-          @for (i of orderedCfds(); track i.symbol) {
-            <app-instrument-card [instrument]="i" [hideAllLevels]="hideAllLevels()" cdkDrag />
-          }
-        </div>
+      <div class="cards-grid" cdkDropList [cdkDropListData]="orderedCfds()" (cdkDropListDropped)="onCfdsDrop($event)">
+        @for (i of orderedCfds(); track i.symbol) {
+        <app-instrument-card [instrument]="i" [hideAllLevels]="hideAllLevels()" cdkDrag />
+        }
+      </div>
       }
     </section>
-
+  }
     } <!-- end @else categorized -->
 
   </div>

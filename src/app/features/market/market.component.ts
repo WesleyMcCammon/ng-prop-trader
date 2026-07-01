@@ -98,6 +98,10 @@ export class MarketComponent implements OnDestroy {
   private cfdsOrder    = signal<string[]>(loadOrder(STORAGE_ORDER_CFDS));
   private allOrder     = signal<string[]>(loadOrder(STORAGE_ORDER_ALL));
 
+  visibleTypeCount = computed(() =>
+    [this.futures(), this.forex(), this.cfds()].filter(g => g.length > 0).length
+  );
+
   orderedFutures = computed(() => this.applyOrder(this.futures(), this.futuresOrder()));
   orderedForex   = computed(() => this.applyOrder(this.forex(),   this.forexOrder()));
   orderedCfds    = computed(() => this.applyOrder(this.cfds(),    this.cfdsOrder()));
