@@ -41,8 +41,9 @@ export class InstrumentsComponent implements OnInit {
   readonly futuresCategories: InstrumentCategory[] = this.categoryService.byType('futures');
   readonly forexCategories:   InstrumentCategory[] = this.categoryService.byType('forex');
 
-  activeF  = signal<Set<InstrumentCategory>>(new Set(this.futuresCategories));
-  activeFx = signal<Set<InstrumentCategory>>(new Set(this.forexCategories));
+  activeF    = signal<Set<InstrumentCategory>>(new Set(this.futuresCategories));
+  activeFx   = signal<Set<InstrumentCategory>>(new Set(this.forexCategories));
+  showMicro  = signal<boolean>(true);
 
   private sorted = computed(() => {
     const dir = this.sortDir();
@@ -53,7 +54,12 @@ export class InstrumentsComponent implements OnInit {
 
   futuresInstruments = computed(() => {
     const active = this.activeF();
-    return this.sorted().filter(i => i.type === 'futures' && active.has(i.category));
+    const micro  = this.showMicro();
+    return this.sorted().filter(i =>
+      i.type === 'futures' &&
+      active.has(i.category) &&
+      (micro || !i.name.startsWith('Micro'))
+    );
   });
 
   forexInstruments = computed(() => {
@@ -84,14 +90,42 @@ export class InstrumentsComponent implements OnInit {
     });
   }
 
+  expandedRows = signal<Set<string>>(new Set());
+
   isActive(symbol: string): boolean {
     return this.activeSymbols().has(symbol);
+  }
+
+  isExpanded(symbol: string): boolean {
+    return this.expandedRows().has(symbol);
   }
 
   toggleActive(symbol: string): void {
     this.activeSymbols.update(set => {
       const next = new Set(set);
       next.has(symbol) ? next.delete(symbol) : next.add(symbol);
+      return next;
+    });
+  }
+
+  toggleRow(symbol: string): void {
+    this.expandedRows.update(set => {
+      const next = new Set(set);
+      next.has(symbol) ? next.delete(symbol) : next.add(symbol);
+      return next;
+    });
+  }
+
+  isSectionExpanded(instruments: { symbol: string }[]): boolean {
+    const expanded = this.expandedRows();
+    return instruments.length > 0 && instruments.every(i => expanded.has(i.symbol));
+  }
+
+  toggleSection(instruments: { symbol: string }[]): void {
+    const expand = !this.isSectionExpanded(instruments);
+    this.expandedRows.update(set => {
+      const next = new Set(set);
+      instruments.forEach(i => expand ? next.add(i.symbol) : next.delete(i.symbol));
       return next;
     });
   }

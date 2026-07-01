@@ -6,18 +6,20 @@
       <a routerLink="/admin" class="btn-back">‹ Back to Admin</a>
     </div>
 
-    <!-- Column visibility toggles -->
-    <div class="col-toggles">
-      <span class="col-toggles-label">Columns</span>
-      @for (c of toggleableCols; track c.key) {
-        <button
-          class="col-toggle"
-          [class.col-toggle--active]="col(c.key)"
-          (click)="toggleCol(c.key)">
-          {{ c.label }}
-        </button>
-      }
-    </div>
+    <!-- Column visibility toggles (admin view only) -->
+    @if (!showAll) {
+      <div class="col-toggles">
+        <span class="col-toggles-label">Columns</span>
+        @for (c of toggleableCols; track c.key) {
+          <button
+            class="col-toggle"
+            [class.col-toggle--active]="col(c.key)"
+            (click)="toggleCol(c.key)">
+            {{ c.label }}
+          </button>
+        }
+      </div>
+    }
 
     <!-- Futures -->
     <section class="instrument-section">
@@ -27,6 +29,11 @@
           Futures Contracts
         </h2>
         <span class="count">{{ futuresInstruments().length }}</span>
+        @if (showAll) {
+          <button class="expand-ctrl-btn" (click)="toggleSection(futuresInstruments())">
+            {{ isSectionExpanded(futuresInstruments()) ? 'Collapse All' : 'Expand All' }}
+          </button>
+        }
       </div>
       <div class="category-toggles">
         @for (cat of futuresCategories; track cat) {
@@ -37,12 +44,20 @@
             {{ cat }}
           </button>
         }
+        <span class="filter-divider"></span>
+        <button
+          class="cat-toggle"
+          [class.cat-toggle--active]="showMicro()"
+          (click)="showMicro.set(!showMicro())">
+          Micro
+        </button>
       </div>
       <div class="table-wrap">
         <table class="instruments-table">
           <thead>
             <tr>
               @if (!showAll) { <th class="col-active">Active</th> }
+              @if (showAll)  { <th class="col-expand"></th> }
               <th class="sortable" (click)="toggleSort()">Symbol <span class="sort-arrow">{{ sortDir() === 'asc' ? '▲' : '▼' }}</span></th>
               <th>Name</th>
               <th>Category</th>
@@ -51,20 +66,21 @@
               <th class="num">Contract Size</th>
               <th class="num">Tick Size</th>
               <th class="num">Tick Value</th>
-              @if (col('price'))     { <th class="num">Price</th> }
-              @if (col('bid'))       { <th class="num">Bid</th> }
-              @if (col('ask'))       { <th class="num">Ask</th> }
-              @if (col('change'))    { <th class="num">Change</th> }
-              @if (col('changePct')) { <th class="num">Change %</th> }
-              @if (col('high'))      { <th class="num">High</th> }
-              @if (col('low'))       { <th class="num">Low</th> }
-              @if (col('volume'))    { <th class="num">Volume</th> }
+              @if (!showAll && col('price'))     { <th class="num">Price</th> }
+              @if (!showAll && col('bid'))       { <th class="num">Bid</th> }
+              @if (!showAll && col('ask'))       { <th class="num">Ask</th> }
+              @if (!showAll && col('change'))    { <th class="num">Change</th> }
+              @if (!showAll && col('changePct')) { <th class="num">Change %</th> }
+              @if (!showAll && col('high'))      { <th class="num">High</th> }
+              @if (!showAll && col('low'))       { <th class="num">Low</th> }
+              @if (!showAll && col('volume'))    { <th class="num">Volume</th> }
             </tr>
           </thead>
           <tbody>
             @for (i of futuresInstruments(); track i.symbol) {
-              <tr>
+              <tr [class.row-expanded]="showAll && isExpanded(i.symbol)">
                 @if (!showAll) { <td class="col-active"><input type="checkbox" [checked]="isActive(i.symbol)" (change)="toggleActive(i.symbol)" /></td> }
+                @if (showAll)  { <td class="col-expand"><button class="expand-btn" (click)="toggleRow(i.symbol)">{{ isExpanded(i.symbol) ? '▼' : '▶' }}</button></td> }
                 <td class="symbol">{{ i.symbol }}</td>
                 <td>{{ i.name }}</td>
                 <td>{{ i.category }}</td>
@@ -73,15 +89,31 @@
                 <td class="num">{{ i.contractSize | number }}</td>
                 <td class="num">{{ i.tickSize }}</td>
                 <td class="num">{{ i.tickValue | currency }}</td>
-                @if (col('price'))     { <td class="num">{{ i.price }}</td> }
-                @if (col('bid'))       { <td class="num">{{ i.bid }}</td> }
-                @if (col('ask'))       { <td class="num">{{ i.ask }}</td> }
-                @if (col('change'))    { <td class="num" [class.positive]="i.change >= 0" [class.negative]="i.change < 0">{{ i.change }}</td> }
-                @if (col('changePct')) { <td class="num" [class.positive]="i.changePct >= 0" [class.negative]="i.changePct < 0">{{ i.changePct }}%</td> }
-                @if (col('high'))      { <td class="num">{{ i.high }}</td> }
-                @if (col('low'))       { <td class="num">{{ i.low }}</td> }
-                @if (col('volume'))    { <td class="num">{{ i.volume | number }}</td> }
+                @if (!showAll && col('price'))     { <td class="num">{{ i.price }}</td> }
+                @if (!showAll && col('bid'))       { <td class="num">{{ i.bid }}</td> }
+                @if (!showAll && col('ask'))       { <td class="num">{{ i.ask }}</td> }
+                @if (!showAll && col('change'))    { <td class="num" [class.positive]="i.change >= 0" [class.negative]="i.change < 0">{{ i.change }}</td> }
+                @if (!showAll && col('changePct')) { <td class="num" [class.positive]="i.changePct >= 0" [class.negative]="i.changePct < 0">{{ i.changePct }}%</td> }
+                @if (!showAll && col('high'))      { <td class="num">{{ i.high }}</td> }
+                @if (!showAll && col('low'))       { <td class="num">{{ i.low }}</td> }
+                @if (!showAll && col('volume'))    { <td class="num">{{ i.volume | number }}</td> }
               </tr>
+              @if (showAll && isExpanded(i.symbol)) {
+                <tr class="detail-row">
+                  <td colspan="99">
+                    <div class="detail-grid">
+                      <div class="detail-item"><span class="detail-label">Price</span><span>{{ i.price }}</span></div>
+                      <div class="detail-item"><span class="detail-label">Bid</span><span>{{ i.bid }}</span></div>
+                      <div class="detail-item"><span class="detail-label">Ask</span><span>{{ i.ask }}</span></div>
+                      <div class="detail-item"><span class="detail-label">Change</span><span [class.positive]="i.change >= 0" [class.negative]="i.change < 0">{{ i.change }}</span></div>
+                      <div class="detail-item"><span class="detail-label">Change %</span><span [class.positive]="i.changePct >= 0" [class.negative]="i.changePct < 0">{{ i.changePct }}%</span></div>
+                      <div class="detail-item"><span class="detail-label">High</span><span>{{ i.high }}</span></div>
+                      <div class="detail-item"><span class="detail-label">Low</span><span>{{ i.low }}</span></div>
+                      <div class="detail-item"><span class="detail-label">Volume</span><span>{{ i.volume | number }}</span></div>
+                    </div>
+                  </td>
+                </tr>
+              }
             }
           </tbody>
         </table>
@@ -96,6 +128,11 @@
           Forex
         </h2>
         <span class="count">{{ forexInstruments().length }}</span>
+        @if (showAll) {
+          <button class="expand-ctrl-btn" (click)="toggleSection(forexInstruments())">
+            {{ isSectionExpanded(forexInstruments()) ? 'Collapse All' : 'Expand All' }}
+          </button>
+        }
       </div>
       <div class="category-toggles">
         @for (cat of forexCategories; track cat) {
@@ -112,41 +149,59 @@
           <thead>
             <tr>
               @if (!showAll) { <th class="col-active">Active</th> }
+              @if (showAll)  { <th class="col-expand"></th> }
               <th class="sortable" (click)="toggleSort()">Symbol <span class="sort-arrow">{{ sortDir() === 'asc' ? '▲' : '▼' }}</span></th>
               <th>Name</th>
               <th>Category</th>
               <th>Ccy</th>
               <th class="num">Lot Size</th>
               <th class="num">Pip Size</th>
-              @if (col('price'))     { <th class="num">Price</th> }
-              @if (col('bid'))       { <th class="num">Bid</th> }
-              @if (col('ask'))       { <th class="num">Ask</th> }
-              <th class="num">Spread</th>
-              @if (col('change'))    { <th class="num">Change</th> }
-              @if (col('changePct')) { <th class="num">Change %</th> }
-              @if (col('high'))      { <th class="num">High</th> }
-              @if (col('low'))       { <th class="num">Low</th> }
+              @if (!showAll && col('price'))     { <th class="num">Price</th> }
+              @if (!showAll && col('bid'))       { <th class="num">Bid</th> }
+              @if (!showAll && col('ask'))       { <th class="num">Ask</th> }
+              @if (!showAll) { <th class="num">Spread</th> }
+              @if (!showAll && col('change'))    { <th class="num">Change</th> }
+              @if (!showAll && col('changePct')) { <th class="num">Change %</th> }
+              @if (!showAll && col('high'))      { <th class="num">High</th> }
+              @if (!showAll && col('low'))       { <th class="num">Low</th> }
             </tr>
           </thead>
           <tbody>
             @for (i of forexInstruments(); track i.symbol) {
-              <tr>
+              <tr [class.row-expanded]="showAll && isExpanded(i.symbol)">
                 @if (!showAll) { <td class="col-active"><input type="checkbox" [checked]="isActive(i.symbol)" (change)="toggleActive(i.symbol)" /></td> }
+                @if (showAll)  { <td class="col-expand"><button class="expand-btn" (click)="toggleRow(i.symbol)">{{ isExpanded(i.symbol) ? '▼' : '▶' }}</button></td> }
                 <td class="symbol">{{ i.symbol }}</td>
                 <td>{{ i.name }}</td>
                 <td>{{ i.category }}</td>
                 <td>{{ i.currency }}</td>
                 <td class="num">{{ i.contractSize | number }}</td>
                 <td class="num">{{ i.tickSize }}</td>
-                @if (col('price'))     { <td class="num">{{ i.price }}</td> }
-                @if (col('bid'))       { <td class="num">{{ i.bid }}</td> }
-                @if (col('ask'))       { <td class="num">{{ i.ask }}</td> }
-                <td class="num spread">{{ (i.ask - i.bid) / i.tickSize | number:'1.0-0' }}</td>
-                @if (col('change'))    { <td class="num" [class.positive]="i.change >= 0" [class.negative]="i.change < 0">{{ i.change }}</td> }
-                @if (col('changePct')) { <td class="num" [class.positive]="i.changePct >= 0" [class.negative]="i.changePct < 0">{{ i.changePct }}%</td> }
-                @if (col('high'))      { <td class="num">{{ i.high }}</td> }
-                @if (col('low'))       { <td class="num">{{ i.low }}</td> }
+                @if (!showAll && col('price'))     { <td class="num">{{ i.price }}</td> }
+                @if (!showAll && col('bid'))       { <td class="num">{{ i.bid }}</td> }
+                @if (!showAll && col('ask'))       { <td class="num">{{ i.ask }}</td> }
+                @if (!showAll) { <td class="num spread">{{ (i.ask - i.bid) / i.tickSize | number:'1.0-0' }}</td> }
+                @if (!showAll && col('change'))    { <td class="num" [class.positive]="i.change >= 0" [class.negative]="i.change < 0">{{ i.change }}</td> }
+                @if (!showAll && col('changePct')) { <td class="num" [class.positive]="i.changePct >= 0" [class.negative]="i.changePct < 0">{{ i.changePct }}%</td> }
+                @if (!showAll && col('high'))      { <td class="num">{{ i.high }}</td> }
+                @if (!showAll && col('low'))       { <td class="num">{{ i.low }}</td> }
               </tr>
+              @if (showAll && isExpanded(i.symbol)) {
+                <tr class="detail-row">
+                  <td colspan="99">
+                    <div class="detail-grid">
+                      <div class="detail-item"><span class="detail-label">Price</span><span>{{ i.price }}</span></div>
+                      <div class="detail-item"><span class="detail-label">Bid</span><span>{{ i.bid }}</span></div>
+                      <div class="detail-item"><span class="detail-label">Ask</span><span>{{ i.ask }}</span></div>
+                      <div class="detail-item"><span class="detail-label">Spread</span><span class="spread">{{ (i.ask - i.bid) / i.tickSize | number:'1.0-0' }} pips</span></div>
+                      <div class="detail-item"><span class="detail-label">Change</span><span [class.positive]="i.change >= 0" [class.negative]="i.change < 0">{{ i.change }}</span></div>
+                      <div class="detail-item"><span class="detail-label">Change %</span><span [class.positive]="i.changePct >= 0" [class.negative]="i.changePct < 0">{{ i.changePct }}%</span></div>
+                      <div class="detail-item"><span class="detail-label">High</span><span>{{ i.high }}</span></div>
+                      <div class="detail-item"><span class="detail-label">Low</span><span>{{ i.low }}</span></div>
+                    </div>
+                  </td>
+                </tr>
+              }
             }
           </tbody>
         </table>
@@ -161,41 +216,64 @@
           CFDs
         </h2>
         <span class="count">{{ cfdInstruments().length }}</span>
+        @if (showAll) {
+          <button class="expand-ctrl-btn" (click)="toggleSection(cfdInstruments())">
+            {{ isSectionExpanded(cfdInstruments()) ? 'Collapse All' : 'Expand All' }}
+          </button>
+        }
       </div>
       <div class="table-wrap">
         <table class="instruments-table">
           <thead>
             <tr>
               @if (!showAll) { <th class="col-active">Active</th> }
+              @if (showAll)  { <th class="col-expand"></th> }
               <th class="sortable" (click)="toggleSort()">Symbol <span class="sort-arrow">{{ sortDir() === 'asc' ? '▲' : '▼' }}</span></th>
               <th>Name</th>
               <th>Ccy</th>
-              @if (col('price'))     { <th class="num">Price</th> }
-              @if (col('bid'))       { <th class="num">Bid</th> }
-              @if (col('ask'))       { <th class="num">Ask</th> }
-              <th class="num">Spread</th>
-              @if (col('change'))    { <th class="num">Change</th> }
-              @if (col('changePct')) { <th class="num">Change %</th> }
-              @if (col('high'))      { <th class="num">High</th> }
-              @if (col('low'))       { <th class="num">Low</th> }
+              @if (!showAll && col('price'))     { <th class="num">Price</th> }
+              @if (!showAll && col('bid'))       { <th class="num">Bid</th> }
+              @if (!showAll && col('ask'))       { <th class="num">Ask</th> }
+              @if (!showAll) { <th class="num">Spread</th> }
+              @if (!showAll && col('change'))    { <th class="num">Change</th> }
+              @if (!showAll && col('changePct')) { <th class="num">Change %</th> }
+              @if (!showAll && col('high'))      { <th class="num">High</th> }
+              @if (!showAll && col('low'))       { <th class="num">Low</th> }
             </tr>
           </thead>
           <tbody>
             @for (i of cfdInstruments(); track i.symbol) {
-              <tr>
+              <tr [class.row-expanded]="showAll && isExpanded(i.symbol)">
                 @if (!showAll) { <td class="col-active"><input type="checkbox" [checked]="isActive(i.symbol)" (change)="toggleActive(i.symbol)" /></td> }
+                @if (showAll)  { <td class="col-expand"><button class="expand-btn" (click)="toggleRow(i.symbol)">{{ isExpanded(i.symbol) ? '▼' : '▶' }}</button></td> }
                 <td class="symbol">{{ i.symbol }}</td>
                 <td>{{ i.name }}</td>
                 <td>{{ i.currency }}</td>
-                @if (col('price'))     { <td class="num">{{ i.price }}</td> }
-                @if (col('bid'))       { <td class="num">{{ i.bid }}</td> }
-                @if (col('ask'))       { <td class="num">{{ i.ask }}</td> }
-                <td class="num spread">{{ (i.ask - i.bid) / i.tickSize | number:'1.0-0' }}</td>
-                @if (col('change'))    { <td class="num" [class.positive]="i.change >= 0" [class.negative]="i.change < 0">{{ i.change }}</td> }
-                @if (col('changePct')) { <td class="num" [class.positive]="i.changePct >= 0" [class.negative]="i.changePct < 0">{{ i.changePct }}%</td> }
-                @if (col('high'))      { <td class="num">{{ i.high }}</td> }
-                @if (col('low'))       { <td class="num">{{ i.low }}</td> }
+                @if (!showAll && col('price'))     { <td class="num">{{ i.price }}</td> }
+                @if (!showAll && col('bid'))       { <td class="num">{{ i.bid }}</td> }
+                @if (!showAll && col('ask'))       { <td class="num">{{ i.ask }}</td> }
+                @if (!showAll) { <td class="num spread">{{ (i.ask - i.bid) / i.tickSize | number:'1.0-0' }}</td> }
+                @if (!showAll && col('change'))    { <td class="num" [class.positive]="i.change >= 0" [class.negative]="i.change < 0">{{ i.change }}</td> }
+                @if (!showAll && col('changePct')) { <td class="num" [class.positive]="i.changePct >= 0" [class.negative]="i.changePct < 0">{{ i.changePct }}%</td> }
+                @if (!showAll && col('high'))      { <td class="num">{{ i.high }}</td> }
+                @if (!showAll && col('low'))       { <td class="num">{{ i.low }}</td> }
               </tr>
+              @if (showAll && isExpanded(i.symbol)) {
+                <tr class="detail-row">
+                  <td colspan="99">
+                    <div class="detail-grid">
+                      <div class="detail-item"><span class="detail-label">Price</span><span>{{ i.price }}</span></div>
+                      <div class="detail-item"><span class="detail-label">Bid</span><span>{{ i.bid }}</span></div>
+                      <div class="detail-item"><span class="detail-label">Ask</span><span>{{ i.ask }}</span></div>
+                      <div class="detail-item"><span class="detail-label">Spread</span><span class="spread">{{ (i.ask - i.bid) / i.tickSize | number:'1.0-0' }} ticks</span></div>
+                      <div class="detail-item"><span class="detail-label">Change</span><span [class.positive]="i.change >= 0" [class.negative]="i.change < 0">{{ i.change }}</span></div>
+                      <div class="detail-item"><span class="detail-label">Change %</span><span [class.positive]="i.changePct >= 0" [class.negative]="i.changePct < 0">{{ i.changePct }}%</span></div>
+                      <div class="detail-item"><span class="detail-label">High</span><span>{{ i.high }}</span></div>
+                      <div class="detail-item"><span class="detail-label">Low</span><span>{{ i.low }}</span></div>
+                    </div>
+                  </td>
+                </tr>
+              }
             }
           </tbody>
         </table>
