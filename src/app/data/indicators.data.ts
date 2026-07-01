@@ -149,10 +149,67 @@ function buildIndicators(inst: FuturesContract): InstrumentIndicators {
   return { symbol, pivots, prevDayOHLC, weeklyOHLC, vwap, volumeProfile, openingRange };
 }
 
+// ── Level value flattener ──────────────────────────────────────────────────────
+// Maps InstrumentIndicators to a flat Record keyed by the level IDs defined
+// in the indicators component (e.g. 'pivots.r3', 'vwap.sd3', 'pd.asia.open').
+// Prev Day and Weekly OHLC use the most recent entry (index 0).
+
+function flattenLevelValues(ind: InstrumentIndicators): Record<string, number> {
+  const day  = ind.prevDayOHLC[0];
+  const week = ind.weeklyOHLC[0];
+  return {
+    'pivots.r3':    ind.pivots.r3,
+    'pivots.r2':    ind.pivots.r2,
+    'pivots.r1':    ind.pivots.r1,
+    'pivots.pivot': ind.pivots.pivot,
+    'pivots.s1':    ind.pivots.s1,
+    'pivots.s2':    ind.pivots.s2,
+    'pivots.s3':    ind.pivots.s3,
+
+    'vwap.sd3':  ind.vwap.sdPlus3,
+    'vwap.sd2':  ind.vwap.sdPlus2,
+    'vwap.sd1':  ind.vwap.sdPlus1,
+    'vwap.vwap': ind.vwap.vwap,
+    'vwap.sm1':  ind.vwap.sdMinus1,
+    'vwap.sm2':  ind.vwap.sdMinus2,
+    'vwap.sm3':  ind.vwap.sdMinus3,
+
+    'vp.vah': ind.volumeProfile.valueAreaHigh,
+    'vp.poc': ind.volumeProfile.pointOfControl,
+    'vp.val': ind.volumeProfile.valueAreaLow,
+
+    'or.high': ind.openingRange.high,
+    'or.low':  ind.openingRange.low,
+
+    'pd.asia.open':  day.asia.open,
+    'pd.asia.high':  day.asia.high,
+    'pd.asia.low':   day.asia.low,
+    'pd.asia.close': day.asia.close,
+    'pd.lon.open':   day.london.open,
+    'pd.lon.high':   day.london.high,
+    'pd.lon.low':    day.london.low,
+    'pd.lon.close':  day.london.close,
+    'pd.ny.open':    day.newYork.open,
+    'pd.ny.high':    day.newYork.high,
+    'pd.ny.low':     day.newYork.low,
+    'pd.ny.close':   day.newYork.close,
+
+    'wk.open':  week.open,
+    'wk.high':  week.high,
+    'wk.low':   week.low,
+    'wk.close': week.close,
+  };
+}
+
 // ── Exports ────────────────────────────────────────────────────────────────────
 
 export const INDICATORS: InstrumentIndicators[] = INSTRUMENTS.map(buildIndicators);
 
 export const INDICATORS_MAP = new Map<string, InstrumentIndicators>(
   INDICATORS.map(ind => [ind.symbol, ind])
+);
+
+/** Flat map: symbol → (levelId → price value) */
+export const LEVEL_VALUES = new Map<string, Record<string, number>>(
+  INDICATORS.map(ind => [ind.symbol, flattenLevelValues(ind)])
 );

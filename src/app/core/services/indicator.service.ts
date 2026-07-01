@@ -1,5 +1,5 @@
-import { Injectable, signal } from '@angular/core';
-import { INDICATORS, INDICATORS_MAP } from '../../data/indicators.data';
+﻿import { Injectable, signal } from '@angular/core';
+import { INDICATORS, INDICATORS_MAP, LEVEL_VALUES } from '../../data/indicators.data';
 import { InstrumentIndicators } from '../../shared/model/indicator.model';
 
 export type { InstrumentIndicators, PivotLevels, VWAPLevels, VolumeProfile, OpeningRange, DayOHLC, WeekOHLC, OHLC } from '../../shared/model/indicator.model';
@@ -14,5 +14,13 @@ export class IndicatorService {
 
   getBySymbol(symbol: string): InstrumentIndicators | undefined {
     return INDICATORS_MAP.get(symbol);
+  }
+
+  getLevelValue(symbol: string, levelId: string): number | undefined {
+    return LEVEL_VALUES.get(symbol)?.[levelId];
+  }
+
+  getLevelValues(symbol: string): Record<string, number> | undefined {
+    return LEVEL_VALUES.get(symbol);
   }
 }
