@@ -35,7 +35,7 @@
             <table class="ind-table">
               <thead>
                 <tr>
-                  <th class="col-active">Active</th>
+                  <th class="col-icon"></th>
                   <th>Level</th>
                 </tr>
               </thead>
@@ -45,13 +45,8 @@
                     [class.row-active]="isActive(level.id)"
                     [class.row-disabled]="!isGroupEnabled(group.id)"
                     (click)="toggleLevel(group.id, level.id)">
-                    <td class="col-active">
-                      <input
-                        type="checkbox"
-                        [checked]="isActive(level.id)"
-                        [disabled]="!isGroupEnabled(group.id)"
-                        (click)="$event.stopPropagation()"
-                        (change)="toggleLevel(group.id, level.id)" />
+                    <td class="col-icon">
+                      <span class="status-icon" [class.status-icon--active]="isActive(level.id)">✓</span>
                     </td>
                     <td class="level-label">{{ level.label }}</td>
                   </tr>
