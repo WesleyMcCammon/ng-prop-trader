@@ -5,6 +5,7 @@ import { RouterLink } from '@angular/router';
 import { InstrumentService } from '../../../core/services/instrument.service';
 import { CategoryService } from '../../../core/services/category.service';
 import { PriceFeedService } from '../../../core/services/price-feed.service';
+import { InstrumentSelectionService } from '../../../core/services/instrument-selection.service';
 import { InstrumentCategory } from '../../../shared/model/instrument.model';
 import { PriceFormatPipe } from '../../../shared/pipes/price-format.pipe';
 
@@ -29,16 +30,16 @@ export const TOGGLEABLE_COLS = [
   styleUrl: './instruments.component.scss'
 })
 export class InstrumentsComponent implements OnInit, OnDestroy {
-  private instrumentService = inject(InstrumentService);
-  private categoryService   = inject(CategoryService);
-  private priceFeed         = inject(PriceFeedService);
+  private instrumentService  = inject(InstrumentService);
+  private categoryService    = inject(CategoryService);
+  private priceFeed          = inject(PriceFeedService);
+  private selectionService   = inject(InstrumentSelectionService);
 
   @Input() showAll = false;
 
   instruments = this.instrumentService.instruments;
   sortDir     = signal<SortDir>('asc');
   visibleCols = signal<Set<string>>(new Set());
-  activeSymbols = signal<Set<string>>(new Set());
 
   readonly toggleableCols = TOGGLEABLE_COLS;
   readonly futuresCategories: InstrumentCategory[] = this.categoryService.byType('futures');
@@ -55,22 +56,36 @@ export class InstrumentsComponent implements OnInit, OnDestroy {
     );
   });
 
+  private activeFilter = computed(() => {
+    if (!this.showAll) return null;
+    const s = this.selectionService.activeSymbols();
+    return s.size > 0 ? s : null;
+  });
+
   futuresInstruments = computed(() => {
-    const active = this.activeF();
-    const micro  = this.showMicro();
+    const active  = this.activeF();
+    const micro   = this.showMicro();
+    const sel     = this.activeFilter();
     return this.sorted().filter(i =>
       i.type === 'futures' &&
       active.has(i.category) &&
-      (micro || !i.name.startsWith('Micro'))
+      (micro || !i.name.startsWith('Micro')) &&
+      (!sel || sel.has(i.symbol))
     );
   });
 
   forexInstruments = computed(() => {
     const active = this.activeFx();
-    return this.sorted().filter(i => i.type === 'forex' && active.has(i.category));
+    const sel    = this.activeFilter();
+    return this.sorted().filter(i =>
+      i.type === 'forex' && active.has(i.category) && (!sel || sel.has(i.symbol))
+    );
   });
 
-  cfdInstruments = computed(() => this.sorted().filter(i => i.type === 'cfd'));
+  cfdInstruments = computed(() => {
+    const sel = this.activeFilter();
+    return this.sorted().filter(i => i.type === 'cfd' && (!sel || sel.has(i.symbol)));
+  });
 
   constructor() {
     inject(Title).setTitle('Instruments – MarketWatch');
@@ -101,7 +116,7 @@ export class InstrumentsComponent implements OnInit, OnDestroy {
   expandedRows = signal<Set<string>>(new Set());
 
   isActive(symbol: string): boolean {
-    return this.activeSymbols().has(symbol);
+    return this.selectionService.isActive(symbol);
   }
 
   isExpanded(symbol: string): boolean {
@@ -109,11 +124,7 @@ export class InstrumentsComponent implements OnInit, OnDestroy {
   }
 
   toggleActive(symbol: string): void {
-    this.activeSymbols.update(set => {
-      const next = new Set(set);
-      next.has(symbol) ? next.delete(symbol) : next.add(symbol);
-      return next;
-    });
+    this.selectionService.toggle(symbol);
   }
 
   toggleRow(symbol: string): void {

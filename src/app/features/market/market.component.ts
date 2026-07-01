@@ -1,7 +1,14 @@
-﻿import { Component, computed, effect, inject, OnDestroy, signal } from '@angular/core';
+import { Component, computed, effect, inject, OnDestroy, signal } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { RouterLink } from '@angular/router';
 import { CdkDragDrop, DragDropModule, moveItemInArray } from '@angular/cdk/drag-drop';
+import { InstrumentService } from '../../core/services/instrument.service';
+import { CategoryService } from '../../core/services/category.service';
+import { PriceFeedService } from '../../core/services/price-feed.service';
+import { InstrumentSelectionService } from '../../core/services/instrument-selection.service';
+import { FuturesContract, InstrumentCategory } from '../../shared/model/instrument.model';
+import { InstrumentCardComponent } from '../../shared/components/instrument-card/instrument-card.component';
+import { PinnedInstrumentsComponent } from './pinned-instruments/pinned-instruments.component';
 
 const STORAGE_VIEW_MODE     = 'mw.viewMode';
 const STORAGE_ORDER_FUTURES = 'mw.order.futures';
@@ -22,12 +29,6 @@ function loadOrder(key: string): string[] {
     return [];
   }
 }
-import { InstrumentService } from '../../core/services/instrument.service';
-import { CategoryService } from '../../core/services/category.service';
-import { PriceFeedService } from '../../core/services/price-feed.service';
-import { FuturesContract, InstrumentCategory } from '../../shared/model/instrument.model';
-import { InstrumentCardComponent } from '../../shared/components/instrument-card/instrument-card.component';
-import { PinnedInstrumentsComponent } from './pinned-instruments/pinned-instruments.component';
 
 @Component({
   selector: 'app-market',
@@ -37,9 +38,10 @@ import { PinnedInstrumentsComponent } from './pinned-instruments/pinned-instrume
   styleUrl: './market.component.scss'
 })
 export class MarketComponent implements OnDestroy {
-  private instrumentService = inject(InstrumentService);
-  private categoryService   = inject(CategoryService);
-  private priceFeed         = inject(PriceFeedService);
+  private instrumentService  = inject(InstrumentService);
+  private categoryService    = inject(CategoryService);
+  private priceFeed          = inject(PriceFeedService);
+  private selectionService   = inject(InstrumentSelectionService);
 
   instruments = this.instrumentService.instruments;
 
@@ -56,24 +58,40 @@ export class MarketComponent implements OnDestroy {
   activeF     = signal<Set<InstrumentCategory>>(new Set(this.futuresCategories));
   activeFx    = signal<Set<InstrumentCategory>>(new Set(this.forexCategories));
 
+  private selFilter = computed(() => {
+    const s = this.selectionService.activeSymbols();
+    return s.size > 0 ? s : null;
+  });
+
   futures = computed(() => {
     const active = this.activeF();
     const micro  = this.showMicro();
+    const sel    = this.selFilter();
     return this.instruments().filter(i =>
       i.type === 'futures' &&
       active.has(i.category) &&
-      (micro || !i.name.startsWith('Micro'))
+      (micro || !i.name.startsWith('Micro')) &&
+      (!sel || sel.has(i.symbol))
     );
   });
 
   forex = computed(() => {
     const active = this.activeFx();
-    return this.instruments().filter(i => i.type === 'forex' && active.has(i.category));
+    const sel    = this.selFilter();
+    return this.instruments().filter(i =>
+      i.type === 'forex' && active.has(i.category) && (!sel || sel.has(i.symbol))
+    );
   });
 
-  cfds = computed(() => this.instruments().filter(i => i.type === 'cfd'));
+  cfds = computed(() => {
+    const sel = this.selFilter();
+    return this.instruments().filter(i => i.type === 'cfd' && (!sel || sel.has(i.symbol)));
+  });
 
-  all = computed(() => this.instruments());
+  all = computed(() => {
+    const sel = this.selFilter();
+    return sel ? this.instruments().filter(i => sel.has(i.symbol)) : this.instruments();
+  });
 
   private futuresOrder = signal<string[]>(loadOrder(STORAGE_ORDER_FUTURES));
   private forexOrder   = signal<string[]>(loadOrder(STORAGE_ORDER_FOREX));
