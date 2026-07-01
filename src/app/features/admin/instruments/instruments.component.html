@@ -7,7 +7,7 @@
     </div>
 
     <!-- Column visibility toggles (admin view only) -->
-    @if (!showAll) {
+    <!-- @if (!showAll) {
       <div class="col-toggles">
         <span class="col-toggles-label">Columns</span>
         @for (c of toggleableCols; track c.key) {
@@ -19,7 +19,7 @@
           </button>
         }
       </div>
-    }
+    } -->
 
     <!-- Futures -->
     <section class="instrument-section">
@@ -56,7 +56,7 @@
         <table class="instruments-table">
           <thead>
             <tr>
-              @if (!showAll) { <th class="col-active">Active</th> }
+              @if (!showAll) { <th class="col-icon"></th> }
               @if (showAll)  { <th class="col-expand"></th> }
               <th class="sortable" (click)="toggleSort()">Symbol <span class="sort-arrow">{{ sortDir() === 'asc' ? '▲' : '▼' }}</span></th>
               <th>Name</th>
@@ -78,8 +78,8 @@
           </thead>
           <tbody>
             @for (i of futuresInstruments(); track i.symbol) {
-              <tr [class.row-expanded]="showAll && isExpanded(i.symbol)">
-                @if (!showAll) { <td class="col-active"><input type="checkbox" [checked]="isActive(i.symbol)" (change)="toggleActive(i.symbol)" /></td> }
+              <tr [class.row-expanded]="showAll && isExpanded(i.symbol)" [class.row-selectable]="!showAll" (click)="!showAll && toggleActive(i.symbol)">
+                @if (!showAll) { <td class="col-icon"><span class="status-icon" [class.status-icon--active]="isActive(i.symbol)">✓</span></td> }
                 @if (showAll)  { <td class="col-expand"><button class="expand-btn" (click)="toggleRow(i.symbol)">{{ isExpanded(i.symbol) ? '▼' : '▶' }}</button></td> }
                 <td class="symbol">{{ i.symbol }}</td>
                 <td>{{ i.name }}</td>
@@ -148,7 +148,7 @@
         <table class="instruments-table">
           <thead>
             <tr>
-              @if (!showAll) { <th class="col-active">Active</th> }
+              @if (!showAll) { <th class="col-icon"></th> }
               @if (showAll)  { <th class="col-expand"></th> }
               <th class="sortable" (click)="toggleSort()">Symbol <span class="sort-arrow">{{ sortDir() === 'asc' ? '▲' : '▼' }}</span></th>
               <th>Name</th>
@@ -168,8 +168,8 @@
           </thead>
           <tbody>
             @for (i of forexInstruments(); track i.symbol) {
-              <tr [class.row-expanded]="showAll && isExpanded(i.symbol)">
-                @if (!showAll) { <td class="col-active"><input type="checkbox" [checked]="isActive(i.symbol)" (change)="toggleActive(i.symbol)" /></td> }
+              <tr [class.row-expanded]="showAll && isExpanded(i.symbol)" [class.row-selectable]="!showAll" (click)="!showAll && toggleActive(i.symbol)">
+                @if (!showAll) { <td class="col-icon"><span class="status-icon" [class.status-icon--active]="isActive(i.symbol)">✓</span></td> }
                 @if (showAll)  { <td class="col-expand"><button class="expand-btn" (click)="toggleRow(i.symbol)">{{ isExpanded(i.symbol) ? '▼' : '▶' }}</button></td> }
                 <td class="symbol">{{ i.symbol }}</td>
                 <td>{{ i.name }}</td>
@@ -226,7 +226,7 @@
         <table class="instruments-table">
           <thead>
             <tr>
-              @if (!showAll) { <th class="col-active">Active</th> }
+              @if (!showAll) { <th class="col-icon"></th> }
               @if (showAll)  { <th class="col-expand"></th> }
               <th class="sortable" (click)="toggleSort()">Symbol <span class="sort-arrow">{{ sortDir() === 'asc' ? '▲' : '▼' }}</span></th>
               <th>Name</th>
@@ -243,8 +243,8 @@
           </thead>
           <tbody>
             @for (i of cfdInstruments(); track i.symbol) {
-              <tr [class.row-expanded]="showAll && isExpanded(i.symbol)">
-                @if (!showAll) { <td class="col-active"><input type="checkbox" [checked]="isActive(i.symbol)" (change)="toggleActive(i.symbol)" /></td> }
+              <tr [class.row-expanded]="showAll && isExpanded(i.symbol)" [class.row-selectable]="!showAll" (click)="!showAll && toggleActive(i.symbol)">
+                @if (!showAll) { <td class="col-icon"><span class="status-icon" [class.status-icon--active]="isActive(i.symbol)">✓</span></td> }
                 @if (showAll)  { <td class="col-expand"><button class="expand-btn" (click)="toggleRow(i.symbol)">{{ isExpanded(i.symbol) ? '▼' : '▶' }}</button></td> }
                 <td class="symbol">{{ i.symbol }}</td>
                 <td>{{ i.name }}</td>

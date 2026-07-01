@@ -190,17 +190,32 @@
 
   tbody tr:last-child td { border-bottom: none; }
   tbody tr:hover { background: var(--color-surface-2); }
+  tbody tr.row-selectable { cursor: pointer; }
 }
 
-.col-active {
-  width: 52px;
+.col-icon {
+  width: 44px;
   text-align: center;
+}
 
-  input[type='checkbox'] {
-    width: 15px;
-    height: 15px;
-    cursor: pointer;
-    accent-color: var(--color-primary);
+.status-icon {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  line-height: 20px;
+  border-radius: 50%;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-align: center;
+  border: 1.5px solid var(--color-border);
+  color: transparent;
+  background: transparent;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+
+  &--active {
+    background: var(--color-primary);
+    border-color: var(--color-primary);
+    color: #fff;
   }
 }
 
