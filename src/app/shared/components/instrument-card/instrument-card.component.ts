@@ -25,6 +25,6 @@ export class InstrumentCardComponent {
   activeLevels(): ActiveLevelDisplay[] {
     return this.indicatorService
       .getActiveLevelsForInstrument(this.instrument.symbol, this.instrument.bid)
-      .slice(0, 5);
+      .slice(0, 3);
   }
 }

@@ -1,30 +1,43 @@
-import { Component, inject, OnInit, computed } from '@angular/core';
+import { Component, OnDestroy, OnInit, computed, inject } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { DataService, Post } from '../../core/services/data.service';
 import { SpinnerComponent } from '../../shared/components/spinner/spinner.component';
-
+import { InstrumentService } from '../../core/services/instrument.service';
+import { PinService } from '../../core/services/pin.service';
+import { PriceFeedService } from '../../core/services/price-feed.service';
+import { InstrumentCardComponent } from '../../shared/components/instrument-card/instrument-card.component';
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule, RouterLink, SpinnerComponent],
+  imports: [CommonModule, RouterLink, SpinnerComponent, InstrumentCardComponent],
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss'
 })
-export class HomeComponent implements OnInit {
-  private title = inject(Title);
-  private dataService = inject(DataService);
+export class HomeComponent implements OnInit, OnDestroy {
+  private title           = inject(Title);
+  private dataService     = inject(DataService);
+  private instrumentService = inject(InstrumentService);
+  private pinService      = inject(PinService);
+  private priceFeed       = inject(PriceFeedService);
 
-  loading = this.dataService.loading;
-  error = this.dataService.error;
-  posts = this.dataService.posts;
+  loading    = this.dataService.loading;
+  error      = this.dataService.error;
+  posts      = this.dataService.posts;
 
-  featured = computed(() => this.posts().slice(0, 1));
+  featured   = computed(() => this.posts().slice(0, 1));
   topStories = computed(() => this.posts().slice(1, 9));
-  latest = computed(() => this.posts().slice(9, 15));
-  opinion = computed(() => this.posts().slice(15, 18));
+  latest     = computed(() => this.posts().slice(9, 15));
+  opinion    = computed(() => this.posts().slice(15, 18));
+
+  pinnedInstruments = computed(() => {
+    const symbols = this.pinService.pinnedSymbols();
+    return this.instrumentService.instruments()
+      .filter(i => symbols.has(i.symbol))
+      .slice(0, 5);
+  });
 
   readonly categories: Array<{ label: string; route?: string }> = [
     { label: 'Markets' },
@@ -39,6 +52,11 @@ export class HomeComponent implements OnInit {
   ngOnInit(): void {
     this.title.setTitle('MarketWatch – Home');
     this.dataService.fetchPosts().subscribe();
+    this.priceFeed.start();
+  }
+
+  ngOnDestroy(): void {
+    this.priceFeed.stop();
   }
 
   trackByPostId(_: number, post: Post): number {

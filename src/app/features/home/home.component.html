@@ -55,6 +55,18 @@
         </section>
       }
 
+      <!-- Pinned instruments -->
+      @if (pinnedInstruments().length > 0) {
+        <section class="section pinned-section">
+          <h2 class="section-title">Pinned Instruments</h2>
+          <div class="pinned-grid">
+            @for (i of pinnedInstruments(); track i.symbol) {
+              <app-instrument-card [instrument]="i" [showType]="true" />
+            }
+          </div>
+        </section>
+      }
+
       <!-- Top stories grid -->
       <section class="section">
         <h2 class="section-title">Top Stories</h2>
