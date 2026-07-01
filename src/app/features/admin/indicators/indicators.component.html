@@ -1,0 +1,67 @@
+<main class="indicators-page">
+  <div class="container">
+
+    <div class="page-header">
+      <h1 class="page-title">Indicators</h1>
+      <span class="total-active">{{ totalActive() }} active</span>
+      <a routerLink="/admin" class="btn-back">‹ Back to Admin</a>
+    </div>
+
+    @for (group of groups; track group.id) {
+      <section class="indicator-section">
+        <div class="section-header">
+          <input
+            class="group-checkbox"
+            type="checkbox"
+            [checked]="isGroupEnabled(group.id)"
+            (change)="toggleGroupEnabled(group)" />
+          <span class="ind-badge" [class.ind-badge--disabled]="!isGroupEnabled(group.id)">{{ group.name }}</span>
+          <span class="count">{{ activeInGroup(group) }} / {{ group.levels.length }}</span>
+          @if (isGroupEnabled(group.id)) {
+            <button
+              class="select-all-btn"
+              [class.select-all-btn--active]="isGroupAllActive(group)"
+              (click)="toggleGroup(group)">
+              {{ isGroupAllActive(group) ? 'Deselect All' : 'Select All' }}
+            </button>
+          }
+          <button class="collapse-btn" (click)="group.show.set(!group.show())">
+            {{ group.show() ? '▼' : '▶' }}
+          </button>
+        </div>
+
+        @if (group.show()) {
+          <div class="table-wrap">
+            <table class="ind-table">
+              <thead>
+                <tr>
+                  <th class="col-active">Active</th>
+                  <th>Level</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (level of group.levels; track level.id) {
+                  <tr
+                    [class.row-active]="isActive(level.id)"
+                    [class.row-disabled]="!isGroupEnabled(group.id)"
+                    (click)="toggleLevel(group.id, level.id)">
+                    <td class="col-active">
+                      <input
+                        type="checkbox"
+                        [checked]="isActive(level.id)"
+                        [disabled]="!isGroupEnabled(group.id)"
+                        (click)="$event.stopPropagation()"
+                        (change)="toggleLevel(group.id, level.id)" />
+                    </td>
+                    <td class="level-label">{{ level.label }}</td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        }
+      </section>
+    }
+
+  </div>
+</main>

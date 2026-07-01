@@ -94,10 +94,10 @@ function buildIndicators(inst: FuturesContract): InstrumentIndicators {
     const wOpen  = wClose - wDir * wr * 0.50;
     return {
       weekOf,
-      open:  snap(wOpen,                                tick),
-      high:  snap(Math.max(wOpen, wClose) + wr * 0.40,  tick),
-      low:   snap(Math.min(wOpen, wClose) - wr * 0.35,  tick),
-      close: snap(wClose,                               tick),
+      open:  snap(wOpen,                                tickSize),
+      high:  snap(Math.max(wOpen, wClose) + wr * 0.40,  tickSize),
+      low:   snap(Math.min(wOpen, wClose) - wr * 0.35,  tickSize),
+      close: snap(wClose,                               tickSize),
     };
   });
 

@@ -8,7 +8,9 @@ export type { InstrumentIndicators, PivotLevels, VWAPLevels, VolumeProfile, Open
 export class IndicatorService {
   private readonly _indicators = signal<InstrumentIndicators[]>(INDICATORS);
 
-  readonly indicators = this._indicators.asReadonly();
+  readonly indicators  = this._indicators.asReadonly();
+  readonly dayDates:  string[] = INDICATORS[0]?.prevDayOHLC.map(d => d.date)  ?? [];
+  readonly weekDates: string[] = INDICATORS[0]?.weeklyOHLC.map(w => w.weekOf) ?? [];
 
   getBySymbol(symbol: string): InstrumentIndicators | undefined {
     return INDICATORS_MAP.get(symbol);

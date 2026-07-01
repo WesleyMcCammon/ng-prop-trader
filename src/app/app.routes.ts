@@ -52,6 +52,12 @@ export const routes: Routes = [
       import('./features/admin/instruments/instruments.component').then(m => m.InstrumentsComponent)
   },
   {
+    path: 'admin/indicators',
+    canActivate: [adminGuard],
+    loadComponent: () =>
+      import('./features/admin/indicators/indicators.component').then(m => m.IndicatorsComponent)
+  },
+  {
     path: 'market',
     loadComponent: () =>
       import('./features/market/market.component').then(m => m.MarketComponent)
