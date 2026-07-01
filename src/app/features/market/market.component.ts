@@ -1,17 +1,18 @@
 import { Component, computed, inject, OnDestroy, signal } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { RouterLink } from '@angular/router';
+import { CdkDragDrop, DragDropModule, moveItemInArray } from '@angular/cdk/drag-drop';
 import { InstrumentService } from '../../core/services/instrument.service';
 import { CategoryService } from '../../core/services/category.service';
 import { PriceFeedService } from '../../core/services/price-feed.service';
-import { InstrumentCategory } from '../../shared/model/instrument.model';
+import { FuturesContract, InstrumentCategory } from '../../shared/model/instrument.model';
 import { InstrumentCardComponent } from '../../shared/components/instrument-card/instrument-card.component';
 import { PinnedInstrumentsComponent } from './pinned-instruments/pinned-instruments.component';
 
 @Component({
   selector: 'app-market',
   standalone: true,
-  imports: [RouterLink, InstrumentCardComponent, PinnedInstrumentsComponent],
+  imports: [RouterLink, InstrumentCardComponent, PinnedInstrumentsComponent, DragDropModule],
   templateUrl: './market.component.html',
   styleUrl: './market.component.scss'
 })
@@ -53,6 +54,24 @@ export class MarketComponent implements OnDestroy {
 
   all = computed(() => this.instruments());
 
+  private futuresOrder = signal<string[]>([]);
+  private forexOrder   = signal<string[]>([]);
+  private cfdsOrder    = signal<string[]>([]);
+  private allOrder     = signal<string[]>([]);
+
+  orderedFutures = computed(() => this.applyOrder(this.futures(), this.futuresOrder()));
+  orderedForex   = computed(() => this.applyOrder(this.forex(),   this.forexOrder()));
+  orderedCfds    = computed(() => this.applyOrder(this.cfds(),    this.cfdsOrder()));
+  orderedAll     = computed(() => this.applyOrder(this.all(),     this.allOrder()));
+
+  private applyOrder(items: FuturesContract[], order: string[]): FuturesContract[] {
+    if (order.length === 0) return items;
+    const map = new Map(items.map(i => [i.symbol, i]));
+    const ordered = order.filter(s => map.has(s)).map(s => map.get(s)!);
+    const rest = items.filter(i => !order.includes(i.symbol));
+    return [...ordered, ...rest];
+  }
+
   constructor() {
     inject(Title).setTitle('Market – MarketWatch');
     this.priceFeed.start();
@@ -76,5 +95,29 @@ export class MarketComponent implements OnDestroy {
       next.has(cat) ? next.delete(cat) : next.add(cat);
       return next;
     });
+  }
+
+  onFuturesDrop(event: CdkDragDrop<FuturesContract[]>): void {
+    const items = [...this.orderedFutures()];
+    moveItemInArray(items, event.previousIndex, event.currentIndex);
+    this.futuresOrder.set(items.map(i => i.symbol));
+  }
+
+  onForexDrop(event: CdkDragDrop<FuturesContract[]>): void {
+    const items = [...this.orderedForex()];
+    moveItemInArray(items, event.previousIndex, event.currentIndex);
+    this.forexOrder.set(items.map(i => i.symbol));
+  }
+
+  onCfdsDrop(event: CdkDragDrop<FuturesContract[]>): void {
+    const items = [...this.orderedCfds()];
+    moveItemInArray(items, event.previousIndex, event.currentIndex);
+    this.cfdsOrder.set(items.map(i => i.symbol));
+  }
+
+  onAllDrop(event: CdkDragDrop<FuturesContract[]>): void {
+    const items = [...this.orderedAll()];
+    moveItemInArray(items, event.previousIndex, event.currentIndex);
+    this.allOrder.set(items.map(i => i.symbol));
   }
 }
