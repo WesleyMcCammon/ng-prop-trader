@@ -10,6 +10,11 @@ export type InstrumentCategory =
   | 'Forex Minors'
   | 'CFDs';
 
+export interface CategoryDescriptor {
+  name: InstrumentCategory;
+  type: InstrumentType;
+}
+
 export interface FuturesContract {
   symbol: string;
   name: string;

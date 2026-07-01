@@ -1,0 +1,206 @@
+<main class="instruments-page">
+  <div class="container">
+
+    <div class="page-header">
+      <h1 class="page-title">Instruments</h1>
+      <a routerLink="/admin" class="btn-back">‹ Back to Admin</a>
+    </div>
+
+    <!-- Column visibility toggles -->
+    <div class="col-toggles">
+      <span class="col-toggles-label">Columns</span>
+      @for (c of toggleableCols; track c.key) {
+        <button
+          class="col-toggle"
+          [class.col-toggle--active]="col(c.key)"
+          (click)="toggleCol(c.key)">
+          {{ c.label }}
+        </button>
+      }
+    </div>
+
+    <!-- Futures -->
+    <section class="instrument-section">
+      <div class="section-header">
+        <h2 class="section-title">
+          <span class="type-badge type-badge--futures">futures</span>
+          Futures Contracts
+        </h2>
+        <span class="count">{{ futuresInstruments().length }}</span>
+      </div>
+      <div class="category-toggles">
+        @for (cat of futuresCategories; track cat) {
+          <button
+            class="cat-toggle"
+            [class.cat-toggle--active]="activeF().has(cat)"
+            (click)="toggleFutures(cat)">
+            {{ cat }}
+          </button>
+        }
+      </div>
+      <div class="table-wrap">
+        <table class="instruments-table">
+          <thead>
+            <tr>
+              @if (!showAll) { <th class="col-active">Active</th> }
+              <th class="sortable" (click)="toggleSort()">Symbol <span class="sort-arrow">{{ sortDir() === 'asc' ? '▲' : '▼' }}</span></th>
+              <th>Name</th>
+              <th>Category</th>
+              <th>Exchange</th>
+              <th>Ccy</th>
+              <th class="num">Contract Size</th>
+              <th class="num">Tick Size</th>
+              <th class="num">Tick Value</th>
+              @if (col('price'))     { <th class="num">Price</th> }
+              @if (col('bid'))       { <th class="num">Bid</th> }
+              @if (col('ask'))       { <th class="num">Ask</th> }
+              @if (col('change'))    { <th class="num">Change</th> }
+              @if (col('changePct')) { <th class="num">Change %</th> }
+              @if (col('high'))      { <th class="num">High</th> }
+              @if (col('low'))       { <th class="num">Low</th> }
+              @if (col('volume'))    { <th class="num">Volume</th> }
+            </tr>
+          </thead>
+          <tbody>
+            @for (i of futuresInstruments(); track i.symbol) {
+              <tr>
+                @if (!showAll) { <td class="col-active"><input type="checkbox" [checked]="isActive(i.symbol)" (change)="toggleActive(i.symbol)" /></td> }
+                <td class="symbol">{{ i.symbol }}</td>
+                <td>{{ i.name }}</td>
+                <td>{{ i.category }}</td>
+                <td>{{ i.exchange }}</td>
+                <td>{{ i.currency }}</td>
+                <td class="num">{{ i.contractSize | number }}</td>
+                <td class="num">{{ i.tickSize }}</td>
+                <td class="num">{{ i.tickValue | currency }}</td>
+                @if (col('price'))     { <td class="num">{{ i.price }}</td> }
+                @if (col('bid'))       { <td class="num">{{ i.bid }}</td> }
+                @if (col('ask'))       { <td class="num">{{ i.ask }}</td> }
+                @if (col('change'))    { <td class="num" [class.positive]="i.change >= 0" [class.negative]="i.change < 0">{{ i.change }}</td> }
+                @if (col('changePct')) { <td class="num" [class.positive]="i.changePct >= 0" [class.negative]="i.changePct < 0">{{ i.changePct }}%</td> }
+                @if (col('high'))      { <td class="num">{{ i.high }}</td> }
+                @if (col('low'))       { <td class="num">{{ i.low }}</td> }
+                @if (col('volume'))    { <td class="num">{{ i.volume | number }}</td> }
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Forex -->
+    <section class="instrument-section">
+      <div class="section-header">
+        <h2 class="section-title">
+          <span class="type-badge type-badge--forex">forex</span>
+          Forex
+        </h2>
+        <span class="count">{{ forexInstruments().length }}</span>
+      </div>
+      <div class="category-toggles">
+        @for (cat of forexCategories; track cat) {
+          <button
+            class="cat-toggle"
+            [class.cat-toggle--active]="activeFx().has(cat)"
+            (click)="toggleForex(cat)">
+            {{ cat }}
+          </button>
+        }
+      </div>
+      <div class="table-wrap">
+        <table class="instruments-table">
+          <thead>
+            <tr>
+              @if (!showAll) { <th class="col-active">Active</th> }
+              <th class="sortable" (click)="toggleSort()">Symbol <span class="sort-arrow">{{ sortDir() === 'asc' ? '▲' : '▼' }}</span></th>
+              <th>Name</th>
+              <th>Category</th>
+              <th>Ccy</th>
+              <th class="num">Lot Size</th>
+              <th class="num">Pip Size</th>
+              @if (col('price'))     { <th class="num">Price</th> }
+              @if (col('bid'))       { <th class="num">Bid</th> }
+              @if (col('ask'))       { <th class="num">Ask</th> }
+              <th class="num">Spread</th>
+              @if (col('change'))    { <th class="num">Change</th> }
+              @if (col('changePct')) { <th class="num">Change %</th> }
+              @if (col('high'))      { <th class="num">High</th> }
+              @if (col('low'))       { <th class="num">Low</th> }
+            </tr>
+          </thead>
+          <tbody>
+            @for (i of forexInstruments(); track i.symbol) {
+              <tr>
+                @if (!showAll) { <td class="col-active"><input type="checkbox" [checked]="isActive(i.symbol)" (change)="toggleActive(i.symbol)" /></td> }
+                <td class="symbol">{{ i.symbol }}</td>
+                <td>{{ i.name }}</td>
+                <td>{{ i.category }}</td>
+                <td>{{ i.currency }}</td>
+                <td class="num">{{ i.contractSize | number }}</td>
+                <td class="num">{{ i.tickSize }}</td>
+                @if (col('price'))     { <td class="num">{{ i.price }}</td> }
+                @if (col('bid'))       { <td class="num">{{ i.bid }}</td> }
+                @if (col('ask'))       { <td class="num">{{ i.ask }}</td> }
+                <td class="num spread">{{ (i.ask - i.bid) / i.tickSize | number:'1.0-0' }}</td>
+                @if (col('change'))    { <td class="num" [class.positive]="i.change >= 0" [class.negative]="i.change < 0">{{ i.change }}</td> }
+                @if (col('changePct')) { <td class="num" [class.positive]="i.changePct >= 0" [class.negative]="i.changePct < 0">{{ i.changePct }}%</td> }
+                @if (col('high'))      { <td class="num">{{ i.high }}</td> }
+                @if (col('low'))       { <td class="num">{{ i.low }}</td> }
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- CFDs -->
+    <section class="instrument-section">
+      <div class="section-header">
+        <h2 class="section-title">
+          <span class="type-badge type-badge--cfd">cfd</span>
+          CFDs
+        </h2>
+        <span class="count">{{ cfdInstruments().length }}</span>
+      </div>
+      <div class="table-wrap">
+        <table class="instruments-table">
+          <thead>
+            <tr>
+              @if (!showAll) { <th class="col-active">Active</th> }
+              <th class="sortable" (click)="toggleSort()">Symbol <span class="sort-arrow">{{ sortDir() === 'asc' ? '▲' : '▼' }}</span></th>
+              <th>Name</th>
+              <th>Ccy</th>
+              @if (col('price'))     { <th class="num">Price</th> }
+              @if (col('bid'))       { <th class="num">Bid</th> }
+              @if (col('ask'))       { <th class="num">Ask</th> }
+              <th class="num">Spread</th>
+              @if (col('change'))    { <th class="num">Change</th> }
+              @if (col('changePct')) { <th class="num">Change %</th> }
+              @if (col('high'))      { <th class="num">High</th> }
+              @if (col('low'))       { <th class="num">Low</th> }
+            </tr>
+          </thead>
+          <tbody>
+            @for (i of cfdInstruments(); track i.symbol) {
+              <tr>
+                @if (!showAll) { <td class="col-active"><input type="checkbox" [checked]="isActive(i.symbol)" (change)="toggleActive(i.symbol)" /></td> }
+                <td class="symbol">{{ i.symbol }}</td>
+                <td>{{ i.name }}</td>
+                <td>{{ i.currency }}</td>
+                @if (col('price'))     { <td class="num">{{ i.price }}</td> }
+                @if (col('bid'))       { <td class="num">{{ i.bid }}</td> }
+                @if (col('ask'))       { <td class="num">{{ i.ask }}</td> }
+                <td class="num spread">{{ (i.ask - i.bid) / i.tickSize | number:'1.0-0' }}</td>
+                @if (col('change'))    { <td class="num" [class.positive]="i.change >= 0" [class.negative]="i.change < 0">{{ i.change }}</td> }
+                @if (col('changePct')) { <td class="num" [class.positive]="i.changePct >= 0" [class.negative]="i.changePct < 0">{{ i.changePct }}%</td> }
+                @if (col('high'))      { <td class="num">{{ i.high }}</td> }
+                @if (col('low'))       { <td class="num">{{ i.low }}</td> }
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+  </div>
+</main>

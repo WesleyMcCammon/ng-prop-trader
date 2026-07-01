@@ -1,23 +1,25 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { InstrumentCategory } from '../../shared/model/instrument.model';
+import { CategoryDescriptor, InstrumentCategory, InstrumentType } from '../../shared/model/instrument.model';
 
-export const CATEGORIES: InstrumentCategory[] = [
-  'Indices',
-  'Metals',
-  'Energies',
-  'Financials',
-  'Currencies',
-  'Forex Majors',
-  'Forex Minors',
-  'CFDs',
+export const CATEGORIES: CategoryDescriptor[] = [
+  { name: 'Indices',      type: 'futures' },
+  { name: 'Metals',       type: 'futures' },
+  { name: 'Energies',     type: 'futures' },
+  { name: 'Financials',   type: 'futures' },
+  { name: 'Currencies',   type: 'futures' },
+  { name: 'Forex Majors', type: 'forex' },
+  { name: 'Forex Minors', type: 'forex' },
+  { name: 'CFDs',         type: 'cfd' },
 ];
 
 @Injectable({ providedIn: 'root' })
 export class CategoryService {
-  readonly categories: InstrumentCategory[] = CATEGORIES;
+  readonly categories: CategoryDescriptor[] = CATEGORIES;
 
-  private readonly _selected$ = new BehaviorSubject<InstrumentCategory[]>([...CATEGORIES]);
+  private readonly allNames: InstrumentCategory[] = CATEGORIES.map(c => c.name);
+
+  private readonly _selected$ = new BehaviorSubject<InstrumentCategory[]>([...this.allNames]);
   readonly selectedCategories$: Observable<InstrumentCategory[]> = this._selected$.asObservable();
 
   get selected(): InstrumentCategory[] {
@@ -25,7 +27,7 @@ export class CategoryService {
   }
 
   selectAll(): void {
-    this._selected$.next([...CATEGORIES]);
+    this._selected$.next([...this.allNames]);
   }
 
   selectNone(): void {
@@ -42,5 +44,13 @@ export class CategoryService {
 
   isSelected(category: InstrumentCategory): boolean {
     return this._selected$.value.includes(category);
+  }
+
+  getType(category: InstrumentCategory): InstrumentType {
+    return CATEGORIES.find(c => c.name === category)!.type;
+  }
+
+  byType(type: InstrumentType): InstrumentCategory[] {
+    return CATEGORIES.filter(c => c.type === type).map(c => c.name);
   }
 }

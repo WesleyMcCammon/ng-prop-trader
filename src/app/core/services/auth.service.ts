@@ -26,6 +26,14 @@ export class AuthService {
   readonly isFutures = computed(() => this.currentUser()?.roles.includes('futures') ?? false);
   readonly isLoggedIn = computed(() => this.currentUser() !== null);
 
+
+  // remove constructor
+  constructor() {
+    const user = MOCK_USERS.find(u => u.username === 'alice');
+    if(user)
+      this.currentUser.set(user);
+  }
+
   login(username: string, password: string): boolean {
     const user = MOCK_USERS.find(u => u.username === username && u.password === password);
     if (user) {
