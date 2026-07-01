@@ -89,26 +89,26 @@
                 <td class="num">{{ i.contractSize | number }}</td>
                 <td class="num">{{ i.tickSize }}</td>
                 <td class="num">{{ i.tickValue | currency }}</td>
-                @if (!showAll && col('price'))     { <td class="num">{{ i.price }}</td> }
-                @if (!showAll && col('bid'))       { <td class="num">{{ i.bid }}</td> }
-                @if (!showAll && col('ask'))       { <td class="num">{{ i.ask }}</td> }
-                @if (!showAll && col('change'))    { <td class="num" [class.positive]="i.change >= 0" [class.negative]="i.change < 0">{{ i.change }}</td> }
+                @if (!showAll && col('price'))     { <td class="num">{{ i.price | priceFormat:i.tickSize }}</td> }
+                @if (!showAll && col('bid'))       { <td class="num">{{ i.bid | priceFormat:i.tickSize }}</td> }
+                @if (!showAll && col('ask'))       { <td class="num">{{ i.ask | priceFormat:i.tickSize }}</td> }
+                @if (!showAll && col('change'))    { <td class="num" [class.positive]="i.change >= 0" [class.negative]="i.change < 0">{{ i.change | priceFormat:i.tickSize }}</td> }
                 @if (!showAll && col('changePct')) { <td class="num" [class.positive]="i.changePct >= 0" [class.negative]="i.changePct < 0">{{ i.changePct }}%</td> }
-                @if (!showAll && col('high'))      { <td class="num">{{ i.high }}</td> }
-                @if (!showAll && col('low'))       { <td class="num">{{ i.low }}</td> }
+                @if (!showAll && col('high'))      { <td class="num">{{ i.high | priceFormat:i.tickSize }}</td> }
+                @if (!showAll && col('low'))       { <td class="num">{{ i.low | priceFormat:i.tickSize }}</td> }
                 @if (!showAll && col('volume'))    { <td class="num">{{ i.volume | number }}</td> }
               </tr>
               @if (showAll && isExpanded(i.symbol)) {
                 <tr class="detail-row">
                   <td colspan="99">
                     <div class="detail-grid">
-                      <div class="detail-item"><span class="detail-label">Price</span><span>{{ i.price }}</span></div>
-                      <div class="detail-item"><span class="detail-label">Bid</span><span>{{ i.bid }}</span></div>
-                      <div class="detail-item"><span class="detail-label">Ask</span><span>{{ i.ask }}</span></div>
-                      <div class="detail-item"><span class="detail-label">Change</span><span [class.positive]="i.change >= 0" [class.negative]="i.change < 0">{{ i.change }}</span></div>
+                      <div class="detail-item"><span class="detail-label">Price</span><span>{{ i.price | priceFormat:i.tickSize }}</span></div>
+                      <div class="detail-item"><span class="detail-label">Bid</span><span>{{ i.bid | priceFormat:i.tickSize }}</span></div>
+                      <div class="detail-item"><span class="detail-label">Ask</span><span>{{ i.ask | priceFormat:i.tickSize }}</span></div>
+                      <div class="detail-item"><span class="detail-label">Change</span><span [class.positive]="i.change >= 0" [class.negative]="i.change < 0">{{ i.change | priceFormat:i.tickSize }}</span></div>
                       <div class="detail-item"><span class="detail-label">Change %</span><span [class.positive]="i.changePct >= 0" [class.negative]="i.changePct < 0">{{ i.changePct }}%</span></div>
-                      <div class="detail-item"><span class="detail-label">High</span><span>{{ i.high }}</span></div>
-                      <div class="detail-item"><span class="detail-label">Low</span><span>{{ i.low }}</span></div>
+                      <div class="detail-item"><span class="detail-label">High</span><span>{{ i.high | priceFormat:i.tickSize }}</span></div>
+                      <div class="detail-item"><span class="detail-label">Low</span><span>{{ i.low | priceFormat:i.tickSize }}</span></div>
                       <div class="detail-item"><span class="detail-label">Volume</span><span>{{ i.volume | number }}</span></div>
                     </div>
                   </td>
@@ -177,27 +177,27 @@
                 <td>{{ i.currency }}</td>
                 <td class="num">{{ i.contractSize | number }}</td>
                 <td class="num">{{ i.tickSize }}</td>
-                @if (!showAll && col('price'))     { <td class="num">{{ i.price }}</td> }
-                @if (!showAll && col('bid'))       { <td class="num">{{ i.bid }}</td> }
-                @if (!showAll && col('ask'))       { <td class="num">{{ i.ask }}</td> }
+                @if (!showAll && col('price'))     { <td class="num">{{ i.price | priceFormat:i.tickSize }}</td> }
+                @if (!showAll && col('bid'))       { <td class="num">{{ i.bid | priceFormat:i.tickSize }}</td> }
+                @if (!showAll && col('ask'))       { <td class="num">{{ i.ask | priceFormat:i.tickSize }}</td> }
                 @if (!showAll) { <td class="num spread">{{ (i.ask - i.bid) / i.tickSize | number:'1.0-0' }}</td> }
-                @if (!showAll && col('change'))    { <td class="num" [class.positive]="i.change >= 0" [class.negative]="i.change < 0">{{ i.change }}</td> }
+                @if (!showAll && col('change'))    { <td class="num" [class.positive]="i.change >= 0" [class.negative]="i.change < 0">{{ i.change | priceFormat:i.tickSize }}</td> }
                 @if (!showAll && col('changePct')) { <td class="num" [class.positive]="i.changePct >= 0" [class.negative]="i.changePct < 0">{{ i.changePct }}%</td> }
-                @if (!showAll && col('high'))      { <td class="num">{{ i.high }}</td> }
-                @if (!showAll && col('low'))       { <td class="num">{{ i.low }}</td> }
+                @if (!showAll && col('high'))      { <td class="num">{{ i.high | priceFormat:i.tickSize }}</td> }
+                @if (!showAll && col('low'))       { <td class="num">{{ i.low | priceFormat:i.tickSize }}</td> }
               </tr>
               @if (showAll && isExpanded(i.symbol)) {
                 <tr class="detail-row">
                   <td colspan="99">
                     <div class="detail-grid">
-                      <div class="detail-item"><span class="detail-label">Price</span><span>{{ i.price }}</span></div>
-                      <div class="detail-item"><span class="detail-label">Bid</span><span>{{ i.bid }}</span></div>
-                      <div class="detail-item"><span class="detail-label">Ask</span><span>{{ i.ask }}</span></div>
+                      <div class="detail-item"><span class="detail-label">Price</span><span>{{ i.price | priceFormat:i.tickSize }}</span></div>
+                      <div class="detail-item"><span class="detail-label">Bid</span><span>{{ i.bid | priceFormat:i.tickSize }}</span></div>
+                      <div class="detail-item"><span class="detail-label">Ask</span><span>{{ i.ask | priceFormat:i.tickSize }}</span></div>
                       <div class="detail-item"><span class="detail-label">Spread</span><span class="spread">{{ (i.ask - i.bid) / i.tickSize | number:'1.0-0' }} pips</span></div>
-                      <div class="detail-item"><span class="detail-label">Change</span><span [class.positive]="i.change >= 0" [class.negative]="i.change < 0">{{ i.change }}</span></div>
+                      <div class="detail-item"><span class="detail-label">Change</span><span [class.positive]="i.change >= 0" [class.negative]="i.change < 0">{{ i.change | priceFormat:i.tickSize }}</span></div>
                       <div class="detail-item"><span class="detail-label">Change %</span><span [class.positive]="i.changePct >= 0" [class.negative]="i.changePct < 0">{{ i.changePct }}%</span></div>
-                      <div class="detail-item"><span class="detail-label">High</span><span>{{ i.high }}</span></div>
-                      <div class="detail-item"><span class="detail-label">Low</span><span>{{ i.low }}</span></div>
+                      <div class="detail-item"><span class="detail-label">High</span><span>{{ i.high | priceFormat:i.tickSize }}</span></div>
+                      <div class="detail-item"><span class="detail-label">Low</span><span>{{ i.low | priceFormat:i.tickSize }}</span></div>
                     </div>
                   </td>
                 </tr>
@@ -249,27 +249,27 @@
                 <td class="symbol">{{ i.symbol }}</td>
                 <td>{{ i.name }}</td>
                 <td>{{ i.currency }}</td>
-                @if (!showAll && col('price'))     { <td class="num">{{ i.price }}</td> }
-                @if (!showAll && col('bid'))       { <td class="num">{{ i.bid }}</td> }
-                @if (!showAll && col('ask'))       { <td class="num">{{ i.ask }}</td> }
+                @if (!showAll && col('price'))     { <td class="num">{{ i.price | priceFormat:i.tickSize }}</td> }
+                @if (!showAll && col('bid'))       { <td class="num">{{ i.bid | priceFormat:i.tickSize }}</td> }
+                @if (!showAll && col('ask'))       { <td class="num">{{ i.ask | priceFormat:i.tickSize }}</td> }
                 @if (!showAll) { <td class="num spread">{{ (i.ask - i.bid) / i.tickSize | number:'1.0-0' }}</td> }
-                @if (!showAll && col('change'))    { <td class="num" [class.positive]="i.change >= 0" [class.negative]="i.change < 0">{{ i.change }}</td> }
+                @if (!showAll && col('change'))    { <td class="num" [class.positive]="i.change >= 0" [class.negative]="i.change < 0">{{ i.change | priceFormat:i.tickSize }}</td> }
                 @if (!showAll && col('changePct')) { <td class="num" [class.positive]="i.changePct >= 0" [class.negative]="i.changePct < 0">{{ i.changePct }}%</td> }
-                @if (!showAll && col('high'))      { <td class="num">{{ i.high }}</td> }
-                @if (!showAll && col('low'))       { <td class="num">{{ i.low }}</td> }
+                @if (!showAll && col('high'))      { <td class="num">{{ i.high | priceFormat:i.tickSize }}</td> }
+                @if (!showAll && col('low'))       { <td class="num">{{ i.low | priceFormat:i.tickSize }}</td> }
               </tr>
               @if (showAll && isExpanded(i.symbol)) {
                 <tr class="detail-row">
                   <td colspan="99">
                     <div class="detail-grid">
-                      <div class="detail-item"><span class="detail-label">Price</span><span>{{ i.price }}</span></div>
-                      <div class="detail-item"><span class="detail-label">Bid</span><span>{{ i.bid }}</span></div>
-                      <div class="detail-item"><span class="detail-label">Ask</span><span>{{ i.ask }}</span></div>
+                      <div class="detail-item"><span class="detail-label">Price</span><span>{{ i.price | priceFormat:i.tickSize }}</span></div>
+                      <div class="detail-item"><span class="detail-label">Bid</span><span>{{ i.bid | priceFormat:i.tickSize }}</span></div>
+                      <div class="detail-item"><span class="detail-label">Ask</span><span>{{ i.ask | priceFormat:i.tickSize }}</span></div>
                       <div class="detail-item"><span class="detail-label">Spread</span><span class="spread">{{ (i.ask - i.bid) / i.tickSize | number:'1.0-0' }} ticks</span></div>
-                      <div class="detail-item"><span class="detail-label">Change</span><span [class.positive]="i.change >= 0" [class.negative]="i.change < 0">{{ i.change }}</span></div>
+                      <div class="detail-item"><span class="detail-label">Change</span><span [class.positive]="i.change >= 0" [class.negative]="i.change < 0">{{ i.change | priceFormat:i.tickSize }}</span></div>
                       <div class="detail-item"><span class="detail-label">Change %</span><span [class.positive]="i.changePct >= 0" [class.negative]="i.changePct < 0">{{ i.changePct }}%</span></div>
-                      <div class="detail-item"><span class="detail-label">High</span><span>{{ i.high }}</span></div>
-                      <div class="detail-item"><span class="detail-label">Low</span><span>{{ i.low }}</span></div>
+                      <div class="detail-item"><span class="detail-label">High</span><span>{{ i.high | priceFormat:i.tickSize }}</span></div>
+                      <div class="detail-item"><span class="detail-label">Low</span><span>{{ i.low | priceFormat:i.tickSize }}</span></div>
                     </div>
                   </td>
                 </tr>

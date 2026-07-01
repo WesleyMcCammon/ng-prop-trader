@@ -7,11 +7,11 @@
   <div class="card-data">
     <div class="data-item">
       <span class="data-label">Bid</span>
-      <span class="data-value">{{ instrument.bid }}</span>
+      <span class="data-value">{{ instrument.bid | priceFormat:instrument.tickSize }}</span>
     </div>
     <div class="data-item">
       <span class="data-label">Ask</span>
-      <span class="data-value">{{ instrument.ask }}</span>
+      <span class="data-value">{{ instrument.ask | priceFormat:instrument.tickSize }}</span>
     </div>
     <div class="data-item data-item--change">
       <span class="data-label">Chg %</span>

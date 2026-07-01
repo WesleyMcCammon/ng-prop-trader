@@ -6,6 +6,7 @@ import { InstrumentService } from '../../../core/services/instrument.service';
 import { CategoryService } from '../../../core/services/category.service';
 import { PriceFeedService } from '../../../core/services/price-feed.service';
 import { InstrumentCategory } from '../../../shared/model/instrument.model';
+import { PriceFormatPipe } from '../../../shared/pipes/price-format.pipe';
 
 type SortDir = 'asc' | 'desc';
 
@@ -23,7 +24,7 @@ export const TOGGLEABLE_COLS = [
 @Component({
   selector: 'app-instruments',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, PriceFormatPipe],
   templateUrl: './instruments.component.html',
   styleUrl: './instruments.component.scss'
 })
