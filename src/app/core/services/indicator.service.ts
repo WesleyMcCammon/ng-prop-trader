@@ -6,12 +6,12 @@ export type { InstrumentIndicators, PivotLevels, VWAPLevels, VolumeProfile, Open
 
 export interface ActiveLevelDisplay {
   levelId: string;
+  groupName: string;
   label: string;
   value: number;
   delta: number;
 }
 
-// Compact labels for card display (mirrors the `label` field in the component's GROUPS_DEF)
 const LEVEL_LABELS: Record<string, string> = {
   'pivots.r3': 'R3',       'pivots.r2': 'R2',     'pivots.r1': 'R1',
   'pivots.pivot': 'Pivot', 'pivots.s1': 'S1',     'pivots.s2': 'S2',     'pivots.s3': 'S3',
@@ -24,6 +24,19 @@ const LEVEL_LABELS: Record<string, string> = {
   'pd.lon.open':   'Lon O',    'pd.lon.high':   'Lon H',    'pd.lon.low':   'Lon L',   'pd.lon.close':   'Lon C',
   'pd.ny.open':    'NY O',     'pd.ny.high':    'NY H',     'pd.ny.low':    'NY L',    'pd.ny.close':    'NY C',
   'wk.open':  'Wk O',     'wk.high':  'Wk H',    'wk.low':  'Wk L',    'wk.close': 'Wk C',
+};
+
+const LEVEL_GROUPS: Record<string, string> = {
+  'pivots.r3': 'Pivots',  'pivots.r2': 'Pivots',  'pivots.r1': 'Pivots',
+  'pivots.pivot': 'Pivots', 'pivots.s1': 'Pivots', 'pivots.s2': 'Pivots', 'pivots.s3': 'Pivots',
+  'vwap.sd3': 'VWAP',     'vwap.sd2': 'VWAP',     'vwap.sd1': 'VWAP',
+  'vwap.vwap': 'VWAP',    'vwap.sm1': 'VWAP',     'vwap.sm2': 'VWAP',    'vwap.sm3': 'VWAP',
+  'vp.vah': 'Vol Profile', 'vp.poc': 'Vol Profile', 'vp.val': 'Vol Profile',
+  'or.high': 'Opening Rng', 'or.low': 'Opening Rng',
+  'pd.asia.open':  'Prev Day', 'pd.asia.high':  'Prev Day', 'pd.asia.low':  'Prev Day', 'pd.asia.close':  'Prev Day',
+  'pd.lon.open':   'Prev Day', 'pd.lon.high':   'Prev Day', 'pd.lon.low':   'Prev Day', 'pd.lon.close':   'Prev Day',
+  'pd.ny.open':    'Prev Day', 'pd.ny.high':    'Prev Day', 'pd.ny.low':    'Prev Day', 'pd.ny.close':    'Prev Day',
+  'wk.open': 'Weekly', 'wk.high': 'Weekly', 'wk.low': 'Weekly', 'wk.close': 'Weekly',
 };
 
 @Injectable({ providedIn: 'root' })
@@ -112,6 +125,7 @@ export class IndicatorService {
     return [...this.activeLevels()]
       .map(levelId => ({
         levelId,
+        groupName: LEVEL_GROUPS[levelId] ?? '',
         label: LEVEL_LABELS[levelId] ?? levelId,
         value: values[levelId] ?? 0,
         delta: (values[levelId] ?? 0) - bid,

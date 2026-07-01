@@ -93,26 +93,25 @@
   border-top: 1px solid var(--color-border);
   display: flex;
   flex-direction: column;
-  gap: 0.2rem;
 }
 
 .level-row {
-  display: grid;
-  grid-template-columns: 1fr auto auto;
-  gap: 0.4rem;
-  align-items: baseline;
-  font-size: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  padding: 0.3rem 0;
   font-variant-numeric: tabular-nums;
 
-  &--header {
-    padding-bottom: 0.2rem;
-    margin-bottom: 0.1rem;
+  &:not(:last-child) {
     border-bottom: 1px solid var(--color-border);
+  }
 
-    .level-label,
-    .level-value,
-    .level-delta {
-      font-size: 0.62rem;
+  &--header {
+    padding-bottom: 0.25rem;
+
+    .level-line1 span,
+    .level-line2 span {
+      font-size: 0.6rem;
       font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 0.05em;
@@ -121,7 +120,15 @@
   }
 }
 
-.level-label {
+.level-line1,
+.level-line2 {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 0.5rem;
+}
+
+.level-group {
   font-size: 0.68rem;
   font-weight: 700;
   text-transform: uppercase;
@@ -129,13 +136,19 @@
   color: var(--color-text-muted);
 }
 
+.level-name {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--color-heading);
+}
+
 .level-value {
-  color: var(--color-text);
+  font-size: 0.78rem;
   font-weight: 500;
+  color: var(--color-text);
 }
 
 .level-delta {
-  font-weight: 600;
-  min-width: 4rem;
-  text-align: right;
+  font-size: 0.78rem;
+  font-weight: 700;
 }
