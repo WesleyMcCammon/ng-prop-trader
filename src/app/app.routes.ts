@@ -52,6 +52,11 @@ export const routes: Routes = [
       import('./features/admin/instruments/instruments.component').then(m => m.InstrumentsComponent)
   },
   {
+    path: 'market',
+    loadComponent: () =>
+      import('./features/market/market.component').then(m => m.MarketComponent)
+  },
+  {
     path: 'settings',
     loadComponent: () =>
       import('./features/settings/settings.component').then(m => m.SettingsComponent)

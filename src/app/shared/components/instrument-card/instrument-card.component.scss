@@ -1,0 +1,88 @@
+.instrument-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  padding: 0.875rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  transition: border-color 0.15s, box-shadow 0.15s;
+
+  &:hover {
+    border-color: var(--color-primary);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.07);
+  }
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.symbol {
+  font-size: 0.95rem;
+  font-weight: 700;
+  font-family: monospace;
+  color: var(--color-heading);
+}
+
+.card-name {
+  font-size: 0.775rem;
+  color: var(--color-text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.card-data {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 0.25rem 0.5rem;
+  margin-top: 0.4rem;
+  padding-top: 0.6rem;
+  border-top: 1px solid var(--color-border);
+}
+
+.data-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+
+  &--change {
+    text-align: right;
+  }
+}
+
+.data-label {
+  font-size: 0.62rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-text-muted);
+}
+
+.data-value {
+  font-size: 0.82rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-text);
+}
+
+.type-badge {
+  display: inline-block;
+  padding: 0.1rem 0.45rem;
+  border-radius: 4px;
+  font-size: 0.6rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  flex-shrink: 0;
+
+  &--futures { background: #e0e7ff; color: #4338ca; }
+  &--forex   { background: #dbeafe; color: #1d4ed8; }
+  &--cfd     { background: #fce7f3; color: #be185d; }
+}
+
+.positive { color: #16a34a; font-weight: 600; }
+.negative { color: #dc2626; font-weight: 600; }
