@@ -1,0 +1,23 @@
+<div class="instrument-card">
+  <div class="card-header">
+    <span class="symbol">{{ instrument.symbol }}</span>
+    <span class="type-badge type-badge--{{ instrument.type }}">{{ instrument.type }}</span>
+  </div>
+  <div class="card-name">{{ instrument.name }}</div>
+  <div class="card-data">
+    <div class="data-item">
+      <span class="data-label">Bid</span>
+      <span class="data-value">{{ instrument.bid }}</span>
+    </div>
+    <div class="data-item">
+      <span class="data-label">Ask</span>
+      <span class="data-value">{{ instrument.ask }}</span>
+    </div>
+    <div class="data-item data-item--change">
+      <span class="data-label">Chg %</span>
+      <span class="data-value" [class.positive]="instrument.changePct >= 0" [class.negative]="instrument.changePct < 0">
+        {{ instrument.changePct >= 0 ? '+' : '' }}{{ instrument.changePct }}%
+      </span>
+    </div>
+  </div>
+</div>
