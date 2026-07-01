@@ -6,7 +6,7 @@
     </div>
     <div class="pinned-grid">
       @for (i of pinned(); track i.symbol) {
-        <app-instrument-card [instrument]="i" />
+        <app-instrument-card [instrument]="i" [showType]="true" />
       }
     </div>
   </section>

@@ -25,6 +25,8 @@ export class MarketComponent implements OnDestroy {
   readonly futuresCategories: InstrumentCategory[] = this.categoryService.byType('futures');
   readonly forexCategories:   InstrumentCategory[] = this.categoryService.byType('forex');
 
+  viewMode    = signal<'categorized' | 'all'>('categorized');
+
   showFutures = signal(true);
   showForex   = signal(true);
   showCfds    = signal(true);
@@ -48,6 +50,8 @@ export class MarketComponent implements OnDestroy {
   });
 
   cfds = computed(() => this.instruments().filter(i => i.type === 'cfd'));
+
+  all = computed(() => this.instruments());
 
   constructor() {
     inject(Title).setTitle('Market – MarketWatch');

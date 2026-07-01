@@ -14,6 +14,7 @@ import { PinService } from '../../../core/services/pin.service';
 })
 export class InstrumentCardComponent {
   @Input({ required: true }) instrument!: FuturesContract;
+  @Input() showType = false;
 
   private indicatorService = inject(IndicatorService);
   readonly pinService      = inject(PinService);
