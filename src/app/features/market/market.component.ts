@@ -1,8 +1,9 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, computed, inject, OnDestroy, signal } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { RouterLink } from '@angular/router';
 import { InstrumentService } from '../../core/services/instrument.service';
 import { CategoryService } from '../../core/services/category.service';
+import { PriceFeedService } from '../../core/services/price-feed.service';
 import { InstrumentCategory } from '../../shared/model/instrument.model';
 import { InstrumentCardComponent } from '../../shared/components/instrument-card/instrument-card.component';
 
@@ -13,9 +14,10 @@ import { InstrumentCardComponent } from '../../shared/components/instrument-card
   templateUrl: './market.component.html',
   styleUrl: './market.component.scss'
 })
-export class MarketComponent {
+export class MarketComponent implements OnDestroy {
   private instrumentService = inject(InstrumentService);
   private categoryService   = inject(CategoryService);
+  private priceFeed         = inject(PriceFeedService);
 
   instruments = this.instrumentService.instruments;
 
@@ -48,6 +50,11 @@ export class MarketComponent {
 
   constructor() {
     inject(Title).setTitle('Market – MarketWatch');
+    this.priceFeed.start();
+  }
+
+  ngOnDestroy(): void {
+    this.priceFeed.stop();
   }
 
   toggleFutures(cat: InstrumentCategory): void {

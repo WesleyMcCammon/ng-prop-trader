@@ -1,9 +1,10 @@
-import { Component, Input, OnInit, inject, signal, computed } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit, inject, signal, computed } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { InstrumentService } from '../../../core/services/instrument.service';
 import { CategoryService } from '../../../core/services/category.service';
+import { PriceFeedService } from '../../../core/services/price-feed.service';
 import { InstrumentCategory } from '../../../shared/model/instrument.model';
 
 type SortDir = 'asc' | 'desc';
@@ -26,9 +27,10 @@ export const TOGGLEABLE_COLS = [
   templateUrl: './instruments.component.html',
   styleUrl: './instruments.component.scss'
 })
-export class InstrumentsComponent implements OnInit {
+export class InstrumentsComponent implements OnInit, OnDestroy {
   private instrumentService = inject(InstrumentService);
   private categoryService   = inject(CategoryService);
+  private priceFeed         = inject(PriceFeedService);
 
   @Input() showAll = false;
 
@@ -76,6 +78,11 @@ export class InstrumentsComponent implements OnInit {
   ngOnInit(): void {
     const allKeys = this.toggleableCols.map(c => c.key);
     this.visibleCols.set(new Set(this.showAll ? allKeys : []));
+    this.priceFeed.start();
+  }
+
+  ngOnDestroy(): void {
+    this.priceFeed.stop();
   }
 
   col(key: string): boolean {
