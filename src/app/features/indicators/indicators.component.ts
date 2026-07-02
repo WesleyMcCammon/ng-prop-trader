@@ -1,6 +1,5 @@
 ﻿import { Component, inject, signal } from '@angular/core';
 import { Title } from '@angular/platform-browser';
-import { RouterLink } from '@angular/router';
 import { IndicatorService } from '../../core/services/indicator.service';
 
 interface IndicatorLevel {
@@ -93,7 +92,7 @@ const GROUPS_DEF: Omit<IndicatorGroup, 'show'>[] = [
 @Component({
   selector: 'app-indicators',
   standalone: true,
-  imports: [RouterLink],
+  imports: [],
   templateUrl: './indicators.component.html',
   styleUrl: './indicators.component.scss',
 })

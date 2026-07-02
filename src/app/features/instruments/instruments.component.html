@@ -1,24 +1,9 @@
-﻿<main class="instruments-page">
+<main class="instruments-page">
   <div class="container">
 
     <div class="page-header">
       <h1 class="page-title">Instruments</h1>
     </div>
-
-    <!-- Column visibility toggles (admin view only) -->
-    <!-- @if (!showAll) {
-      <div class="col-toggles">
-        <span class="col-toggles-label">Columns</span>
-        @for (c of toggleableCols; track c.key) {
-          <button
-            class="col-toggle"
-            [class.col-toggle--active]="col(c.key)"
-            (click)="toggleCol(c.key)">
-            {{ c.label }}
-          </button>
-        }
-      </div>
-    } -->
 
     <!-- Futures -->
     <section class="instrument-section">
@@ -32,23 +17,6 @@
           </button>
         }
       </div>
-      <div class="category-toggles">
-        @for (cat of futuresCategories; track cat) {
-          <button
-            class="cat-toggle"
-            [class.cat-toggle--active]="activeF().has(cat)"
-            (click)="toggleFutures(cat)">
-            {{ cat }}
-          </button>
-        }
-        <span class="filter-divider"></span>
-        <button
-          class="cat-toggle"
-          [class.cat-toggle--active]="showMicro()"
-          (click)="showMicro.set(!showMicro())">
-          Micro
-        </button>
-      </div>
       <div class="table-wrap">
         <table class="instruments-table">
           <thead>
@@ -57,9 +25,9 @@
               @if (showAll)  { <th class="col-expand"></th> }
               <th class="sortable" (click)="toggleSort()">Symbol <span class="sort-arrow">{{ sortDir() === 'asc' ? '▲' : '▼' }}</span></th>
               <th>Name</th>
+              <th>Tier</th>
               <th>Category</th>
               <th>Exchange</th>
-              <th>Ccy</th>
               <th class="num">Contract Size</th>
               <th class="num">Tick Size</th>
               <th class="num">Tick Value</th>
@@ -72,6 +40,137 @@
               @if (!showAll && col('low'))       { <th class="num">Low</th> }
               @if (!showAll && col('volume'))    { <th class="num">Volume</th> }
             </tr>
+            <tr class="filter-row">
+              <th></th>
+              <th class="filter-th">
+                <div class="col-filter" [class.col-filter--active]="colFilterActive(futuresColFilters(), 'symbol')">
+                  <button class="col-filter-btn" (click)="toggleFilterOpen('futures', 'symbol', $event)">
+                    @if (colFilterCount(futuresColFilters(), 'symbol') > 0) { <span class="col-filter-badge">{{ colFilterCount(futuresColFilters(), 'symbol') }}</span> }▾
+                  </button>
+                  @if (isFilterOpen('futures', 'symbol')) {
+                    <div class="col-filter-panel" [style.top.px]="openFilter()!.y" [style.left.px]="openFilter()!.x" (click)="$event.stopPropagation()">
+                      @if (colFilterActive(futuresColFilters(), 'symbol')) { <button class="col-filter-clear" (click)="clearColFilter('futures', 'symbol', $event)">Clear</button> }
+                      @for (val of uniqueVals(futuresBase(), 'symbol'); track val) {
+                        <label class="col-filter-item"><input type="checkbox" [checked]="isFilterChecked(futuresColFilters(), 'symbol', val)" (change)="toggleColFilter('futures', 'symbol', val, $event)">{{ val }}</label>
+                      }
+                    </div>
+                  }
+                </div>
+              </th>
+              <th class="filter-th">
+                <div class="col-filter" [class.col-filter--active]="colFilterActive(futuresColFilters(), 'name')">
+                  <button class="col-filter-btn" (click)="toggleFilterOpen('futures', 'name', $event)">
+                    @if (colFilterCount(futuresColFilters(), 'name') > 0) { <span class="col-filter-badge">{{ colFilterCount(futuresColFilters(), 'name') }}</span> }▾
+                  </button>
+                  @if (isFilterOpen('futures', 'name')) {
+                    <div class="col-filter-panel" [style.top.px]="openFilter()!.y" [style.left.px]="openFilter()!.x" (click)="$event.stopPropagation()">
+                      @if (colFilterActive(futuresColFilters(), 'name')) { <button class="col-filter-clear" (click)="clearColFilter('futures', 'name', $event)">Clear</button> }
+                      @for (val of uniqueVals(futuresBase(), 'name'); track val) {
+                        <label class="col-filter-item"><input type="checkbox" [checked]="isFilterChecked(futuresColFilters(), 'name', val)" (change)="toggleColFilter('futures', 'name', val, $event)">{{ val }}</label>
+                      }
+                    </div>
+                  }
+                </div>
+              </th>
+              <th class="filter-th">
+                <div class="col-filter" [class.col-filter--active]="colFilterActive(futuresColFilters(), 'size')">
+                  <button class="col-filter-btn" (click)="toggleFilterOpen('futures', 'size', $event)">
+                    @if (colFilterCount(futuresColFilters(), 'size') > 0) { <span class="col-filter-badge">{{ colFilterCount(futuresColFilters(), 'size') }}</span> }▾
+                  </button>
+                  @if (isFilterOpen('futures', 'size')) {
+                    <div class="col-filter-panel" [style.top.px]="openFilter()!.y" [style.left.px]="openFilter()!.x" (click)="$event.stopPropagation()">
+                      @if (colFilterActive(futuresColFilters(), 'size')) { <button class="col-filter-clear" (click)="clearColFilter('futures', 'size', $event)">Clear</button> }
+                      @for (val of uniqueVals(futuresBase(), 'size'); track val) {
+                        <label class="col-filter-item"><input type="checkbox" [checked]="isFilterChecked(futuresColFilters(), 'size', val)" (change)="toggleColFilter('futures', 'size', val, $event)">{{ val }}</label>
+                      }
+                    </div>
+                  }
+                </div>
+              </th>
+              <th class="filter-th">
+                <div class="col-filter" [class.col-filter--active]="colFilterActive(futuresColFilters(), 'category')">
+                  <button class="col-filter-btn" (click)="toggleFilterOpen('futures', 'category', $event)">
+                    @if (colFilterCount(futuresColFilters(), 'category') > 0) { <span class="col-filter-badge">{{ colFilterCount(futuresColFilters(), 'category') }}</span> }▾
+                  </button>
+                  @if (isFilterOpen('futures', 'category')) {
+                    <div class="col-filter-panel" [style.top.px]="openFilter()!.y" [style.left.px]="openFilter()!.x" (click)="$event.stopPropagation()">
+                      @if (colFilterActive(futuresColFilters(), 'category')) { <button class="col-filter-clear" (click)="clearColFilter('futures', 'category', $event)">Clear</button> }
+                      @for (val of uniqueVals(futuresBase(), 'category'); track val) {
+                        <label class="col-filter-item"><input type="checkbox" [checked]="isFilterChecked(futuresColFilters(), 'category', val)" (change)="toggleColFilter('futures', 'category', val, $event)">{{ val }}</label>
+                      }
+                    </div>
+                  }
+                </div>
+              </th>
+              <th class="filter-th">
+                <div class="col-filter" [class.col-filter--active]="colFilterActive(futuresColFilters(), 'exchange')">
+                  <button class="col-filter-btn" (click)="toggleFilterOpen('futures', 'exchange', $event)">
+                    @if (colFilterCount(futuresColFilters(), 'exchange') > 0) { <span class="col-filter-badge">{{ colFilterCount(futuresColFilters(), 'exchange') }}</span> }▾
+                  </button>
+                  @if (isFilterOpen('futures', 'exchange')) {
+                    <div class="col-filter-panel" [style.top.px]="openFilter()!.y" [style.left.px]="openFilter()!.x" (click)="$event.stopPropagation()">
+                      @if (colFilterActive(futuresColFilters(), 'exchange')) { <button class="col-filter-clear" (click)="clearColFilter('futures', 'exchange', $event)">Clear</button> }
+                      @for (val of uniqueVals(futuresBase(), 'exchange'); track val) {
+                        <label class="col-filter-item"><input type="checkbox" [checked]="isFilterChecked(futuresColFilters(), 'exchange', val)" (change)="toggleColFilter('futures', 'exchange', val, $event)">{{ val }}</label>
+                      }
+                    </div>
+                  }
+                </div>
+              </th>
+              <th class="filter-th">
+                <div class="col-filter" [class.col-filter--active]="colFilterActive(futuresColFilters(), 'contractSize')">
+                  <button class="col-filter-btn" (click)="toggleFilterOpen('futures', 'contractSize', $event)">
+                    @if (colFilterCount(futuresColFilters(), 'contractSize') > 0) { <span class="col-filter-badge">{{ colFilterCount(futuresColFilters(), 'contractSize') }}</span> }▾
+                  </button>
+                  @if (isFilterOpen('futures', 'contractSize')) {
+                    <div class="col-filter-panel" [style.top.px]="openFilter()!.y" [style.left.px]="openFilter()!.x" (click)="$event.stopPropagation()">
+                      @if (colFilterActive(futuresColFilters(), 'contractSize')) { <button class="col-filter-clear" (click)="clearColFilter('futures', 'contractSize', $event)">Clear</button> }
+                      @for (val of uniqueVals(futuresBase(), 'contractSize'); track val) {
+                        <label class="col-filter-item"><input type="checkbox" [checked]="isFilterChecked(futuresColFilters(), 'contractSize', val)" (change)="toggleColFilter('futures', 'contractSize', val, $event)">{{ val }}</label>
+                      }
+                    </div>
+                  }
+                </div>
+              </th>
+              <th class="filter-th">
+                <div class="col-filter" [class.col-filter--active]="colFilterActive(futuresColFilters(), 'tickSize')">
+                  <button class="col-filter-btn" (click)="toggleFilterOpen('futures', 'tickSize', $event)">
+                    @if (colFilterCount(futuresColFilters(), 'tickSize') > 0) { <span class="col-filter-badge">{{ colFilterCount(futuresColFilters(), 'tickSize') }}</span> }▾
+                  </button>
+                  @if (isFilterOpen('futures', 'tickSize')) {
+                    <div class="col-filter-panel" [style.top.px]="openFilter()!.y" [style.left.px]="openFilter()!.x" (click)="$event.stopPropagation()">
+                      @if (colFilterActive(futuresColFilters(), 'tickSize')) { <button class="col-filter-clear" (click)="clearColFilter('futures', 'tickSize', $event)">Clear</button> }
+                      @for (val of uniqueVals(futuresBase(), 'tickSize'); track val) {
+                        <label class="col-filter-item"><input type="checkbox" [checked]="isFilterChecked(futuresColFilters(), 'tickSize', val)" (change)="toggleColFilter('futures', 'tickSize', val, $event)">{{ val }}</label>
+                      }
+                    </div>
+                  }
+                </div>
+              </th>
+              <th class="filter-th">
+                <div class="col-filter" [class.col-filter--active]="colFilterActive(futuresColFilters(), 'tickValue')">
+                  <button class="col-filter-btn" (click)="toggleFilterOpen('futures', 'tickValue', $event)">
+                    @if (colFilterCount(futuresColFilters(), 'tickValue') > 0) { <span class="col-filter-badge">{{ colFilterCount(futuresColFilters(), 'tickValue') }}</span> }▾
+                  </button>
+                  @if (isFilterOpen('futures', 'tickValue')) {
+                    <div class="col-filter-panel" [style.top.px]="openFilter()!.y" [style.left.px]="openFilter()!.x" (click)="$event.stopPropagation()">
+                      @if (colFilterActive(futuresColFilters(), 'tickValue')) { <button class="col-filter-clear" (click)="clearColFilter('futures', 'tickValue', $event)">Clear</button> }
+                      @for (val of uniqueVals(futuresBase(), 'tickValue'); track val) {
+                        <label class="col-filter-item"><input type="checkbox" [checked]="isFilterChecked(futuresColFilters(), 'tickValue', val)" (change)="toggleColFilter('futures', 'tickValue', val, $event)">{{ val }}</label>
+                      }
+                    </div>
+                  }
+                </div>
+              </th>
+              @if (!showAll && col('price'))     { <th></th> }
+              @if (!showAll && col('bid'))       { <th></th> }
+              @if (!showAll && col('ask'))       { <th></th> }
+              @if (!showAll && col('change'))    { <th></th> }
+              @if (!showAll && col('changePct')) { <th></th> }
+              @if (!showAll && col('high'))      { <th></th> }
+              @if (!showAll && col('low'))       { <th></th> }
+              @if (!showAll && col('volume'))    { <th></th> }
+            </tr>
           </thead>
           <tbody>
             @for (i of futuresInstruments(); track i.symbol) {
@@ -80,9 +179,9 @@
                 @if (showAll)  { <td class="col-expand"><button class="expand-btn" (click)="toggleRow(i.symbol)">{{ isExpanded(i.symbol) ? '▼' : '▶' }}</button></td> }
                 <td class="symbol">{{ i.symbol }}</td>
                 <td>{{ i.name }}</td>
+                <td><span class="tier-badge tier-badge--{{ instrumentSize(i) | lowercase }}">{{ instrumentSize(i) }}</span></td>
                 <td>{{ i.category }}</td>
                 <td>{{ i.exchange }}</td>
-                <td>{{ i.currency }}</td>
                 <td class="num">{{ i.contractSize | number }}</td>
                 <td class="num">{{ i.tickSize }}</td>
                 <td class="num">{{ i.tickValue | currency }}</td>
@@ -129,16 +228,6 @@
           </button>
         }
       </div>
-      <div class="category-toggles">
-        @for (cat of forexCategories; track cat) {
-          <button
-            class="cat-toggle"
-            [class.cat-toggle--active]="activeFx().has(cat)"
-            (click)="toggleForex(cat)">
-            {{ cat }}
-          </button>
-        }
-      </div>
       <div class="table-wrap">
         <table class="instruments-table">
           <thead>
@@ -148,7 +237,6 @@
               <th class="sortable" (click)="toggleSort()">Symbol <span class="sort-arrow">{{ sortDir() === 'asc' ? '▲' : '▼' }}</span></th>
               <th>Name</th>
               <th>Category</th>
-              <th>Ccy</th>
               <th class="num">Lot Size</th>
               <th class="num">Pip Size</th>
               @if (!showAll && col('price'))     { <th class="num">Price</th> }
@@ -160,6 +248,92 @@
               @if (!showAll && col('high'))      { <th class="num">High</th> }
               @if (!showAll && col('low'))       { <th class="num">Low</th> }
             </tr>
+            <tr class="filter-row">
+              <th></th>
+              <th class="filter-th">
+                <div class="col-filter" [class.col-filter--active]="colFilterActive(forexColFilters(), 'symbol')">
+                  <button class="col-filter-btn" (click)="toggleFilterOpen('forex', 'symbol', $event)">
+                    @if (colFilterCount(forexColFilters(), 'symbol') > 0) { <span class="col-filter-badge">{{ colFilterCount(forexColFilters(), 'symbol') }}</span> }▾
+                  </button>
+                  @if (isFilterOpen('forex', 'symbol')) {
+                    <div class="col-filter-panel" [style.top.px]="openFilter()!.y" [style.left.px]="openFilter()!.x" (click)="$event.stopPropagation()">
+                      @if (colFilterActive(forexColFilters(), 'symbol')) { <button class="col-filter-clear" (click)="clearColFilter('forex', 'symbol', $event)">Clear</button> }
+                      @for (val of uniqueVals(forexBase(), 'symbol'); track val) {
+                        <label class="col-filter-item"><input type="checkbox" [checked]="isFilterChecked(forexColFilters(), 'symbol', val)" (change)="toggleColFilter('forex', 'symbol', val, $event)">{{ val }}</label>
+                      }
+                    </div>
+                  }
+                </div>
+              </th>
+              <th class="filter-th">
+                <div class="col-filter" [class.col-filter--active]="colFilterActive(forexColFilters(), 'name')">
+                  <button class="col-filter-btn" (click)="toggleFilterOpen('forex', 'name', $event)">
+                    @if (colFilterCount(forexColFilters(), 'name') > 0) { <span class="col-filter-badge">{{ colFilterCount(forexColFilters(), 'name') }}</span> }▾
+                  </button>
+                  @if (isFilterOpen('forex', 'name')) {
+                    <div class="col-filter-panel" [style.top.px]="openFilter()!.y" [style.left.px]="openFilter()!.x" (click)="$event.stopPropagation()">
+                      @if (colFilterActive(forexColFilters(), 'name')) { <button class="col-filter-clear" (click)="clearColFilter('forex', 'name', $event)">Clear</button> }
+                      @for (val of uniqueVals(forexBase(), 'name'); track val) {
+                        <label class="col-filter-item"><input type="checkbox" [checked]="isFilterChecked(forexColFilters(), 'name', val)" (change)="toggleColFilter('forex', 'name', val, $event)">{{ val }}</label>
+                      }
+                    </div>
+                  }
+                </div>
+              </th>
+              <th class="filter-th">
+                <div class="col-filter" [class.col-filter--active]="colFilterActive(forexColFilters(), 'category')">
+                  <button class="col-filter-btn" (click)="toggleFilterOpen('forex', 'category', $event)">
+                    @if (colFilterCount(forexColFilters(), 'category') > 0) { <span class="col-filter-badge">{{ colFilterCount(forexColFilters(), 'category') }}</span> }▾
+                  </button>
+                  @if (isFilterOpen('forex', 'category')) {
+                    <div class="col-filter-panel" [style.top.px]="openFilter()!.y" [style.left.px]="openFilter()!.x" (click)="$event.stopPropagation()">
+                      @if (colFilterActive(forexColFilters(), 'category')) { <button class="col-filter-clear" (click)="clearColFilter('forex', 'category', $event)">Clear</button> }
+                      @for (val of uniqueVals(forexBase(), 'category'); track val) {
+                        <label class="col-filter-item"><input type="checkbox" [checked]="isFilterChecked(forexColFilters(), 'category', val)" (change)="toggleColFilter('forex', 'category', val, $event)">{{ val }}</label>
+                      }
+                    </div>
+                  }
+                </div>
+              </th>
+              <th class="filter-th">
+                <div class="col-filter" [class.col-filter--active]="colFilterActive(forexColFilters(), 'contractSize')">
+                  <button class="col-filter-btn" (click)="toggleFilterOpen('forex', 'contractSize', $event)">
+                    @if (colFilterCount(forexColFilters(), 'contractSize') > 0) { <span class="col-filter-badge">{{ colFilterCount(forexColFilters(), 'contractSize') }}</span> }▾
+                  </button>
+                  @if (isFilterOpen('forex', 'contractSize')) {
+                    <div class="col-filter-panel" [style.top.px]="openFilter()!.y" [style.left.px]="openFilter()!.x" (click)="$event.stopPropagation()">
+                      @if (colFilterActive(forexColFilters(), 'contractSize')) { <button class="col-filter-clear" (click)="clearColFilter('forex', 'contractSize', $event)">Clear</button> }
+                      @for (val of uniqueVals(forexBase(), 'contractSize'); track val) {
+                        <label class="col-filter-item"><input type="checkbox" [checked]="isFilterChecked(forexColFilters(), 'contractSize', val)" (change)="toggleColFilter('forex', 'contractSize', val, $event)">{{ val }}</label>
+                      }
+                    </div>
+                  }
+                </div>
+              </th>
+              <th class="filter-th">
+                <div class="col-filter" [class.col-filter--active]="colFilterActive(forexColFilters(), 'tickSize')">
+                  <button class="col-filter-btn" (click)="toggleFilterOpen('forex', 'tickSize', $event)">
+                    @if (colFilterCount(forexColFilters(), 'tickSize') > 0) { <span class="col-filter-badge">{{ colFilterCount(forexColFilters(), 'tickSize') }}</span> }▾
+                  </button>
+                  @if (isFilterOpen('forex', 'tickSize')) {
+                    <div class="col-filter-panel" [style.top.px]="openFilter()!.y" [style.left.px]="openFilter()!.x" (click)="$event.stopPropagation()">
+                      @if (colFilterActive(forexColFilters(), 'tickSize')) { <button class="col-filter-clear" (click)="clearColFilter('forex', 'tickSize', $event)">Clear</button> }
+                      @for (val of uniqueVals(forexBase(), 'tickSize'); track val) {
+                        <label class="col-filter-item"><input type="checkbox" [checked]="isFilterChecked(forexColFilters(), 'tickSize', val)" (change)="toggleColFilter('forex', 'tickSize', val, $event)">{{ val }}</label>
+                      }
+                    </div>
+                  }
+                </div>
+              </th>
+              @if (!showAll && col('price'))     { <th></th> }
+              @if (!showAll && col('bid'))       { <th></th> }
+              @if (!showAll && col('ask'))       { <th></th> }
+              @if (!showAll) { <th></th> }
+              @if (!showAll && col('change'))    { <th></th> }
+              @if (!showAll && col('changePct')) { <th></th> }
+              @if (!showAll && col('high'))      { <th></th> }
+              @if (!showAll && col('low'))       { <th></th> }
+            </tr>
           </thead>
           <tbody>
             @for (i of forexInstruments(); track i.symbol) {
@@ -169,7 +343,6 @@
                 <td class="symbol">{{ i.symbol }}</td>
                 <td>{{ i.name }}</td>
                 <td>{{ i.category }}</td>
-                <td>{{ i.currency }}</td>
                 <td class="num">{{ i.contractSize | number }}</td>
                 <td class="num">{{ i.tickSize }}</td>
                 @if (!showAll && col('price'))     { <td class="num">{{ i.price | priceFormat:i.tickSize }}</td> }
@@ -223,7 +396,6 @@
               @if (showAll)  { <th class="col-expand"></th> }
               <th class="sortable" (click)="toggleSort()">Symbol <span class="sort-arrow">{{ sortDir() === 'asc' ? '▲' : '▼' }}</span></th>
               <th>Name</th>
-              <th>Ccy</th>
               @if (!showAll && col('price'))     { <th class="num">Price</th> }
               @if (!showAll && col('bid'))       { <th class="num">Bid</th> }
               @if (!showAll && col('ask'))       { <th class="num">Ask</th> }
@@ -233,6 +405,47 @@
               @if (!showAll && col('high'))      { <th class="num">High</th> }
               @if (!showAll && col('low'))       { <th class="num">Low</th> }
             </tr>
+            <tr class="filter-row">
+              <th></th>
+              <th class="filter-th">
+                <div class="col-filter" [class.col-filter--active]="colFilterActive(cfdColFilters(), 'symbol')">
+                  <button class="col-filter-btn" (click)="toggleFilterOpen('cfd', 'symbol', $event)">
+                    @if (colFilterCount(cfdColFilters(), 'symbol') > 0) { <span class="col-filter-badge">{{ colFilterCount(cfdColFilters(), 'symbol') }}</span> }▾
+                  </button>
+                  @if (isFilterOpen('cfd', 'symbol')) {
+                    <div class="col-filter-panel" [style.top.px]="openFilter()!.y" [style.left.px]="openFilter()!.x" (click)="$event.stopPropagation()">
+                      @if (colFilterActive(cfdColFilters(), 'symbol')) { <button class="col-filter-clear" (click)="clearColFilter('cfd', 'symbol', $event)">Clear</button> }
+                      @for (val of uniqueVals(cfdBase(), 'symbol'); track val) {
+                        <label class="col-filter-item"><input type="checkbox" [checked]="isFilterChecked(cfdColFilters(), 'symbol', val)" (change)="toggleColFilter('cfd', 'symbol', val, $event)">{{ val }}</label>
+                      }
+                    </div>
+                  }
+                </div>
+              </th>
+              <th class="filter-th">
+                <div class="col-filter" [class.col-filter--active]="colFilterActive(cfdColFilters(), 'name')">
+                  <button class="col-filter-btn" (click)="toggleFilterOpen('cfd', 'name', $event)">
+                    @if (colFilterCount(cfdColFilters(), 'name') > 0) { <span class="col-filter-badge">{{ colFilterCount(cfdColFilters(), 'name') }}</span> }▾
+                  </button>
+                  @if (isFilterOpen('cfd', 'name')) {
+                    <div class="col-filter-panel" [style.top.px]="openFilter()!.y" [style.left.px]="openFilter()!.x" (click)="$event.stopPropagation()">
+                      @if (colFilterActive(cfdColFilters(), 'name')) { <button class="col-filter-clear" (click)="clearColFilter('cfd', 'name', $event)">Clear</button> }
+                      @for (val of uniqueVals(cfdBase(), 'name'); track val) {
+                        <label class="col-filter-item"><input type="checkbox" [checked]="isFilterChecked(cfdColFilters(), 'name', val)" (change)="toggleColFilter('cfd', 'name', val, $event)">{{ val }}</label>
+                      }
+                    </div>
+                  }
+                </div>
+              </th>
+              @if (!showAll && col('price'))     { <th></th> }
+              @if (!showAll && col('bid'))       { <th></th> }
+              @if (!showAll && col('ask'))       { <th></th> }
+              @if (!showAll) { <th></th> }
+              @if (!showAll && col('change'))    { <th></th> }
+              @if (!showAll && col('changePct')) { <th></th> }
+              @if (!showAll && col('high'))      { <th></th> }
+              @if (!showAll && col('low'))       { <th></th> }
+            </tr>
           </thead>
           <tbody>
             @for (i of cfdInstruments(); track i.symbol) {
@@ -241,7 +454,6 @@
                 @if (showAll)  { <td class="col-expand"><button class="expand-btn" (click)="toggleRow(i.symbol)">{{ isExpanded(i.symbol) ? '▼' : '▶' }}</button></td> }
                 <td class="symbol">{{ i.symbol }}</td>
                 <td>{{ i.name }}</td>
-                <td>{{ i.currency }}</td>
                 @if (!showAll && col('price'))     { <td class="num">{{ i.price | priceFormat:i.tickSize }}</td> }
                 @if (!showAll && col('bid'))       { <td class="num">{{ i.bid | priceFormat:i.tickSize }}</td> }
                 @if (!showAll && col('ask'))       { <td class="num">{{ i.ask | priceFormat:i.tickSize }}</td> }
