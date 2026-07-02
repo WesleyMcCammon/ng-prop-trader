@@ -27,16 +27,28 @@ export class HomeComponent implements OnInit, OnDestroy {
   error      = this.dataService.error;
   posts      = this.dataService.posts;
 
-  featured   = computed(() => this.posts().slice(0, 1));
-  topStories = computed(() => this.posts().slice(1, 9));
-  latest     = computed(() => this.posts().slice(9, 15));
-  opinion    = computed(() => this.posts().slice(15, 18));
+  featured = computed(() => this.posts().slice(0, 1));
 
   pinnedInstruments = computed(() => {
     const symbols = this.pinService.pinnedSymbols();
     const items   = this.instrumentService.instruments().filter(i => symbols.has(i.symbol));
-    return this.pinService.applyOrder(items).slice(0, 5);
+    return this.pinService.applyOrder(items).slice(0, 4);
   });
+
+  fillerStories = computed(() => {
+    const pinned = this.pinnedInstruments().length;
+    if (pinned === 0) return [];
+    const needed = Math.max(0, 4 - pinned);
+    return this.posts().slice(1, 1 + needed);
+  });
+
+  topStories = computed(() => {
+    const offset = this.fillerStories().length;
+    return this.posts().slice(1 + offset, 9);
+  });
+
+  latest  = computed(() => this.posts().slice(9, 15));
+  opinion = computed(() => this.posts().slice(15, 18));
 
 
   ngOnInit(): void {

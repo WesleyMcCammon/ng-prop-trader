@@ -5,8 +5,11 @@
 
 .pinned-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
-  gap: 0.75rem;
+  grid-template-columns: 1fr;
+  gap: var(--space-4);
+
+  @media (min-width: 480px)  { grid-template-columns: repeat(2, 1fr); }
+  @media (min-width: 1024px) { grid-template-columns: repeat(4, 1fr); }
 }
 
 /* ── Ticker bar ─────────────────────────────────────── */

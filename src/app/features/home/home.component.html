@@ -45,13 +45,27 @@
         </section>
       }
 
-      <!-- Pinned instruments -->
+      <!-- Pinned instruments + filler stories -->
       @if (pinnedInstruments().length > 0) {
         <section class="section pinned-section">
           <h2 class="section-title">Markets</h2>
           <div class="pinned-grid">
             @for (i of pinnedInstruments(); track i.symbol) {
               <app-instrument-card [instrument]="i" [showType]="true" [showPin]="false" />
+            }
+            @for (post of fillerStories(); track post.id) {
+              <article class="story-card">
+                <div class="placeholder-img card-img"></div>
+                <div class="card-body">
+                  <span class="tag tag--sm">Markets</span>
+                  <h3 class="card-title">{{ post.title | titlecase }}</h3>
+                  <p class="card-excerpt">{{ excerpt(post.body) }}</p>
+                  <div class="card-meta">
+                    <span class="author">Staff</span>
+                    <time>Jun 29</time>
+                  </div>
+                </div>
+              </article>
             }
           </div>
         </section>
