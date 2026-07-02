@@ -1,13 +1,13 @@
-import { Component, Input, OnDestroy, OnInit, inject, signal, computed } from '@angular/core';
+﻿import { Component, Input, OnDestroy, OnInit, inject, signal, computed } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
-import { InstrumentService } from '../../../core/services/instrument.service';
-import { CategoryService } from '../../../core/services/category.service';
-import { PriceFeedService } from '../../../core/services/price-feed.service';
-import { InstrumentSelectionService } from '../../../core/services/instrument-selection.service';
-import { InstrumentCategory } from '../../../shared/model/instrument.model';
-import { PriceFormatPipe } from '../../../shared/pipes/price-format.pipe';
+import { InstrumentService } from '../../core/services/instrument.service';
+import { CategoryService } from '../../core/services/category.service';
+import { PriceFeedService } from '../../core/services/price-feed.service';
+import { InstrumentSelectionService } from '../../core/services/instrument-selection.service';
+import { InstrumentCategory } from '../../shared/model/instrument.model';
+import { PriceFormatPipe } from '../../shared/pipes/price-format.pipe';
 
 type SortDir = 'asc' | 'desc';
 

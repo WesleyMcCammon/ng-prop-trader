@@ -1,5 +1,4 @@
 import { Routes } from '@angular/router';
-import { adminGuard } from './core/guards/admin.guard';
 
 export const routes: Routes = [
   {
@@ -28,23 +27,10 @@ export const routes: Routes = [
       import('./features/news-alerts/news-alerts.component').then(m => m.NewsAlertsComponent)
   },
   {
-    path: 'admin',
-    canActivate: [adminGuard],
-    loadComponent: () =>
-      import('./features/admin/admin.component').then(m => m.AdminComponent)
-  },
-  {
-    path: 'admin/instruments',
-    canActivate: [adminGuard],
+    path: 'instruments',
     data: { showAll: false },
     loadComponent: () =>
-      import('./features/admin/instruments/instruments.component').then(m => m.InstrumentsComponent)
-  },
-  {
-    path: 'instruments',
-    data: { showAll: true },
-    loadComponent: () =>
-      import('./features/admin/instruments/instruments.component').then(m => m.InstrumentsComponent)
+      import('./features/instruments/instruments.component').then(m => m.InstrumentsComponent)
   },
   {
     path: 'indicators',
