@@ -21,16 +21,6 @@
       <a routerLink="/login" class="btn btn--primary">Log In</a>
     </div> -->
 
-    <!-- Category nav -->
-    <nav class="category-nav" aria-label="Category navigation">
-      @for (cat of categories; track cat.label) {
-        @if (cat.route) {
-          <a class="cat-btn cat-btn--link" [routerLink]="cat.route">{{ cat.label }}</a>
-        } @else {
-          <button class="cat-btn">{{ cat.label }}</button>
-        }
-      }
-    </nav>
 
     @if (loading()) {
       <app-spinner label="Loading stories…" />
