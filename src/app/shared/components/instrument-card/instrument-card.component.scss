@@ -1,4 +1,9 @@
-﻿.instrument-card {
+﻿@keyframes card-exit {
+  from { transform: translateY(0)    scale(1);    opacity: 1; }
+  to   { transform: translateY(20px) scale(0.93); opacity: 0; }
+}
+
+.instrument-card {
   background: var(--color-surface);
   border: 1px solid var(--color-border);
   border-radius: 10px;
@@ -11,6 +16,11 @@
   &:hover {
     border-color: var(--color-primary);
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.07);
+  }
+
+  &.card--unpinning {
+    animation: card-exit 260ms cubic-bezier(0.4, 0, 1, 1) forwards;
+    pointer-events: none;
   }
 }
 

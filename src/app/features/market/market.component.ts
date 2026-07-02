@@ -9,6 +9,7 @@ import { InstrumentSelectionService } from '../../core/services/instrument-selec
 import { FuturesContract, InstrumentCategory } from '../../shared/model/instrument.model';
 import { InstrumentCardComponent } from '../../shared/components/instrument-card/instrument-card.component';
 import { PinnedInstrumentsComponent } from './pinned-instruments/pinned-instruments.component';
+import { PinService } from '../../core/services/pin.service';
 
 const STORAGE_VIEW_MODE     = 'mw.viewMode';
 const STORAGE_ORDER_FUTURES = 'mw.order.futures';
@@ -42,7 +43,8 @@ export class MarketComponent implements OnDestroy {
   private categoryService    = inject(CategoryService);
   private priceFeed          = inject(PriceFeedService);
   private selectionService   = inject(InstrumentSelectionService);
-
+  readonly pinService      = inject(PinService);
+  
   instruments = this.instrumentService.instruments;
 
   readonly futuresCategories: InstrumentCategory[] = this.categoryService.byType('futures');

@@ -27,6 +27,11 @@ export class PinService {
   readonly pinnedOrder   = signal<string[]>(loadOrder());
   readonly count         = computed(() => this.pinnedSymbols().size);
 
+  // Animation coordination: set in InstrumentCardComponent before toggling a pin;
+  // PinnedInstrumentsComponent reads these to FLIP-animate the entering card.
+  readonly justPinned = signal<{ symbol: string; id: number } | null>(null);
+  pendingSourceRect: DOMRect | null = null;
+
   constructor() {
     effect(() => localStorage.setItem(STORAGE_PINS,  JSON.stringify([...this.pinnedSymbols()])));
     effect(() => localStorage.setItem(STORAGE_ORDER, JSON.stringify(this.pinnedOrder())));

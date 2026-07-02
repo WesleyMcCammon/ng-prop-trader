@@ -17,6 +17,7 @@ export class InstrumentCardComponent {
   @Input() showType       = false;
   @Input() showPin        = true;
   @Input() hideAllLevels  = false;
+  @Input() animateUnpin   = false;
 
   readonly hideLevels = signal(false);
 
@@ -27,5 +28,24 @@ export class InstrumentCardComponent {
     return this.indicatorService
       .getActiveLevelsForInstrument(this.instrument.symbol, this.instrument.bid)
       .slice(0, 3);
+  }
+
+  onPinClick(event: Event): void {
+    const cardEl = (event.currentTarget as HTMLElement).closest('.instrument-card') as HTMLElement;
+
+    if (!this.pinService.isPinned(this.instrument.symbol)) {
+      if (cardEl) {
+        this.pinService.pendingSourceRect = cardEl.getBoundingClientRect();
+        this.pinService.justPinned.set({ symbol: this.instrument.symbol, id: Date.now() });
+      }
+      this.pinService.toggle(this.instrument.symbol);
+    } else if (this.animateUnpin && cardEl) {
+      cardEl.classList.add('card--unpinning');
+      cardEl.addEventListener('animationend', () => {
+        this.pinService.toggle(this.instrument.symbol);
+      }, { once: true });
+    } else {
+      this.pinService.toggle(this.instrument.symbol);
+    }
   }
 }
