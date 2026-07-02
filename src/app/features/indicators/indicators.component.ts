@@ -1,7 +1,7 @@
 ﻿import { Component, inject, signal } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { RouterLink } from '@angular/router';
-import { IndicatorService } from '../../../core/services/indicator.service';
+import { IndicatorService } from '../../core/services/indicator.service';
 
 interface IndicatorLevel {
   id: string;

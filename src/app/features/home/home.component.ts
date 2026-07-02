@@ -40,12 +40,13 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   readonly categories: Array<{ label: string; route?: string }> = [
     { label: 'Markets', route: '/market' },
-    { label: 'Instruments', route: '/instruments' },
-    { label: 'Economy' },
-    { label: 'Finance' },
-    { label: 'World' },
-    { label: 'Politics' },
-    { label: 'News Alerts', route: '/news-alerts' }
+    { label: 'Instruments', route: '/instruments' },    
+    { label: 'News Alerts', route: '/news-alerts' },
+    { label: 'Indicators', route: '/indicators' },
+    // { label: 'Economy' },
+    // { label: 'Finance' },
+    // { label: 'World' },
+    // { label: 'Politics' },
   ];
 
   ngOnInit(): void {
