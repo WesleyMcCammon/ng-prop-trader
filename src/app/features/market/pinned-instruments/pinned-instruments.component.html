@@ -6,7 +6,7 @@
     </div>
     <div class="pinned-grid" cdkDropList [cdkDropListData]="orderedPinned()" (cdkDropListDropped)="onDrop($event)">
       @for (i of orderedPinned(); track i.symbol) {
-        <app-instrument-card [instrument]="i" [showType]="true" [hideAllLevels]="hideAllLevels" [animateUnpin]="true" [attr.data-symbol]="i.symbol" cdkDrag />
+        <app-instrument-card [instrument]="i" [showType]="true" [showExpand]="true" [hideAllLevels]="hideAllLevels" [animateUnpin]="true" [attr.data-symbol]="i.symbol" cdkDrag />
       }
     </div>
   </section>

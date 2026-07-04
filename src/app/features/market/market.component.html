@@ -29,7 +29,7 @@
       </div>
       <div class="cards-grid" cdkDropList [cdkDropListData]="orderedAll()" (cdkDropListDropped)="onAllDrop($event)">
         @for (i of orderedAll(); track i.symbol) {
-        <app-instrument-card [instrument]="i" [showType]="true" [hideAllLevels]="hideAllLevels()" cdkDrag />
+        <app-instrument-card [instrument]="i" [showType]="true" [showExpand]="true" [hideAllLevels]="hideAllLevels()" cdkDrag />
         }
       </div>
     </section>
@@ -51,7 +51,7 @@
         (cdkDropListDropped)="onFuturesDrop($event)">
         @for (i of orderedFutures(); track i.symbol) {
           @if(!pinService.isPinned(i.symbol)) {
-            <app-instrument-card [instrument]="i" [hideAllLevels]="hideAllLevels()" cdkDrag />
+            <app-instrument-card [instrument]="i" [showExpand]="true" [hideAllLevels]="hideAllLevels()" cdkDrag />
           }
         }
       </div>
@@ -72,7 +72,7 @@
       @if (showForex()) {
       <div class="cards-grid" cdkDropList [cdkDropListData]="orderedForex()" (cdkDropListDropped)="onForexDrop($event)">
         @for (i of orderedForex(); track i.symbol) {
-        <app-instrument-card [instrument]="i" [hideAllLevels]="hideAllLevels()" cdkDrag />
+        <app-instrument-card [instrument]="i" [showExpand]="true" [hideAllLevels]="hideAllLevels()" cdkDrag />
         }
       </div>
       }
@@ -92,7 +92,7 @@
       @if (showCfds()) {
       <div class="cards-grid" cdkDropList [cdkDropListData]="orderedCfds()" (cdkDropListDropped)="onCfdsDrop($event)">
         @for (i of orderedCfds(); track i.symbol) {
-        <app-instrument-card [instrument]="i" [hideAllLevels]="hideAllLevels()" cdkDrag />
+        <app-instrument-card [instrument]="i" [showExpand]="true" [hideAllLevels]="hideAllLevels()" cdkDrag />
         }
       </div>
       }

@@ -1,11 +1,45 @@
-<div class="instrument-card">
+<ng-template #levelsListTpl>
+  <div class="levels-list">
+    <div class="level-row level-row--header">
+      <span class="level-line1">
+        <span>Indicator</span>
+        <span>Level</span>
+      </span>
+      <span class="level-line2">
+        <span>Value</span>
+        <span>Δ Bid</span>
+      </span>
+    </div>
+    @for (lv of activeLevels(); track lv.levelId) {
+      <div class="level-row">
+        <span class="level-line1">
+          <span class="level-group">{{ lv.groupName }}</span>
+          <span class="level-name">{{ lv.label }}</span>
+        </span>
+        <span class="level-line2">
+          <span class="level-value">{{ lv.value | priceFormat:instrument.tickSize }}</span>
+          <span class="level-delta" [class.positive]="lv.delta > 0" [class.negative]="lv.delta < 0">
+            {{ lv.delta > 0 ? '+' : '' }}{{ lv.delta | priceFormat:instrument.tickSize }}
+          </span>
+        </span>
+      </div>
+    }
+  </div>
+</ng-template>
+
+<div class="instrument-card" [class.instrument-card--expanded]="expandedLayout()">
   <div class="card-header">
     <span class="symbol">{{ instrument.symbol }}</span>
     <span class="card-header-right">
       @if (showType) {
         <span class="type-badge type-badge--{{ instrument.type }}">{{ instrument.type }}</span>
       }
-      @if (showPin) {
+      @if (showExpand) {
+        <button class="expand-btn" [class.expand-btn--active]="expanded()" (click)="toggleExpand($event)">
+          {{ expanded() ? 'COLLAPSE' : 'EXPAND' }}
+        </button>
+      }
+      @if (showPin && !expandedLayout()) {
         <button class="pin-btn" [class.pin-btn--active]="pinService.isPinned(instrument.symbol)" (click)="onPinClick($event)" [title]="pinService.isPinned(instrument.symbol) ? 'Unpin' : 'Pin'">
           {{ pinService.isPinned(instrument.symbol) ? 'UNPIN' : 'PIN' }}
         </button>
@@ -13,56 +47,92 @@
     </span>
   </div>
   <div class="card-name">{{ instrument.name }}</div>
-  <div class="card-data">
-    <div class="data-item">
-      <span class="data-label">Bid</span>
-      <span class="data-value">{{ instrument.bid | priceFormat:instrument.tickSize }}</span>
+  <div class="card-data-row" [class.card-data-row--expanded]="expandedLayout()">
+    <div class="card-data">
+      <div class="data-item">
+        <span class="data-label">Bid</span>
+        <span class="data-value">{{ instrument.bid | priceFormat:instrument.tickSize }}</span>
+      </div>
+      <div class="data-item">
+        <span class="data-label">Ask</span>
+        <span class="data-value">{{ instrument.ask | priceFormat:instrument.tickSize }}</span>
+      </div>
+      <div class="data-item data-item--change">
+        <span class="data-label">Chg %</span>
+        <span class="data-value" [class.positive]="instrument.changePct >= 0" [class.negative]="instrument.changePct < 0">
+          {{ instrument.changePct >= 0 ? '+' : '' }}{{ instrument.changePct | number:'1.2-2' }}%
+        </span>
+      </div>
     </div>
-    <div class="data-item">
-      <span class="data-label">Ask</span>
-      <span class="data-value">{{ instrument.ask | priceFormat:instrument.tickSize }}</span>
-    </div>
-    <div class="data-item data-item--change">
-      <span class="data-label">Chg %</span>
-      <span class="data-value" [class.positive]="instrument.changePct >= 0" [class.negative]="instrument.changePct < 0">
-        {{ instrument.changePct >= 0 ? '+' : '' }}{{ instrument.changePct | number:'1.2-2' }}%
-      </span>
-    </div>
-  </div>
-
-  @if (activeLevels().length > 0) {
-    <div class="levels-footer">
-      <button class="levels-toggle-btn" (click)="hideLevels.set(!hideLevels())">
-        Levels {{ (hideLevels() || hideAllLevels) ? '▸' : '▾' }}
-      </button>
-    </div>
-    @if (!hideLevels() && !hideAllLevels) {
-      <div class="levels-list">
-        <div class="level-row level-row--header">
-          <span class="level-line1">
-            <span>Indicator</span>
-            <span>Level</span>
-          </span>
-          <span class="level-line2">
-            <span>Value</span>
-            <span>Δ Bid</span>
-          </span>
-        </div>
-        @for (lv of activeLevels(); track lv.levelId) {
-          <div class="level-row">
-            <span class="level-line1">
-              <span class="level-group">{{ lv.groupName }}</span>
-              <span class="level-name">{{ lv.label }}</span>
-            </span>
-            <span class="level-line2">
-              <span class="level-value">{{ lv.value | priceFormat:instrument.tickSize }}</span>
-              <span class="level-delta" [class.positive]="lv.delta > 0" [class.negative]="lv.delta < 0">
-                {{ lv.delta > 0 ? '+' : '' }}{{ lv.delta | priceFormat:instrument.tickSize }}
-              </span>
-            </span>
-          </div>
-        }
+    @if (expandedLayout()) {
+      <div class="card-data-placeholder">
+        <span class="card-data-placeholder-label">Coming soon</span>
+      </div>
+      <div class="card-data-placeholder">
+        <span class="card-data-placeholder-label">Coming soon</span>
       </div>
     }
+  </div>
+
+  @if (!expandedLayout()) {
+    @if (activeLevels().length > 0) {
+      <div class="levels-footer">
+        <button class="levels-toggle-btn" (click)="hideLevels.set(!hideLevels())">
+          Levels {{ (hideLevels() || hideAllLevels) ? '▸' : '▾' }}
+        </button>
+      </div>
+      @if (!hideLevels() && !hideAllLevels) {
+        <ng-container *ngTemplateOutlet="levelsListTpl"></ng-container>
+      }
+    }
+  } @else {
+    <div class="expanded-columns">
+      <div class="expanded-col expanded-col--levels">
+        <h3 class="expanded-col-title">Indicator Levels</h3>
+        @if (activeLevels().length > 0) {
+          <ng-container *ngTemplateOutlet="levelsListTpl"></ng-container>
+        } @else {
+          <p class="expanded-empty">No active levels for this instrument.</p>
+        }
+      </div>
+      <div class="expanded-col expanded-col--details">
+        <h3 class="expanded-col-title">Instrument Details</h3>
+        <div class="detail-grid">
+          <div class="detail-item"><span class="detail-label">Exchange</span><span>{{ instrument.exchange }}</span></div>
+          <div class="detail-item"><span class="detail-label">Currency</span><span>{{ instrument.currency }}</span></div>
+          <div class="detail-item"><span class="detail-label">Contract Size</span><span>{{ instrument.contractSize | number }}</span></div>
+          <div class="detail-item"><span class="detail-label">Tick Size</span><span>{{ instrument.tickSize }}</span></div>
+          <div class="detail-item"><span class="detail-label">Tick Value</span><span>{{ instrument.tickValue | currency }}</span></div>
+          <div class="detail-item"><span class="detail-label">Open</span><span>{{ instrument.open | priceFormat:instrument.tickSize }}</span></div>
+          <div class="detail-item"><span class="detail-label">High</span><span>{{ instrument.high | priceFormat:instrument.tickSize }}</span></div>
+          <div class="detail-item"><span class="detail-label">Low</span><span>{{ instrument.low | priceFormat:instrument.tickSize }}</span></div>
+          <div class="detail-item"><span class="detail-label">Volume</span><span>{{ instrument.volume | number }}</span></div>
+        </div>
+
+        <div class="expanded-placeholder expanded-placeholder--chart">
+          <h4 class="expanded-placeholder-title">Chart</h4>
+          <p class="expanded-placeholder-body">Coming soon</p>
+        </div>
+        <div class="expanded-placeholder">
+          <h4 class="expanded-placeholder-title">Top Stories</h4>
+          <p class="expanded-placeholder-body">Coming soon</p>
+        </div>
+        <div class="expanded-placeholder">
+          <h4 class="expanded-placeholder-title">Daily Analysis</h4>
+          <p class="expanded-placeholder-body">Coming soon</p>
+        </div>
+        <div class="expanded-placeholder">
+          <h4 class="expanded-placeholder-title">Intraday Analysis</h4>
+          <p class="expanded-placeholder-body">Coming soon</p>
+        </div>
+        <div class="expanded-placeholder">
+          <h4 class="expanded-placeholder-title">Profit &amp; Loss Calculator</h4>
+          <p class="expanded-placeholder-body">Coming soon</p>
+        </div>
+      </div>
+    </div>
   }
 </div>
+@if (expandedLayout()) {
+  <div class="expand-backdrop" [class.expand-backdrop--visible]="expanded()" (click)="toggleExpand($event)"></div>
+}
