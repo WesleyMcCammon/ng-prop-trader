@@ -3,18 +3,18 @@
     <div class="level-row level-row--header">
       <span class="level-line1">
         <span>Indicator</span>
-        <span>Level</span>
+        <span></span>
       </span>
       <span class="level-line2">
-        <span>Value</span>
-        <span>Δ Bid</span>
+        <span>Price Level</span>
+        <span>Difference</span>
       </span>
     </div>
     @for (lv of activeLevels(); track lv.levelId) {
       <div class="level-row">
         <span class="level-line1">
           <span class="level-group" [title]="lv.groupDescription">{{ lv.groupName }}</span>
-          <span class="level-name" [title]="lv.label">{{ expandedLayout() && lv.description ? lv.description : lv.label }}</span>
+          <span class="level-name" [title]="lv.label">{{ lv.description || lv.label }}</span>
         </span>
         <span class="level-line2">
           <span class="level-value">{{ lv.value | priceFormat:instrument.tickSize }}</span>

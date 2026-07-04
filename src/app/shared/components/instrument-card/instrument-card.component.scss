@@ -40,12 +40,6 @@
     .level-name  { font-size: 0.9rem; font-weight: 500; }
     .level-value,
     .level-delta { font-size: 1.05rem; }
-
-    .level-row:not(.level-row--header) .level-line1 {
-      flex-direction: column;
-      align-items: flex-start;
-      gap: 0.15rem;
-    }
   }
 }
 
@@ -321,7 +315,8 @@
 
 
 .levels-footer {
-  display: flex;
+  // display: flex;
+  display: none;
   justify-content: flex-end;
   border-top: 1px solid var(--color-border);
   padding-top: 0.35rem;
@@ -350,8 +345,10 @@
 
 .level-row {
   display: flex;
-  flex-direction: column;
-  gap: 0.1rem;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
   padding: 0.3rem 0;
   font-variant-numeric: tabular-nums;
 
@@ -371,6 +368,12 @@
       color: var(--color-text-muted);
     }
   }
+
+  &:not(.level-row--header) .level-line1 {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.15rem;
+  }
 }
 
 .level-line1,
@@ -379,6 +382,18 @@
   justify-content: space-between;
   align-items: baseline;
   gap: 0.5rem;
+}
+
+.level-line1 {
+  flex: 1;
+  min-width: 0;
+}
+
+.level-line2 {
+  flex-direction: column;
+  align-items: flex-end;
+  flex-shrink: 0;
+  gap: 0.15rem;
 }
 
 .level-group {
