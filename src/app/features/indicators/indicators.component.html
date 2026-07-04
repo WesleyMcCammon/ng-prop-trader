@@ -15,7 +15,7 @@
             type="checkbox"
             [checked]="isGroupEnabled(group.id)"
             (change)="toggleGroupEnabled(group)" />
-          <span class="ind-badge" [class.ind-badge--disabled]="!isGroupEnabled(group.id)">{{ group.name }}</span>
+          <span class="ind-badge" [class.ind-badge--disabled]="!isGroupEnabled(group.id)" [title]="group.description">{{ group.name }}</span>
           <span class="count">{{ activeInGroup(group) }} / {{ group.levels.length }}</span>
           @if (isGroupEnabled(group.id)) {
             <button
@@ -48,7 +48,7 @@
                     <td class="col-icon">
                       <span class="status-icon" [class.status-icon--active]="isActive(level.id)">✓</span>
                     </td>
-                    <td class="level-label">{{ level.name }}</td>
+                    <td class="level-label" [title]="level.description">{{ level.name }}</td>
                   </tr>
                 }
               </tbody>

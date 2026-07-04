@@ -7,7 +7,9 @@ export type { InstrumentIndicators, PivotLevels, VWAPLevels, VolumeProfile, Open
 export interface ActiveLevelDisplay {
   levelId: string;
   groupName: string;
+  groupDescription: string;
   label: string;
+  description: string;
   value: number;
   delta: number;
 }
@@ -37,6 +39,53 @@ const LEVEL_GROUPS: Record<string, string> = {
   'pd.lon.open':   'Prev Day', 'pd.lon.high':   'Prev Day', 'pd.lon.low':   'Prev Day', 'pd.lon.close':   'Prev Day',
   'pd.ny.open':    'Prev Day', 'pd.ny.high':    'Prev Day', 'pd.ny.low':    'Prev Day', 'pd.ny.close':    'Prev Day',
   'wk.open': 'Weekly', 'wk.high': 'Weekly', 'wk.low': 'Weekly', 'wk.close': 'Weekly',
+};
+
+const GROUP_DESCRIPTIONS: Record<string, string> = {
+  'Pivots':      'Classic floor-trader pivot points calculated from the prior session’s high, low, and close.',
+  'VWAP':        'Volume-weighted average price and standard deviation bands for the current session.',
+  'Vol Profile': 'Price levels where the most trading volume occurred during the session.',
+  'Opening Rng': 'The high and low of the opening range window at the start of the session.',
+  'Prev Day':    'Open, high, low, and close from the prior session’s Asia, London, and New York windows.',
+  'Weekly':      'Open, high, low, and close from the prior trading week.',
+};
+
+const LEVEL_DESCRIPTIONS: Record<string, string> = {
+  'pivots.r3':    'Third resistance level, furthest above the pivot.',
+  'pivots.r2':    'Second resistance level above the pivot.',
+  'pivots.r1':    'First resistance level above the pivot.',
+  'pivots.pivot': 'Central pivot point, the average of the prior session’s high, low, and close.',
+  'pivots.s1':    'First support level below the pivot.',
+  'pivots.s2':    'Second support level below the pivot.',
+  'pivots.s3':    'Third support level, furthest below the pivot.',
+  'vwap.sd3': 'VWAP plus three standard deviations.',
+  'vwap.sd2': 'VWAP plus two standard deviations.',
+  'vwap.sd1': 'VWAP plus one standard deviation.',
+  'vwap.vwap': 'Volume-weighted average price for the current session.',
+  'vwap.sm1': 'VWAP minus one standard deviation.',
+  'vwap.sm2': 'VWAP minus two standard deviations.',
+  'vwap.sm3': 'VWAP minus three standard deviations.',
+  'vp.vah': 'Value Area High — top of the range containing the bulk of traded volume.',
+  'vp.poc': 'Point of Control — the single price level with the highest traded volume.',
+  'vp.val': 'Value Area Low — bottom of the range containing the bulk of traded volume.',
+  'or.high': 'High of the opening range window.',
+  'or.low':  'Low of the opening range window.',
+  'pd.asia.open':  'Opening price during the prior session’s Asia trading window.',
+  'pd.asia.high':  'High price during the prior session’s Asia trading window.',
+  'pd.asia.low':   'Low price during the prior session’s Asia trading window.',
+  'pd.asia.close': 'Closing price during the prior session’s Asia trading window.',
+  'pd.lon.open':   'Opening price during the prior session’s London trading window.',
+  'pd.lon.high':   'High price during the prior session’s London trading window.',
+  'pd.lon.low':    'Low price during the prior session’s London trading window.',
+  'pd.lon.close':  'Closing price during the prior session’s London trading window.',
+  'pd.ny.open':    'Opening price during the prior session’s New York trading window.',
+  'pd.ny.high':    'High price during the prior session’s New York trading window.',
+  'pd.ny.low':     'Low price during the prior session’s New York trading window.',
+  'pd.ny.close':   'Closing price during the prior session’s New York trading window.',
+  'wk.open':  'Opening price of the prior trading week.',
+  'wk.high':  'High price of the prior trading week.',
+  'wk.low':   'Low price of the prior trading week.',
+  'wk.close': 'Closing price of the prior trading week.',
 };
 
 const STORAGE_GROUPS = 'mw.activeGroups';
@@ -140,13 +189,18 @@ export class IndicatorService {
     const values = LEVEL_VALUES.get(symbol);
     if (!values) return [];
     return [...this.activeLevels()]
-      .map(levelId => ({
-        levelId,
-        groupName: LEVEL_GROUPS[levelId] ?? '',
-        label: LEVEL_LABELS[levelId] ?? levelId,
-        value: values[levelId] ?? 0,
-        delta: (values[levelId] ?? 0) - bid,
-      }))
+      .map(levelId => {
+        const groupName = LEVEL_GROUPS[levelId] ?? '';
+        return {
+          levelId,
+          groupName,
+          groupDescription: GROUP_DESCRIPTIONS[groupName] ?? '',
+          label: LEVEL_LABELS[levelId] ?? levelId,
+          description: LEVEL_DESCRIPTIONS[levelId] ?? '',
+          value: values[levelId] ?? 0,
+          delta: (values[levelId] ?? 0) - bid,
+        };
+      })
       .sort((a, b) => Math.abs(a.delta) - Math.abs(b.delta));
   }
 }
