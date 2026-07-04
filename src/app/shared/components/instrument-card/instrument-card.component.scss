@@ -37,9 +37,15 @@
     .data-label  { font-size: 0.85rem; }
     .data-value  { font-size: 2rem; }
     .level-group { font-size: 0.85rem; }
-    .level-name  { font-size: 1rem; }
+    .level-name  { font-size: 0.9rem; font-weight: 500; }
     .level-value,
     .level-delta { font-size: 1.05rem; }
+
+    .level-row:not(.level-row--header) .level-line1 {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.15rem;
+    }
   }
 }
 

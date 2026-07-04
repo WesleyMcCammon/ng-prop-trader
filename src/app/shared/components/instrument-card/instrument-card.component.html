@@ -14,7 +14,7 @@
       <div class="level-row">
         <span class="level-line1">
           <span class="level-group" [title]="lv.groupDescription">{{ lv.groupName }}</span>
-          <span class="level-name" [title]="lv.description">{{ lv.label }}</span>
+          <span class="level-name" [title]="lv.label">{{ expandedLayout() && lv.description ? lv.description : lv.label }}</span>
         </span>
         <span class="level-line2">
           <span class="level-value">{{ lv.value | priceFormat:instrument.tickSize }}</span>
