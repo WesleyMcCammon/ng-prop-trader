@@ -7,7 +7,7 @@
       }
       @if (showPin) {
         <button class="pin-btn" [class.pin-btn--active]="pinService.isPinned(instrument.symbol)" (click)="onPinClick($event)" [title]="pinService.isPinned(instrument.symbol) ? 'Unpin' : 'Pin'">
-          {{ pinService.isPinned(instrument.symbol) ? '📍' : '📌' }}
+          {{ pinService.isPinned(instrument.symbol) ? 'UNPIN' : 'PIN' }}
         </button>
       }
     </span>

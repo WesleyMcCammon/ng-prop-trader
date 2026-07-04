@@ -38,17 +38,27 @@
 }
 
 .pin-btn {
-  background: none;
-  border: none;
-  padding: 0;
+  background: var(--color-surface-alt, transparent);
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  padding: 0.1rem 0.4rem;
   cursor: pointer;
-  font-size: 0.75rem;
-  line-height: 1;
-  opacity: 0.25;
-  transition: opacity 0.15s;
+  font-size: 0.6rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  line-height: 1.4;
+  color: var(--color-text-muted);
+  opacity: 0.5;
+  transition: opacity 0.15s, color 0.15s, border-color 0.15s;
 
-  &:hover { opacity: 0.7; }
-  &--active { opacity: 1; }
+  &:hover { opacity: 1; }
+
+  &--active {
+    opacity: 1;
+    color: var(--color-primary);
+    border-color: var(--color-primary);
+  }
 }
 
 .symbol {
