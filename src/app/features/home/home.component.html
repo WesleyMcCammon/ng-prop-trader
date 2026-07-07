@@ -95,22 +95,47 @@
       <!-- Two-column: latest + opinion -->
       <div class="two-col-layout">
 
-        <!-- Latest articles -->
-        <section class="section" style="margin-top: 16px">
-          <h2 class="section-title">Latest</h2>
-          <div class="latest-list">
-            @for (post of latest(); track post.id) {
-              <article class="list-item">
-                <div class="placeholder-img list-img"></div>
-                <div class="list-body">
-                  <span class="tag tag--sm">Finance</span>
-                  <h3 class="list-title">{{ post.title | titlecase }}</h3>
-                  <p class="list-excerpt">{{ excerpt(post.body, 80) }}</p>
-                </div>
-              </article>
-            }
-          </div>
-        </section>
+        <div class="latest-column" style="margin-top: 16px">
+
+          <!-- Latest articles -->
+          <section class="section">
+            <h2 class="section-title">Latest</h2>
+            <div class="latest-list">
+              @for (post of latest(); track post.id) {
+                <article class="list-item">
+                  <div class="placeholder-img list-img"></div>
+                  <div class="list-body">
+                    <span class="tag tag--sm">Finance</span>
+                    <h3 class="list-title">{{ post.title | titlecase }}</h3>
+                    <p class="list-excerpt">{{ excerpt(post.body, 80) }}</p>
+                  </div>
+                </article>
+              }
+            </div>
+          </section>
+
+          <!-- More ads -->
+          <section class="section ad-banner-section">
+            <h2 class="section-title">More From Our Partners</h2>
+            <div class="ad-banner-list">
+              @for (ad of bannerAds; track ad.sponsor) {
+                <article class="ad-banner">
+                  <div class="ad-banner-media placeholder-img"></div>
+                  <div class="ad-banner-body">
+                    <div class="ad-banner-meta">
+                      <span class="ad-sponsor">{{ ad.sponsor }}</span>
+                      <span class="ad-badge ad-badge--static">Ad</span>
+                    </div>
+                    <h3 class="ad-banner-headline">{{ ad.headline }}</h3>
+                    <p class="ad-banner-text">{{ ad.body }}</p>
+                  </div>
+                  <a href="#" class="btn btn--primary ad-cta" (click)="$event.preventDefault()">{{ ad.cta }}</a>
+                </article>
+              }
+            </div>
+          </section>
+
+        </div>
 
         <!-- Sponsored -->
         <aside class="ads-sidebar" style="margin-top:16px">

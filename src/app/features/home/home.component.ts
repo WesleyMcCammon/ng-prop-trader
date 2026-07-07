@@ -37,6 +37,27 @@ const MOCK_ADS: MockAd[] = [
   }
 ];
 
+const MOCK_BANNER_ADS: MockAd[] = [
+  {
+    sponsor: 'NinjaTrader',
+    headline: 'Free Trading Simulator',
+    body: 'Practice risk-free with real-time market data before you trade live.',
+    cta: 'Download Free'
+  },
+  {
+    sponsor: 'TraderSync',
+    headline: 'Know Your Edge',
+    body: 'Automated trade journaling and analytics that show you what actually works.',
+    cta: 'Start Trial'
+  },
+  {
+    sponsor: 'Velocity VPS',
+    headline: '99.9% Uptime for Your Bots',
+    body: 'Ultra-low latency hosting built for algorithmic traders. 1ms to major exchanges.',
+    cta: 'Get Hosting'
+  }
+];
+
 @Component({
   selector: 'app-home',
   standalone: true,
@@ -78,6 +99,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   latest = computed(() => this.posts().slice(9, 15));
 
   readonly ads = MOCK_ADS;
+  readonly bannerAds = MOCK_BANNER_ADS;
 
 
   ngOnInit(): void {
