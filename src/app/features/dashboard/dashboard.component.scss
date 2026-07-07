@@ -61,8 +61,13 @@
   overflow-x: auto;
 }
 
+.col-instrument { width: 20%; }
+.col-level      { width: 16%; }
+
 .dashboard-table {
   width: 100%;
+  min-width: 1120px;
+  table-layout: fixed;
   border-collapse: collapse;
   font-size: 0.825rem;
   white-space: nowrap;
@@ -111,7 +116,6 @@
 
 .instrument-cell {
   position: relative;
-  min-width: 160px;
   padding-right: 3.25rem !important;
 }
 
@@ -145,20 +149,27 @@
   &--cfd     { background: #fce7f3; color: #be185d; }
 }
 
-/* ── Combined bid/ask + change cell ──────────────────── */
-.price-cell {
-  min-width: 120px;
+/* ── Combined bid/ask + change (part of instrument cell) ── */
+.price-line {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem;
+  color: var(--color-text);
+  margin-top: 0.3rem;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
 }
 
-.price-line {
-  color: var(--color-text);
+.price-value {
+  white-space: nowrap;
 }
 
 .change-line {
   text-align: right;
   font-size: 0.75rem;
   font-weight: 600;
-  margin-top: 0.15rem;
+  white-space: nowrap;
 
   &.positive { color: #16a34a; }
   &.negative { color: #dc2626; }
@@ -167,7 +178,6 @@
 /* ── Level columns (matches instrument-card levels list style) ── */
 .level-cell {
   white-space: normal;
-  min-width: 130px;
   border-left: 1px solid var(--color-border);
 }
 
@@ -190,6 +200,7 @@
   display: flex;
   flex-direction: row;
   align-items: baseline;
+  justify-content: space-between;
   gap: 0.35rem;
 }
 
@@ -214,6 +225,7 @@
 }
 
 .level-delta {
+  text-align: right;
   font-size: 0.75rem;
   font-weight: 700;
 

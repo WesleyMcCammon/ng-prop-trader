@@ -18,10 +18,15 @@
     } @else {
       <div class="table-wrap">
         <table class="dashboard-table">
+          <colgroup>
+            <col class="col-instrument" />
+            @for (idx of levelSlots; track idx) {
+              <col class="col-level" />
+            }
+          </colgroup>
           <thead>
             <tr>
               <th class="sortable" (click)="toggleSort()">Instrument <span class="sort-arrow">{{ sortDir() === 'asc' ? '▲' : '▼' }}</span></th>
-              <th class="num">Bid / Ask</th>
               @for (idx of levelSlots; track idx) {
                 <th></th>
               }
@@ -34,13 +39,11 @@
                   <span class="type-badge type-badge--{{ row.type }}">{{ row.type }}</span>
                   <div class="instrument-symbol">{{ row.symbol }}</div>
                   <div class="instrument-desc">{{ row.name }}</div>
-                </td>
-                <td class="num price-cell">
                   <div class="price-line">
-                    {{ row.bid | priceFormat:row.tickSize }} / {{ row.ask | priceFormat:row.tickSize }}
-                  </div>
-                  <div class="change-line" [class.positive]="row.changePct >= 0" [class.negative]="row.changePct < 0">
-                    {{ row.changePct >= 0 ? '+' : '' }}{{ row.changePct | number:'1.2-2' }}%
+                    <span class="price-value">{{ row.bid | priceFormat:row.tickSize }} / {{ row.ask | priceFormat:row.tickSize }}</span>
+                    <span class="change-line" [class.positive]="row.changePct >= 0" [class.negative]="row.changePct < 0">
+                      {{ row.changePct >= 0 ? '+' : '' }}{{ row.changePct | number:'1.2-2' }}%
+                    </span>
                   </div>
                 </td>
                 @for (idx of levelSlots; track idx) {
