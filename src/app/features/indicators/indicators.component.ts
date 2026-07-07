@@ -1,4 +1,4 @@
-﻿import { Component, inject, signal } from '@angular/core';
+﻿import { Component, computed, inject, signal } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { IndicatorService } from '../../core/services/indicator.service';
 import { AdSidebarComponent } from '../../shared/components/ad-sidebar/ad-sidebar.component';
@@ -37,10 +37,9 @@ interface IndicatorGroup {
   name: string;
   description: string;
   levels: IndicatorLevel[];
-  show: ReturnType<typeof signal<boolean>>;
 }
 
-const GROUPS_DEF: Omit<IndicatorGroup, 'show'>[] = [
+const GROUPS_DEF: IndicatorGroup[] = [
   {
     id: 'pivots',
     name: 'Pivots',
@@ -129,27 +128,39 @@ const GROUPS_DEF: Omit<IndicatorGroup, 'show'>[] = [
 })
 export class IndicatorsComponent {
   readonly svc = inject(IndicatorService);
-  readonly groups: IndicatorGroup[] = GROUPS_DEF.map(g => ({ ...g, show: signal(true) }));
+  readonly groups: IndicatorGroup[] = GROUPS_DEF;
   readonly ads = INDICATOR_ADS;
+
+  selectedGroupId = signal<string>(this.groups[0].id);
+
+  selectedGroup = computed(() =>
+    this.groups.find(g => g.id === this.selectedGroupId())
+  );
+
+  activeSummary = computed(() =>
+    this.groups
+      .map(group => ({ group, levels: group.levels.filter(l => this.isActive(l.id)) }))
+      .filter(entry => entry.levels.length > 0)
+  );
 
   constructor() {
     inject(Title).setTitle('Indicators – MarketWatch');
   }
 
-  isGroupEnabled(groupId: string): boolean {
-    return this.svc.isGroupEnabled(groupId);
+  selectGroup(groupId: string): void {
+    this.selectedGroupId.set(groupId);
   }
 
-  toggleGroupEnabled(group: IndicatorGroup): void {
-    this.svc.toggleGroupEnabled(group.id, group.levels.map(l => l.id));
+  isGroupSelected(groupId: string): boolean {
+    return this.selectedGroupId() === groupId;
   }
 
   isActive(levelId: string): boolean {
     return this.svc.isLevelActive(levelId);
   }
 
-  toggleLevel(groupId: string, levelId: string): void {
-    this.svc.toggleLevel(groupId, levelId);
+  toggleLevel(levelId: string): void {
+    this.svc.toggleLevel(levelId);
   }
 
   isGroupAllActive(group: IndicatorGroup): boolean {
@@ -157,7 +168,7 @@ export class IndicatorsComponent {
   }
 
   toggleGroup(group: IndicatorGroup): void {
-    this.svc.toggleGroupLevels(group.id, group.levels.map(l => l.id));
+    this.svc.toggleGroupLevels(group.levels.map(l => l.id));
   }
 
   activeInGroup(group: IndicatorGroup): number {

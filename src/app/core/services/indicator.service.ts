@@ -88,7 +88,6 @@ const LEVEL_DESCRIPTIONS: Record<string, string> = {
   'wk.close': 'Weekly Close',
 };
 
-const STORAGE_GROUPS = 'mw.activeGroups';
 const STORAGE_LEVELS = 'mw.activeLevels';
 
 function loadSet(key: string): Set<string> {
@@ -109,42 +108,19 @@ export class IndicatorService {
   readonly weekDates: string[] = INDICATORS[0]?.weeklyOHLC.map(w => w.weekOf) ?? [];
 
   // ── Selection state (shared with indicators admin and market overview) ──────
-  readonly activeGroups = signal<Set<string>>(loadSet(STORAGE_GROUPS));
   readonly activeLevels = signal<Set<string>>(loadSet(STORAGE_LEVELS));
   readonly totalActive  = computed(() => this.activeLevels().size);
 
   constructor() {
-    effect(() => localStorage.setItem(STORAGE_GROUPS, JSON.stringify([...this.activeGroups()])));
     effect(() => localStorage.setItem(STORAGE_LEVELS, JSON.stringify([...this.activeLevels()])));
   }
 
   // ── Selection methods ────────────────────────────────────────────────────────
-  isGroupEnabled(groupId: string): boolean {
-    return this.activeGroups().has(groupId);
-  }
-
-  toggleGroupEnabled(groupId: string, levelIds: string[]): void {
-    const enabling = !this.isGroupEnabled(groupId);
-    this.activeGroups.update(set => {
-      const next = new Set(set);
-      enabling ? next.add(groupId) : next.delete(groupId);
-      return next;
-    });
-    if (!enabling) {
-      this.activeLevels.update(set => {
-        const next = new Set(set);
-        levelIds.forEach(id => next.delete(id));
-        return next;
-      });
-    }
-  }
-
   isLevelActive(levelId: string): boolean {
     return this.activeLevels().has(levelId);
   }
 
-  toggleLevel(groupId: string, levelId: string): void {
-    if (!this.isGroupEnabled(groupId)) return;
+  toggleLevel(levelId: string): void {
     this.activeLevels.update(set => {
       const next = new Set(set);
       next.has(levelId) ? next.delete(levelId) : next.add(levelId);
@@ -157,8 +133,7 @@ export class IndicatorService {
     return levelIds.length > 0 && levelIds.every(id => active.has(id));
   }
 
-  toggleGroupLevels(groupId: string, levelIds: string[]): void {
-    if (!this.isGroupEnabled(groupId)) return;
+  toggleGroupLevels(levelIds: string[]): void {
     const selectAll = !this.isGroupAllActive(levelIds);
     this.activeLevels.update(set => {
       const next = new Set(set);

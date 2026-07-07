@@ -6,61 +6,70 @@
       <span class="total-active">{{ svc.totalActive() }} active</span>
     </div>
 
+    <!-- Selected levels summary -->
+    @if (activeSummary().length > 0) {
+      <div class="active-summary">
+        @for (entry of activeSummary(); track entry.group.id) {
+          <div class="summary-item">
+            <span class="summary-group-name">{{ entry.group.name }}:</span>
+            <span class="summary-levels">{{ entry.levels.map(l => l.name).join(', ') }}</span>
+          </div>
+        }
+      </div>
+    } @else {
+      <p class="no-selection">No indicator levels selected yet.</p>
+    }
+
     <div class="page-layout">
     <div class="page-main">
 
-    <div class="masonry-grid">
-    @for (group of groups; track group.id) {
-      <section class="indicator-section">
-        <div class="section-header">
-          <input
-            class="group-checkbox"
-            type="checkbox"
-            [checked]="isGroupEnabled(group.id)"
-            (change)="toggleGroupEnabled(group)" />
-          <span class="ind-badge" [class.ind-badge--disabled]="!isGroupEnabled(group.id)" [title]="group.description">{{ group.name }}</span>
-          <span class="count">{{ activeInGroup(group) }} / {{ group.levels.length }}</span>
-          @if (isGroupEnabled(group.id)) {
+    <div class="indicators-split">
+
+      <!-- Indicator list -->
+      <nav class="group-list">
+        @for (group of groups; track group.id) {
+          <button
+            type="button"
+            class="group-list-item"
+            [class.active]="isGroupSelected(group.id)"
+            (click)="selectGroup(group.id)">
+            <span class="group-list-name">{{ group.name }}</span>
+            <span class="group-list-count">{{ activeInGroup(group) }}/{{ group.levels.length }}</span>
+          </button>
+        }
+      </nav>
+
+      <!-- Levels for selected indicator -->
+      @if (selectedGroup(); as group) {
+        <section class="levels-panel">
+          <div class="levels-panel-header">
+            <div>
+              <h2 class="levels-panel-title">{{ group.name }}</h2>
+              <p class="group-description">{{ group.description }}</p>
+            </div>
             <button
               class="select-all-btn"
               [class.select-all-btn--active]="isGroupAllActive(group)"
               (click)="toggleGroup(group)">
               {{ isGroupAllActive(group) ? 'Deselect All' : 'Select All' }}
             </button>
-          }
-          <button class="collapse-btn" (click)="group.show.set(!group.show())">
-            {{ group.show() ? '▼' : '▶' }}
-          </button>
-        </div>
-
-        @if (group.show()) {
-          <div class="table-wrap">
-            <table class="ind-table">
-              <thead>
-                <tr>
-                  <th class="col-icon"></th>
-                  <th>Level</th>
-                </tr>
-              </thead>
-              <tbody>
-                @for (level of group.levels; track level.id) {
-                  <tr
-                    [class.row-active]="isActive(level.id)"
-                    [class.row-disabled]="!isGroupEnabled(group.id)"
-                    (click)="toggleLevel(group.id, level.id)">
-                    <td class="col-icon">
-                      <span class="status-icon" [class.status-icon--active]="isActive(level.id)">✓</span>
-                    </td>
-                    <td class="level-label" [title]="level.description">{{ level.name }}</td>
-                  </tr>
-                }
-              </tbody>
-            </table>
           </div>
-        }
-      </section>
-    }
-    </div><!-- /masonry-grid -->
+
+          <ul class="levels-list">
+            @for (level of group.levels; track level.id) {
+              <li
+                class="level-item"
+                [class.level-item--active]="isActive(level.id)"
+                (click)="toggleLevel(level.id)">
+                <span class="status-icon" [class.status-icon--active]="isActive(level.id)">✓</span>
+                <span class="level-label" [title]="level.description">{{ level.name }}</span>
+              </li>
+            }
+          </ul>
+        </section>
+      }
+
+    </div><!-- /indicators-split -->
 
     </div>
 
