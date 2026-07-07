@@ -257,12 +257,6 @@ export class InstrumentsComponent implements OnInit, OnDestroy {
     });
   }
 
-  instrumentSize(i: FuturesContract): string {
-    if (i.name.startsWith('Micro')) return 'Micro';
-    if (i.name.startsWith('E-mini')) return 'E-mini';
-    return 'Standard';
-  }
-
   uniqueVals(items: FuturesContract[], col: string): string[] {
     return [...new Set(items.map(i => this.fieldVal(i, col)))].sort((a, b) =>
       a.localeCompare(b, undefined, { numeric: true })
@@ -270,7 +264,6 @@ export class InstrumentsComponent implements OnInit, OnDestroy {
   }
 
   private fieldVal(i: FuturesContract, col: string): string {
-    if (col === 'size') return this.instrumentSize(i);
     return String((i as any)[col]);
   }
 

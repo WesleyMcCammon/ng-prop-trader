@@ -437,20 +437,6 @@
 .positive { color: #16a34a; }
 .negative { color: #dc2626; }
 
-.tier-badge {
-  display: inline-block;
-  padding: 0.1rem 0.45rem;
-  border-radius: 4px;
-  font-size: 0.65rem;
-  font-weight: 700;
-  letter-spacing: 0.03em;
-  white-space: nowrap;
-
-  &--e-mini   { background: #dbeafe; color: #1d4ed8; }
-  &--micro    { background: #ede9fe; color: #7c3aed; }
-  &--standard { background: var(--color-surface-2); color: var(--color-text-muted); }
-}
-
 .sort-arrow {
   font-size: 0.6rem;
   margin-left: 0.2rem;
