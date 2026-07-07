@@ -9,6 +9,34 @@ import { PinService } from '../../core/services/pin.service';
 import { PriceFeedService } from '../../core/services/price-feed.service';
 import { InstrumentCardComponent } from '../../shared/components/instrument-card/instrument-card.component';
 
+interface MockAd {
+  sponsor: string;
+  headline: string;
+  body: string;
+  cta: string;
+}
+
+const MOCK_ADS: MockAd[] = [
+  {
+    sponsor: 'FundedNext',
+    headline: 'Get Funded up to $200K',
+    body: 'Pass our challenge and trade with our capital. No risk to your own funds.',
+    cta: 'Start Challenge'
+  },
+  {
+    sponsor: 'TradingView',
+    headline: 'Chart Like a Pro',
+    body: 'Advanced charting tools trusted by millions of traders worldwide.',
+    cta: 'Try Free'
+  },
+  {
+    sponsor: 'Apex Capital',
+    headline: '90% Profit Split',
+    body: 'Keep more of what you earn with our industry-leading payout structure.',
+    cta: 'Learn More'
+  }
+];
+
 @Component({
   selector: 'app-home',
   standalone: true,
@@ -47,8 +75,9 @@ export class HomeComponent implements OnInit, OnDestroy {
     return this.posts().slice(1 + offset, 9);
   });
 
-  latest  = computed(() => this.posts().slice(9, 15));
-  opinion = computed(() => this.posts().slice(15, 18));
+  latest = computed(() => this.posts().slice(9, 15));
+
+  readonly ads = MOCK_ADS;
 
 
   ngOnInit(): void {

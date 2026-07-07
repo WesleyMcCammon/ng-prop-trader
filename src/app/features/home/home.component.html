@@ -96,7 +96,7 @@
       <div class="two-col-layout">
 
         <!-- Latest articles -->
-        <section class="section">
+        <section class="section" style="margin-top: 16px">
           <h2 class="section-title">Latest</h2>
           <div class="latest-list">
             @for (post of latest(); track post.id) {
@@ -112,15 +112,18 @@
           </div>
         </section>
 
-        <!-- Opinion -->
-        <aside class="opinion-sidebar">
-          <h2 class="section-title">Opinion</h2>
-          @for (post of opinion(); track post.id) {
-            <article class="opinion-card">
-              <div class="opinion-avatar">{{ post.userId }}</div>
-              <div>
-                <h3 class="opinion-title">{{ post.title | titlecase }}</h3>
-                <p class="opinion-author">Columnist · Jun 29</p>
+        <!-- Sponsored -->
+        <aside class="ads-sidebar" style="margin-top:16px">
+          <h2 class="section-title">Sponsored</h2>
+          @for (ad of ads; track ad.sponsor) {
+            <article class="ad-card">
+              <span class="ad-badge">Ad</span>
+              <div class="ad-media placeholder-img"></div>
+              <div class="ad-body">
+                <span class="ad-sponsor">{{ ad.sponsor }}</span>
+                <h3 class="ad-headline">{{ ad.headline }}</h3>
+                <p class="ad-text">{{ ad.body }}</p>
+                <a href="#" class="btn btn--primary ad-cta" (click)="$event.preventDefault()">{{ ad.cta }}</a>
               </div>
             </article>
           }
