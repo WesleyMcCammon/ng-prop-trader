@@ -273,6 +273,50 @@
   tbody tr.row-selectable { cursor: pointer; }
 }
 
+/* ── Forex category group rows ───────────────────────── */
+.group-header-row {
+  cursor: pointer;
+
+  td {
+    padding: 0.5rem 0.75rem;
+    background: var(--color-surface-2);
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  &:hover td { background: var(--color-border); }
+}
+
+.group-expand-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--color-text-muted);
+  font-size: 0.6rem;
+  padding: 0;
+  margin-right: 0.5rem;
+
+  &:hover { color: var(--color-primary); }
+}
+
+.group-header-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-heading);
+}
+
+.group-header-count {
+  margin-left: 0.5rem;
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--color-text-muted);
+}
+
 .col-icon {
   width: 44px;
   text-align: center;

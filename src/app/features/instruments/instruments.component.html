@@ -52,6 +52,9 @@
             {{ isSectionExpanded(futuresInstruments()) ? 'Collapse All' : 'Expand All' }}
           </button>
         }
+        <button class="expand-ctrl-btn" (click)="toggleAllGroups('futures')">
+          {{ isAllGroupsExpanded('futures') ? 'Collapse All' : 'Expand All' }}
+        </button>
       </div>
       <div class="table-wrap">
         <table class="instruments-table">
@@ -209,42 +212,55 @@
             </tr>
           </thead>
           <tbody>
-            @for (i of futuresInstruments(); track i.symbol) {
-              <tr [class.row-expanded]="showAll && isExpanded(i.symbol)" [class.row-selectable]="!showAll" (click)="!showAll && toggleActive(i.symbol)">
-                @if (!showAll) { <td class="col-icon"><span class="status-icon" [class.status-icon--active]="isActive(i.symbol)">✓</span></td> }
-                @if (showAll)  { <td class="col-expand"><button class="expand-btn" (click)="toggleRow(i.symbol)">{{ isExpanded(i.symbol) ? '▼' : '▶' }}</button></td> }
-                <td class="symbol">{{ i.symbol }}</td>
-                <td>{{ i.name }}</td>
-                <td><span class="tier-badge tier-badge--{{ instrumentSize(i) | lowercase }}">{{ instrumentSize(i) }}</span></td>
-                <td>{{ i.category }}</td>
-                <td>{{ i.exchange }}</td>
-                <td class="num">{{ i.contractSize | number }}</td>
-                <td class="num">{{ i.tickSize }}</td>
-                <td class="num">{{ i.tickValue | currency }}</td>
-                @if (!showAll && col('price'))     { <td class="num">{{ i.price | priceFormat:i.tickSize }}</td> }
-                @if (!showAll && col('bid'))       { <td class="num">{{ i.bid | priceFormat:i.tickSize }}</td> }
-                @if (!showAll && col('ask'))       { <td class="num">{{ i.ask | priceFormat:i.tickSize }}</td> }
-                @if (!showAll && col('change'))    { <td class="num" [class.positive]="i.change >= 0" [class.negative]="i.change < 0">{{ i.change | priceFormat:i.tickSize }}</td> }
-                @if (!showAll && col('changePct')) { <td class="num" [class.positive]="i.changePct >= 0" [class.negative]="i.changePct < 0">{{ i.changePct }}%</td> }
-                @if (!showAll && col('high'))      { <td class="num">{{ i.high | priceFormat:i.tickSize }}</td> }
-                @if (!showAll && col('low'))       { <td class="num">{{ i.low | priceFormat:i.tickSize }}</td> }
-                @if (!showAll && col('volume'))    { <td class="num">{{ i.volume | number }}</td> }
+            @for (group of futuresGroups(); track group.category) {
+              <tr class="group-header-row" (click)="toggleGroup('futures', group.category)">
+                <td colspan="99">
+                  <button type="button" class="group-expand-btn" (click)="toggleGroup('futures', group.category); $event.stopPropagation()">
+                    {{ isGroupExpanded('futures', group.category) ? '▼' : '▶' }}
+                  </button>
+                  <span class="group-header-label">{{ group.category }}</span>
+                  <span class="group-header-count">{{ group.items.length }}</span>
+                </td>
               </tr>
-              @if (showAll && isExpanded(i.symbol)) {
-                <tr class="detail-row">
-                  <td colspan="99">
-                    <div class="detail-grid">
-                      <div class="detail-item"><span class="detail-label">Price</span><span>{{ i.price | priceFormat:i.tickSize }}</span></div>
-                      <div class="detail-item"><span class="detail-label">Bid</span><span>{{ i.bid | priceFormat:i.tickSize }}</span></div>
-                      <div class="detail-item"><span class="detail-label">Ask</span><span>{{ i.ask | priceFormat:i.tickSize }}</span></div>
-                      <div class="detail-item"><span class="detail-label">Change</span><span [class.positive]="i.change >= 0" [class.negative]="i.change < 0">{{ i.change | priceFormat:i.tickSize }}</span></div>
-                      <div class="detail-item"><span class="detail-label">Change %</span><span [class.positive]="i.changePct >= 0" [class.negative]="i.changePct < 0">{{ i.changePct }}%</span></div>
-                      <div class="detail-item"><span class="detail-label">High</span><span>{{ i.high | priceFormat:i.tickSize }}</span></div>
-                      <div class="detail-item"><span class="detail-label">Low</span><span>{{ i.low | priceFormat:i.tickSize }}</span></div>
-                      <div class="detail-item"><span class="detail-label">Volume</span><span>{{ i.volume | number }}</span></div>
-                    </div>
-                  </td>
-                </tr>
+              @if (isGroupExpanded('futures', group.category)) {
+                @for (i of group.items; track i.symbol) {
+                  <tr [class.row-expanded]="showAll && isExpanded(i.symbol)" [class.row-selectable]="!showAll" (click)="!showAll && toggleActive(i.symbol)">
+                    @if (!showAll) { <td class="col-icon"><span class="status-icon" [class.status-icon--active]="isActive(i.symbol)">✓</span></td> }
+                    @if (showAll)  { <td class="col-expand"><button class="expand-btn" (click)="toggleRow(i.symbol)">{{ isExpanded(i.symbol) ? '▼' : '▶' }}</button></td> }
+                    <td class="symbol">{{ i.symbol }}</td>
+                    <td>{{ i.name }}</td>
+                    <td><span class="tier-badge tier-badge--{{ instrumentSize(i) | lowercase }}">{{ instrumentSize(i) }}</span></td>
+                    <td>{{ i.category }}</td>
+                    <td>{{ i.exchange }}</td>
+                    <td class="num">{{ i.contractSize | number }}</td>
+                    <td class="num">{{ i.tickSize }}</td>
+                    <td class="num">{{ i.tickValue | currency }}</td>
+                    @if (!showAll && col('price'))     { <td class="num">{{ i.price | priceFormat:i.tickSize }}</td> }
+                    @if (!showAll && col('bid'))       { <td class="num">{{ i.bid | priceFormat:i.tickSize }}</td> }
+                    @if (!showAll && col('ask'))       { <td class="num">{{ i.ask | priceFormat:i.tickSize }}</td> }
+                    @if (!showAll && col('change'))    { <td class="num" [class.positive]="i.change >= 0" [class.negative]="i.change < 0">{{ i.change | priceFormat:i.tickSize }}</td> }
+                    @if (!showAll && col('changePct')) { <td class="num" [class.positive]="i.changePct >= 0" [class.negative]="i.changePct < 0">{{ i.changePct }}%</td> }
+                    @if (!showAll && col('high'))      { <td class="num">{{ i.high | priceFormat:i.tickSize }}</td> }
+                    @if (!showAll && col('low'))       { <td class="num">{{ i.low | priceFormat:i.tickSize }}</td> }
+                    @if (!showAll && col('volume'))    { <td class="num">{{ i.volume | number }}</td> }
+                  </tr>
+                  @if (showAll && isExpanded(i.symbol)) {
+                    <tr class="detail-row">
+                      <td colspan="99">
+                        <div class="detail-grid">
+                          <div class="detail-item"><span class="detail-label">Price</span><span>{{ i.price | priceFormat:i.tickSize }}</span></div>
+                          <div class="detail-item"><span class="detail-label">Bid</span><span>{{ i.bid | priceFormat:i.tickSize }}</span></div>
+                          <div class="detail-item"><span class="detail-label">Ask</span><span>{{ i.ask | priceFormat:i.tickSize }}</span></div>
+                          <div class="detail-item"><span class="detail-label">Change</span><span [class.positive]="i.change >= 0" [class.negative]="i.change < 0">{{ i.change | priceFormat:i.tickSize }}</span></div>
+                          <div class="detail-item"><span class="detail-label">Change %</span><span [class.positive]="i.changePct >= 0" [class.negative]="i.changePct < 0">{{ i.changePct }}%</span></div>
+                          <div class="detail-item"><span class="detail-label">High</span><span>{{ i.high | priceFormat:i.tickSize }}</span></div>
+                          <div class="detail-item"><span class="detail-label">Low</span><span>{{ i.low | priceFormat:i.tickSize }}</span></div>
+                          <div class="detail-item"><span class="detail-label">Volume</span><span>{{ i.volume | number }}</span></div>
+                        </div>
+                      </td>
+                    </tr>
+                  }
+                }
               }
             }
           </tbody>
@@ -265,6 +281,9 @@
             {{ isSectionExpanded(forexInstruments()) ? 'Collapse All' : 'Expand All' }}
           </button>
         }
+        <button class="expand-ctrl-btn" (click)="toggleAllGroups('forex')">
+          {{ isAllGroupsExpanded('forex') ? 'Collapse All' : 'Expand All' }}
+        </button>
       </div>
       <div class="table-wrap">
         <table class="instruments-table">
@@ -372,37 +391,50 @@
             </tr>
           </thead>
           <tbody>
-            @for (i of forexInstruments(); track i.symbol) {
-              <tr [class.row-expanded]="showAll && isExpanded(i.symbol)" [class.row-selectable]="!showAll" (click)="!showAll && toggleActive(i.symbol)">
-                @if (!showAll) { <td class="col-icon"><span class="status-icon" [class.status-icon--active]="isActive(i.symbol)">✓</span></td> }
-                @if (showAll)  { <td class="col-expand"><button class="expand-btn" (click)="toggleRow(i.symbol)">{{ isExpanded(i.symbol) ? '▼' : '▶' }}</button></td> }
-                <td class="symbol">{{ i.symbol }}</td>
-                <td>{{ i.name }}</td>
-                <td>{{ i.category }}</td>
-                <td class="num">{{ i.contractSize | number }}</td>
-                <td class="num">{{ i.tickSize }}</td>
-                @if (!showAll && col('price'))     { <td class="num">{{ i.price | priceFormat:i.tickSize }}</td> }
-                @if (!showAll && col('bid'))       { <td class="num">{{ i.bid | priceFormat:i.tickSize }}</td> }
-                @if (!showAll && col('ask'))       { <td class="num">{{ i.ask | priceFormat:i.tickSize }}</td> }
-                @if (!showAll && col('change'))    { <td class="num" [class.positive]="i.change >= 0" [class.negative]="i.change < 0">{{ i.change | priceFormat:i.tickSize }}</td> }
-                @if (!showAll && col('changePct')) { <td class="num" [class.positive]="i.changePct >= 0" [class.negative]="i.changePct < 0">{{ i.changePct }}%</td> }
-                @if (!showAll && col('high'))      { <td class="num">{{ i.high | priceFormat:i.tickSize }}</td> }
-                @if (!showAll && col('low'))       { <td class="num">{{ i.low | priceFormat:i.tickSize }}</td> }
+            @for (group of forexGroups(); track group.category) {
+              <tr class="group-header-row" (click)="toggleGroup('forex', group.category)">
+                <td colspan="99">
+                  <button type="button" class="group-expand-btn" (click)="toggleGroup('forex', group.category); $event.stopPropagation()">
+                    {{ isGroupExpanded('forex', group.category) ? '▼' : '▶' }}
+                  </button>
+                  <span class="group-header-label">{{ group.category }}</span>
+                  <span class="group-header-count">{{ group.items.length }}</span>
+                </td>
               </tr>
-              @if (showAll && isExpanded(i.symbol)) {
-                <tr class="detail-row">
-                  <td colspan="99">
-                    <div class="detail-grid">
-                      <div class="detail-item"><span class="detail-label">Price</span><span>{{ i.price | priceFormat:i.tickSize }}</span></div>
-                      <div class="detail-item"><span class="detail-label">Bid</span><span>{{ i.bid | priceFormat:i.tickSize }}</span></div>
-                      <div class="detail-item"><span class="detail-label">Ask</span><span>{{ i.ask | priceFormat:i.tickSize }}</span></div>
-                      <div class="detail-item"><span class="detail-label">Change</span><span [class.positive]="i.change >= 0" [class.negative]="i.change < 0">{{ i.change | priceFormat:i.tickSize }}</span></div>
-                      <div class="detail-item"><span class="detail-label">Change %</span><span [class.positive]="i.changePct >= 0" [class.negative]="i.changePct < 0">{{ i.changePct }}%</span></div>
-                      <div class="detail-item"><span class="detail-label">High</span><span>{{ i.high | priceFormat:i.tickSize }}</span></div>
-                      <div class="detail-item"><span class="detail-label">Low</span><span>{{ i.low | priceFormat:i.tickSize }}</span></div>
-                    </div>
-                  </td>
-                </tr>
+              @if (isGroupExpanded('forex', group.category)) {
+                @for (i of group.items; track i.symbol) {
+                  <tr [class.row-expanded]="showAll && isExpanded(i.symbol)" [class.row-selectable]="!showAll" (click)="!showAll && toggleActive(i.symbol)">
+                    @if (!showAll) { <td class="col-icon"><span class="status-icon" [class.status-icon--active]="isActive(i.symbol)">✓</span></td> }
+                    @if (showAll)  { <td class="col-expand"><button class="expand-btn" (click)="toggleRow(i.symbol)">{{ isExpanded(i.symbol) ? '▼' : '▶' }}</button></td> }
+                    <td class="symbol">{{ i.symbol }}</td>
+                    <td>{{ i.name }}</td>
+                    <td>{{ i.category }}</td>
+                    <td class="num">{{ i.contractSize | number }}</td>
+                    <td class="num">{{ i.tickSize }}</td>
+                    @if (!showAll && col('price'))     { <td class="num">{{ i.price | priceFormat:i.tickSize }}</td> }
+                    @if (!showAll && col('bid'))       { <td class="num">{{ i.bid | priceFormat:i.tickSize }}</td> }
+                    @if (!showAll && col('ask'))       { <td class="num">{{ i.ask | priceFormat:i.tickSize }}</td> }
+                    @if (!showAll && col('change'))    { <td class="num" [class.positive]="i.change >= 0" [class.negative]="i.change < 0">{{ i.change | priceFormat:i.tickSize }}</td> }
+                    @if (!showAll && col('changePct')) { <td class="num" [class.positive]="i.changePct >= 0" [class.negative]="i.changePct < 0">{{ i.changePct }}%</td> }
+                    @if (!showAll && col('high'))      { <td class="num">{{ i.high | priceFormat:i.tickSize }}</td> }
+                    @if (!showAll && col('low'))       { <td class="num">{{ i.low | priceFormat:i.tickSize }}</td> }
+                  </tr>
+                  @if (showAll && isExpanded(i.symbol)) {
+                    <tr class="detail-row">
+                      <td colspan="99">
+                        <div class="detail-grid">
+                          <div class="detail-item"><span class="detail-label">Price</span><span>{{ i.price | priceFormat:i.tickSize }}</span></div>
+                          <div class="detail-item"><span class="detail-label">Bid</span><span>{{ i.bid | priceFormat:i.tickSize }}</span></div>
+                          <div class="detail-item"><span class="detail-label">Ask</span><span>{{ i.ask | priceFormat:i.tickSize }}</span></div>
+                          <div class="detail-item"><span class="detail-label">Change</span><span [class.positive]="i.change >= 0" [class.negative]="i.change < 0">{{ i.change | priceFormat:i.tickSize }}</span></div>
+                          <div class="detail-item"><span class="detail-label">Change %</span><span [class.positive]="i.changePct >= 0" [class.negative]="i.changePct < 0">{{ i.changePct }}%</span></div>
+                          <div class="detail-item"><span class="detail-label">High</span><span>{{ i.high | priceFormat:i.tickSize }}</span></div>
+                          <div class="detail-item"><span class="detail-label">Low</span><span>{{ i.low | priceFormat:i.tickSize }}</span></div>
+                        </div>
+                      </td>
+                    </tr>
+                  }
+                }
               }
             }
           </tbody>

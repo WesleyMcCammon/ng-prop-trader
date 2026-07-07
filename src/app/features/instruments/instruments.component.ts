@@ -40,6 +40,17 @@ const SECTION_DEFS: Array<{ key: Section; label: string }> = [
   { key: 'cfd',     label: 'CFD' },
 ];
 
+const CATEGORY_ORDER: Record<Section, string[]> = {
+  futures: ['Indices', 'Metals', 'Energies', 'Financials', 'Currencies'],
+  forex:   ['Forex Majors', 'Forex Minors'],
+  cfd:     [],
+};
+
+interface CategoryGroup {
+  category: string;
+  items: FuturesContract[];
+}
+
 const STORAGE_FILTERS: Record<Section, string> = {
   futures: 'mw.filters.futures',
   forex:   'mw.filters.forex',
@@ -133,6 +144,34 @@ export class InstrumentsComponent implements OnInit, OnDestroy {
   futuresInstruments = computed(() => this.applyColFilters(this.futuresBase(), this.futuresColFilters()));
   forexInstruments   = computed(() => this.applyColFilters(this.forexBase(),   this.forexColFilters()));
   cfdInstruments     = computed(() => this.applyColFilters(this.cfdBase(),     this.cfdColFilters()));
+
+  // ── Category groups (per section) ──────────────────────
+  collapsedFuturesGroups = signal<Set<string>>(new Set());
+  collapsedForexGroups   = signal<Set<string>>(new Set());
+  collapsedCfdGroups     = signal<Set<string>>(new Set());
+
+  futuresGroups = computed<CategoryGroup[]>(() => this.buildGroups(this.futuresInstruments(), 'futures'));
+  forexGroups   = computed<CategoryGroup[]>(() => this.buildGroups(this.forexInstruments(),   'forex'));
+  cfdGroups     = computed<CategoryGroup[]>(() => this.buildGroups(this.cfdInstruments(),     'cfd'));
+
+  private buildGroups(items: FuturesContract[], section: Section): CategoryGroup[] {
+    const order = CATEGORY_ORDER[section];
+    const groups = new Map<string, FuturesContract[]>();
+    for (const i of items) {
+      const arr = groups.get(i.category) ?? [];
+      arr.push(i);
+      groups.set(i.category, arr);
+    }
+    const keys = [...groups.keys()].sort((a, b) => {
+      const ao = order.indexOf(a);
+      const bo = order.indexOf(b);
+      if (ao !== -1 && bo !== -1) return ao - bo;
+      if (ao !== -1) return -1;
+      if (bo !== -1) return 1;
+      return a.localeCompare(b);
+    });
+    return keys.map(category => ({ category, items: groups.get(category)! }));
+  }
 
   // ── Section list + selection summary ──────────────────
   readonly sectionDefs = SECTION_DEFS;
@@ -306,6 +345,41 @@ export class InstrumentsComponent implements OnInit, OnDestroy {
       instruments.forEach(i => expand ? next.add(i.symbol) : next.delete(i.symbol));
       return next;
     });
+  }
+
+  private getCollapsedGroupsSig(section: Section): WritableSignal<Set<string>> {
+    return section === 'futures' ? this.collapsedFuturesGroups :
+           section === 'forex'   ? this.collapsedForexGroups   : this.collapsedCfdGroups;
+  }
+
+  private groupsFor(section: Section): CategoryGroup[] {
+    return section === 'futures' ? this.futuresGroups() :
+           section === 'forex'   ? this.forexGroups()   : this.cfdGroups();
+  }
+
+  isGroupExpanded(section: Section, category: string): boolean {
+    return !this.getCollapsedGroupsSig(section)().has(category);
+  }
+
+  toggleGroup(section: Section, category: string): void {
+    this.getCollapsedGroupsSig(section).update(set => {
+      const next = new Set(set);
+      next.has(category) ? next.delete(category) : next.add(category);
+      return next;
+    });
+  }
+
+  isAllGroupsExpanded(section: Section): boolean {
+    return this.getCollapsedGroupsSig(section)().size === 0;
+  }
+
+  toggleAllGroups(section: Section): void {
+    const sig = this.getCollapsedGroupsSig(section);
+    sig.set(
+      this.isAllGroupsExpanded(section)
+        ? new Set(this.groupsFor(section).map(g => g.category))
+        : new Set()
+    );
   }
 
   toggleSort(): void {
