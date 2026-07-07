@@ -19,6 +19,93 @@
   &:hover { text-decoration: underline; }
 }
 
+/* ── Selected instruments summary ────────────────────── */
+.active-summary {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  padding: 0.9rem 1rem;
+  margin-bottom: 1.5rem;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+}
+
+.summary-item {
+  font-size: 0.8rem;
+  line-height: 1.5;
+}
+
+.summary-group-name {
+  font-weight: 700;
+  color: var(--color-heading);
+  margin-right: 0.4rem;
+}
+
+.summary-levels {
+  color: var(--color-text-muted);
+  font-family: monospace;
+}
+
+.no-selection {
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+  margin-bottom: 1.5rem;
+}
+
+/* ── Type list + section panel split ─────────────────── */
+.instruments-split {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.25rem;
+  align-items: start;
+
+  @media (min-width: 768px) {
+    grid-template-columns: 200px 1fr;
+  }
+}
+
+.group-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  padding: 0.5rem;
+}
+
+.group-list-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0.5rem 0.6rem;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  cursor: pointer;
+  transition: background 0.15s;
+
+  &:hover {
+    background: var(--color-surface-2);
+  }
+
+  &.active {
+    background: color-mix(in srgb, var(--color-primary) 12%, transparent);
+  }
+}
+
+.group-list-count {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--color-text-muted);
+}
+
+.levels-panel {
+  min-width: 0;
+}
+
 /* ── Section ──────────────────────────────────────────── */
 .instrument-section {
   margin-bottom: 2.5rem;
@@ -287,10 +374,6 @@
 .symbol {
   font-weight: 700;
   font-family: monospace;
-}
-
-.spread {
-  color: var(--color-text-muted);
 }
 
 .type-badge {

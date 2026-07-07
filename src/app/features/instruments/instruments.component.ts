@@ -34,6 +34,12 @@ type SortDir    = 'asc' | 'desc';
 type Section    = 'futures' | 'forex' | 'cfd';
 type ColFilters = Record<string, Set<string>>;
 
+const SECTION_DEFS: Array<{ key: Section; label: string }> = [
+  { key: 'futures', label: 'Futures' },
+  { key: 'forex',   label: 'Forex' },
+  { key: 'cfd',     label: 'CFD' },
+];
+
 const STORAGE_FILTERS: Record<Section, string> = {
   futures: 'mw.filters.futures',
   forex:   'mw.filters.forex',
@@ -127,6 +133,18 @@ export class InstrumentsComponent implements OnInit, OnDestroy {
   futuresInstruments = computed(() => this.applyColFilters(this.futuresBase(), this.futuresColFilters()));
   forexInstruments   = computed(() => this.applyColFilters(this.forexBase(),   this.forexColFilters()));
   cfdInstruments     = computed(() => this.applyColFilters(this.cfdBase(),     this.cfdColFilters()));
+
+  // ── Section list + selection summary ──────────────────
+  readonly sectionDefs = SECTION_DEFS;
+  selectedType = signal<Section>('futures');
+
+  activeSummary = computed(() => {
+    const active = this.selectionService.activeSymbols();
+    if (active.size === 0) return [];
+    return SECTION_DEFS
+      .map(s => ({ section: s, symbols: this.baseFor(s.key).filter(i => active.has(i.symbol)).map(i => i.symbol) }))
+      .filter(entry => entry.symbols.length > 0);
+  });
 
   constructor() {
     inject(Title).setTitle('Instruments – MarketWatch');
@@ -226,6 +244,30 @@ export class InstrumentsComponent implements OnInit, OnDestroy {
   private getFilterSig(section: Section): WritableSignal<ColFilters> {
     return section === 'futures' ? this.futuresColFilters :
            section === 'forex'   ? this.forexColFilters   : this.cfdColFilters;
+  }
+
+  private baseFor(type: Section): FuturesContract[] {
+    return type === 'futures' ? this.futuresBase() :
+           type === 'forex'   ? this.forexBase()   : this.cfdBase();
+  }
+
+  // ── Section selection (list box) ───────────────────────
+
+  selectType(type: Section): void {
+    this.selectedType.set(type);
+  }
+
+  isTypeSelected(type: Section): boolean {
+    return this.selectedType() === type;
+  }
+
+  baseCountByType(type: Section): number {
+    return this.baseFor(type).length;
+  }
+
+  activeCountByType(type: Section): number {
+    const active = this.selectionService.activeSymbols();
+    return this.baseFor(type).filter(i => active.has(i.symbol)).length;
   }
 
   // ── Table row state ───────────────────────────────────

@@ -5,9 +5,42 @@
       <h1 class="page-title">Instruments</h1>
     </div>
 
+    <!-- Selected instruments summary -->
+    @if (activeSummary().length > 0) {
+      <div class="active-summary">
+        @for (entry of activeSummary(); track entry.section.key) {
+          <div class="summary-item">
+            <span class="summary-group-name">{{ entry.section.label }}:</span>
+            <span class="summary-levels">{{ entry.symbols.join(', ') }}</span>
+          </div>
+        }
+      </div>
+    } @else {
+      <p class="no-selection">No instruments selected yet.</p>
+    }
+
     <div class="page-layout">
     <div class="page-main">
 
+    <div class="instruments-split">
+
+      <!-- Type list -->
+      <nav class="group-list">
+        @for (s of sectionDefs; track s.key) {
+          <button
+            type="button"
+            class="group-list-item"
+            [class.active]="isTypeSelected(s.key)"
+            (click)="selectType(s.key)">
+            <span class="type-badge type-badge--{{ s.key }}">{{ s.key }}</span>
+            <span class="group-list-count">{{ activeCountByType(s.key) }}/{{ baseCountByType(s.key) }}</span>
+          </button>
+        }
+      </nav>
+
+      <div class="levels-panel">
+
+    @if (selectedType() === 'futures') {
     <!-- Futures -->
     <section class="instrument-section">
       <div class="section-header">
@@ -218,7 +251,9 @@
         </table>
       </div>
     </section>
+    }
 
+    @if (selectedType() === 'forex') {
     <!-- Forex -->
     <section class="instrument-section">
       <div class="section-header">
@@ -245,7 +280,6 @@
               @if (!showAll && col('price'))     { <th class="num">Price</th> }
               @if (!showAll && col('bid'))       { <th class="num">Bid</th> }
               @if (!showAll && col('ask'))       { <th class="num">Ask</th> }
-              @if (!showAll) { <th class="num">Spread</th> }
               @if (!showAll && col('change'))    { <th class="num">Change</th> }
               @if (!showAll && col('changePct')) { <th class="num">Change %</th> }
               @if (!showAll && col('high'))      { <th class="num">High</th> }
@@ -331,7 +365,6 @@
               @if (!showAll && col('price'))     { <th></th> }
               @if (!showAll && col('bid'))       { <th></th> }
               @if (!showAll && col('ask'))       { <th></th> }
-              @if (!showAll) { <th></th> }
               @if (!showAll && col('change'))    { <th></th> }
               @if (!showAll && col('changePct')) { <th></th> }
               @if (!showAll && col('high'))      { <th></th> }
@@ -351,7 +384,6 @@
                 @if (!showAll && col('price'))     { <td class="num">{{ i.price | priceFormat:i.tickSize }}</td> }
                 @if (!showAll && col('bid'))       { <td class="num">{{ i.bid | priceFormat:i.tickSize }}</td> }
                 @if (!showAll && col('ask'))       { <td class="num">{{ i.ask | priceFormat:i.tickSize }}</td> }
-                @if (!showAll) { <td class="num spread">{{ (i.ask - i.bid) / i.tickSize | number:'1.0-0' }}</td> }
                 @if (!showAll && col('change'))    { <td class="num" [class.positive]="i.change >= 0" [class.negative]="i.change < 0">{{ i.change | priceFormat:i.tickSize }}</td> }
                 @if (!showAll && col('changePct')) { <td class="num" [class.positive]="i.changePct >= 0" [class.negative]="i.changePct < 0">{{ i.changePct }}%</td> }
                 @if (!showAll && col('high'))      { <td class="num">{{ i.high | priceFormat:i.tickSize }}</td> }
@@ -364,7 +396,6 @@
                       <div class="detail-item"><span class="detail-label">Price</span><span>{{ i.price | priceFormat:i.tickSize }}</span></div>
                       <div class="detail-item"><span class="detail-label">Bid</span><span>{{ i.bid | priceFormat:i.tickSize }}</span></div>
                       <div class="detail-item"><span class="detail-label">Ask</span><span>{{ i.ask | priceFormat:i.tickSize }}</span></div>
-                      <div class="detail-item"><span class="detail-label">Spread</span><span class="spread">{{ (i.ask - i.bid) / i.tickSize | number:'1.0-0' }} pips</span></div>
                       <div class="detail-item"><span class="detail-label">Change</span><span [class.positive]="i.change >= 0" [class.negative]="i.change < 0">{{ i.change | priceFormat:i.tickSize }}</span></div>
                       <div class="detail-item"><span class="detail-label">Change %</span><span [class.positive]="i.changePct >= 0" [class.negative]="i.changePct < 0">{{ i.changePct }}%</span></div>
                       <div class="detail-item"><span class="detail-label">High</span><span>{{ i.high | priceFormat:i.tickSize }}</span></div>
@@ -378,7 +409,9 @@
         </table>
       </div>
     </section>
+    }
 
+    @if (selectedType() === 'cfd') {
     <!-- CFDs -->
     <section class="instrument-section">
       <div class="section-header">
@@ -402,7 +435,6 @@
               @if (!showAll && col('price'))     { <th class="num">Price</th> }
               @if (!showAll && col('bid'))       { <th class="num">Bid</th> }
               @if (!showAll && col('ask'))       { <th class="num">Ask</th> }
-              @if (!showAll) { <th class="num">Spread</th> }
               @if (!showAll && col('change'))    { <th class="num">Change</th> }
               @if (!showAll && col('changePct')) { <th class="num">Change %</th> }
               @if (!showAll && col('high'))      { <th class="num">High</th> }
@@ -443,7 +475,6 @@
               @if (!showAll && col('price'))     { <th></th> }
               @if (!showAll && col('bid'))       { <th></th> }
               @if (!showAll && col('ask'))       { <th></th> }
-              @if (!showAll) { <th></th> }
               @if (!showAll && col('change'))    { <th></th> }
               @if (!showAll && col('changePct')) { <th></th> }
               @if (!showAll && col('high'))      { <th></th> }
@@ -460,7 +491,6 @@
                 @if (!showAll && col('price'))     { <td class="num">{{ i.price | priceFormat:i.tickSize }}</td> }
                 @if (!showAll && col('bid'))       { <td class="num">{{ i.bid | priceFormat:i.tickSize }}</td> }
                 @if (!showAll && col('ask'))       { <td class="num">{{ i.ask | priceFormat:i.tickSize }}</td> }
-                @if (!showAll) { <td class="num spread">{{ (i.ask - i.bid) / i.tickSize | number:'1.0-0' }}</td> }
                 @if (!showAll && col('change'))    { <td class="num" [class.positive]="i.change >= 0" [class.negative]="i.change < 0">{{ i.change | priceFormat:i.tickSize }}</td> }
                 @if (!showAll && col('changePct')) { <td class="num" [class.positive]="i.changePct >= 0" [class.negative]="i.changePct < 0">{{ i.changePct }}%</td> }
                 @if (!showAll && col('high'))      { <td class="num">{{ i.high | priceFormat:i.tickSize }}</td> }
@@ -473,7 +503,6 @@
                       <div class="detail-item"><span class="detail-label">Price</span><span>{{ i.price | priceFormat:i.tickSize }}</span></div>
                       <div class="detail-item"><span class="detail-label">Bid</span><span>{{ i.bid | priceFormat:i.tickSize }}</span></div>
                       <div class="detail-item"><span class="detail-label">Ask</span><span>{{ i.ask | priceFormat:i.tickSize }}</span></div>
-                      <div class="detail-item"><span class="detail-label">Spread</span><span class="spread">{{ (i.ask - i.bid) / i.tickSize | number:'1.0-0' }} ticks</span></div>
                       <div class="detail-item"><span class="detail-label">Change</span><span [class.positive]="i.change >= 0" [class.negative]="i.change < 0">{{ i.change | priceFormat:i.tickSize }}</span></div>
                       <div class="detail-item"><span class="detail-label">Change %</span><span [class.positive]="i.changePct >= 0" [class.negative]="i.changePct < 0">{{ i.changePct }}%</span></div>
                       <div class="detail-item"><span class="detail-label">High</span><span>{{ i.high | priceFormat:i.tickSize }}</span></div>
@@ -487,6 +516,11 @@
         </table>
       </div>
     </section>
+    }
+
+      </div><!-- /levels-panel -->
+
+    </div><!-- /instruments-split -->
 
     </div>
 
