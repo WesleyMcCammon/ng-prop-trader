@@ -6,6 +6,29 @@ import { PriceFeedService } from '../../core/services/price-feed.service';
 import { InstrumentSelectionService } from '../../core/services/instrument-selection.service';
 import { FuturesContract } from '../../shared/model/instrument.model';
 import { PriceFormatPipe } from '../../shared/pipes/price-format.pipe';
+import { AdSidebarComponent } from '../../shared/components/ad-sidebar/ad-sidebar.component';
+import { MockAd } from '../../shared/model/ad.model';
+
+const INSTRUMENT_ADS: MockAd[] = [
+  {
+    sponsor: 'AMP Futures',
+    headline: 'Low Day-Trading Margins',
+    body: 'Trade futures with some of the lowest intraday margin requirements in the industry.',
+    cta: 'Open Account'
+  },
+  {
+    sponsor: 'Tradovate',
+    headline: 'Commission-Free Futures',
+    body: 'Flat-rate monthly plans with no per-contract fees on every trade.',
+    cta: 'Learn More'
+  },
+  {
+    sponsor: 'NinjaTrader Brokerage',
+    headline: 'Trade Smarter, Not Harder',
+    body: 'Award-winning platform with deep discounts on futures commissions.',
+    cta: 'Get Started'
+  }
+];
 
 type SortDir    = 'asc' | 'desc';
 type Section    = 'futures' | 'forex' | 'cfd';
@@ -46,7 +69,7 @@ export const TOGGLEABLE_COLS = [
 @Component({
   selector: 'app-instruments',
   standalone: true,
-  imports: [CommonModule, PriceFormatPipe],
+  imports: [CommonModule, PriceFormatPipe, AdSidebarComponent],
   templateUrl: './instruments.component.html',
   styleUrl: './instruments.component.scss'
 })
@@ -56,6 +79,8 @@ export class InstrumentsComponent implements OnInit, OnDestroy {
   private selectionService  = inject(InstrumentSelectionService);
 
   @Input() showAll = false;
+
+  readonly ads = INSTRUMENT_ADS;
 
   instruments = this.instrumentService.instruments;
   sortDir     = signal<SortDir>('asc');

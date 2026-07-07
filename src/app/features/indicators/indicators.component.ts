@@ -1,6 +1,29 @@
 ﻿import { Component, inject, signal } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { IndicatorService } from '../../core/services/indicator.service';
+import { AdSidebarComponent } from '../../shared/components/ad-sidebar/ad-sidebar.component';
+import { MockAd } from '../../shared/model/ad.model';
+
+const INDICATOR_ADS: MockAd[] = [
+  {
+    sponsor: 'TrendSpider',
+    headline: 'Automated Technical Analysis',
+    body: 'Auto-detect trendlines, support/resistance, and patterns across every timeframe.',
+    cta: 'Start Free Trial'
+  },
+  {
+    sponsor: 'Trade Ideas',
+    headline: 'AI-Powered Scanning',
+    body: 'Let an AI trading assistant surface high-probability setups in real time.',
+    cta: 'See It in Action'
+  },
+  {
+    sponsor: 'MotiveWave',
+    headline: 'Elliott Wave & Fibonacci Tools',
+    body: 'Professional-grade analysis tools trusted by technical traders for two decades.',
+    cta: 'Try Free'
+  }
+];
 
 interface IndicatorLevel {
   id: string;
@@ -100,13 +123,14 @@ const GROUPS_DEF: Omit<IndicatorGroup, 'show'>[] = [
 @Component({
   selector: 'app-indicators',
   standalone: true,
-  imports: [],
+  imports: [AdSidebarComponent],
   templateUrl: './indicators.component.html',
   styleUrl: './indicators.component.scss',
 })
 export class IndicatorsComponent {
   readonly svc = inject(IndicatorService);
   readonly groups: IndicatorGroup[] = GROUPS_DEF.map(g => ({ ...g, show: signal(true) }));
+  readonly ads = INDICATOR_ADS;
 
   constructor() {
     inject(Title).setTitle('Indicators – MarketWatch');

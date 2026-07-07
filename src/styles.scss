@@ -115,6 +115,22 @@ img {
 /* pipe-compatible titlecase for display */
 .titlecase { text-transform: capitalize; }
 
+/* ── Page layout with ad sidebar ────────────────────── */
+.page-layout {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-8);
+  align-items: start;
+
+  @media (min-width: 1024px) {
+    grid-template-columns: minmax(0, 1fr) 300px;
+  }
+}
+
+.page-main {
+  min-width: 0;
+}
+
 /* ── CDK Drag & Drop ────────────────────────────────── */
 .cdk-drag-preview {
   box-sizing: border-box;

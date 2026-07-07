@@ -10,6 +10,29 @@ import { FuturesContract, InstrumentCategory } from '../../shared/model/instrume
 import { InstrumentCardComponent } from '../../shared/components/instrument-card/instrument-card.component';
 import { PinnedInstrumentsComponent } from './pinned-instruments/pinned-instruments.component';
 import { PinService } from '../../core/services/pin.service';
+import { AdSidebarComponent } from '../../shared/components/ad-sidebar/ad-sidebar.component';
+import { MockAd } from '../../shared/model/ad.model';
+
+const MARKET_ADS: MockAd[] = [
+  {
+    sponsor: 'Bloomberg Terminal',
+    headline: 'The Trusted Data Standard',
+    body: 'Real-time quotes, news, and analytics used by professional trading desks worldwide.',
+    cta: 'Request Demo'
+  },
+  {
+    sponsor: 'Tradovate',
+    headline: 'Commission-Free Futures',
+    body: 'Trade futures with no per-contract fees on our flat-rate monthly plans.',
+    cta: 'Open Account'
+  },
+  {
+    sponsor: 'Benzinga Pro',
+    headline: 'Move Faster Than the Market',
+    body: 'Breaking news and squawk alerts delivered seconds before the headlines hit.',
+    cta: 'Try Free'
+  }
+];
 
 const STORAGE_VIEW_MODE     = 'mw.viewMode';
 const STORAGE_ORDER_FUTURES = 'mw.order.futures';
@@ -34,7 +57,7 @@ function loadOrder(key: string): string[] {
 @Component({
   selector: 'app-market',
   standalone: true,
-  imports: [InstrumentCardComponent, PinnedInstrumentsComponent, DragDropModule],
+  imports: [InstrumentCardComponent, PinnedInstrumentsComponent, DragDropModule, AdSidebarComponent],
   templateUrl: './market.component.html',
   styleUrl: './market.component.scss'
 })
@@ -44,7 +67,9 @@ export class MarketComponent implements OnDestroy {
   private priceFeed          = inject(PriceFeedService);
   private selectionService   = inject(InstrumentSelectionService);
   readonly pinService      = inject(PinService);
-  
+
+  readonly ads = MARKET_ADS;
+
   instruments = this.instrumentService.instruments;
 
   readonly futuresCategories: InstrumentCategory[] = this.categoryService.byType('futures');

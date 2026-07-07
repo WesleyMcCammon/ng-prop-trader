@@ -19,6 +19,9 @@
       </div>
     </div>
 
+    <div class="page-layout">
+    <div class="page-main">
+
     <app-pinned-instruments [hideAllLevels]="hideAllLevels()" />
 
     @if (viewMode() === 'all') {
@@ -99,6 +102,12 @@
     </section>
   }
     } <!-- end @else categorized -->
+
+    </div>
+
+    <app-ad-sidebar [ads]="ads" title="Sponsored" />
+
+    </div>
 
   </div>
 </main>

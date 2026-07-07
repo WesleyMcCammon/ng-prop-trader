@@ -6,6 +6,9 @@
       <span class="total-active">{{ svc.totalActive() }} active</span>
     </div>
 
+    <div class="page-layout">
+    <div class="page-main">
+
     <div class="masonry-grid">
     @for (group of groups; track group.id) {
       <section class="indicator-section">
@@ -58,6 +61,12 @@
       </section>
     }
     </div><!-- /masonry-grid -->
+
+    </div>
+
+    <app-ad-sidebar [ads]="ads" title="Sponsored" />
+
+    </div>
 
   </div>
 </main>

@@ -208,6 +208,72 @@
   color: var(--color-text-muted);
 }
 
+/* ── Ad strip ───────────────────────────────────────── */
+.ad-strip-section {
+  padding: var(--space-5);
+  border: 1px dashed var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface-2);
+}
+
+.ad-strip-label {
+  display: block;
+  font-size: var(--font-size-xs);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--color-text-muted);
+  margin-bottom: var(--space-4);
+}
+
+.ad-strip-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-4);
+
+  @media (min-width: 640px)  { grid-template-columns: repeat(2, 1fr); }
+  @media (min-width: 1024px) { grid-template-columns: repeat(3, 1fr); }
+}
+
+.ad-strip-card {
+  display: flex;
+  flex-direction: column;
+  padding: var(--space-4);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+}
+
+.ad-strip-card .ad-badge--static {
+  align-self: flex-end;
+  margin-bottom: var(--space-2);
+}
+
+.ad-strip-media {
+  width: 100%;
+  aspect-ratio: 16/9;
+  margin-bottom: var(--space-3);
+}
+
+.ad-strip-card .ad-sponsor {
+  margin-bottom: var(--space-1);
+}
+
+.ad-strip-headline {
+  font-size: var(--font-size-sm);
+  font-weight: 700;
+  color: var(--color-heading);
+  line-height: 1.3;
+  margin-bottom: var(--space-1);
+}
+
+.ad-strip-text {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  line-height: 1.5;
+  margin-bottom: var(--space-3);
+}
+
 /* ── Two-column layout ──────────────────────────────── */
 .two-col-layout {
   display: grid;

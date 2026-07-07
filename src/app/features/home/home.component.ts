@@ -8,13 +8,7 @@ import { InstrumentService } from '../../core/services/instrument.service';
 import { PinService } from '../../core/services/pin.service';
 import { PriceFeedService } from '../../core/services/price-feed.service';
 import { InstrumentCardComponent } from '../../shared/components/instrument-card/instrument-card.component';
-
-interface MockAd {
-  sponsor: string;
-  headline: string;
-  body: string;
-  cta: string;
-}
+import { MockAd } from '../../shared/model/ad.model';
 
 const MOCK_ADS: MockAd[] = [
   {
@@ -34,6 +28,27 @@ const MOCK_ADS: MockAd[] = [
     headline: '90% Profit Split',
     body: 'Keep more of what you earn with our industry-leading payout structure.',
     cta: 'Learn More'
+  }
+];
+
+const MOCK_STRIP_ADS: MockAd[] = [
+  {
+    sponsor: 'Topstep',
+    headline: 'Trade Our Money',
+    body: 'Earn a funded futures account by proving your strategy in our trading combine.',
+    cta: 'Get Started'
+  },
+  {
+    sponsor: 'Interactive Brokers',
+    headline: 'Low-Cost Global Access',
+    body: 'Trade stocks, options, and futures across 150 markets from one account.',
+    cta: 'Open Account'
+  },
+  {
+    sponsor: 'MetaTrader 5',
+    headline: 'Multi-Asset Trading Platform',
+    body: 'Advanced order types and one-click trading for forex, stocks, and futures.',
+    cta: 'Download'
   }
 ];
 
@@ -100,6 +115,7 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   readonly ads = MOCK_ADS;
   readonly bannerAds = MOCK_BANNER_ADS;
+  readonly stripAds = MOCK_STRIP_ADS;
 
 
   ngOnInit(): void {

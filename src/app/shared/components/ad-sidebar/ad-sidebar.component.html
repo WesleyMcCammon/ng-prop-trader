@@ -1,0 +1,15 @@
+<aside class="ad-sidebar">
+  <h2 class="ad-sidebar-title">{{ title() }}</h2>
+  @for (ad of ads(); track ad.sponsor) {
+    <article class="ad-card">
+      <span class="ad-badge">Ad</span>
+      <div class="ad-media placeholder-img"></div>
+      <div class="ad-body">
+        <span class="ad-sponsor">{{ ad.sponsor }}</span>
+        <h3 class="ad-headline">{{ ad.headline }}</h3>
+        <p class="ad-text">{{ ad.body }}</p>
+        <a href="#" class="ad-cta" (click)="$event.preventDefault()">{{ ad.cta }}</a>
+      </div>
+    </article>
+  }
+</aside>

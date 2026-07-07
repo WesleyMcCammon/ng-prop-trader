@@ -4,6 +4,29 @@ import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { DataService, Post } from '../../core/services/data.service';
 import { SpinnerComponent } from '../../shared/components/spinner/spinner.component';
+import { AdSidebarComponent } from '../../shared/components/ad-sidebar/ad-sidebar.component';
+import { MockAd } from '../../shared/model/ad.model';
+
+const NEWS_ADS: MockAd[] = [
+  {
+    sponsor: 'Benzinga News',
+    headline: 'Breaking News, Seconds Faster',
+    body: 'Real-time squawk and headline alerts before they hit the wires.',
+    cta: 'Try Free'
+  },
+  {
+    sponsor: 'Forex Factory Premium',
+    headline: 'Never Miss a Catalyst',
+    body: 'High-impact economic calendar alerts sent straight to your phone.',
+    cta: 'Get Alerts'
+  },
+  {
+    sponsor: 'Trading Economics',
+    headline: 'Global Data at Your Fingertips',
+    body: 'Macro indicators and forecasts for 196 countries, updated in real time.',
+    cta: 'Explore Data'
+  }
+];
 
 type Severity = 'critical' | 'high' | 'medium';
 
@@ -60,7 +83,7 @@ function loadActiveSeverities(): Set<Severity> {
 @Component({
   selector: 'app-news-alerts',
   standalone: true,
-  imports: [CommonModule, RouterLink, SpinnerComponent],
+  imports: [CommonModule, RouterLink, SpinnerComponent, AdSidebarComponent],
   templateUrl: './news-alerts.component.html',
   styleUrl: './news-alerts.component.scss'
 })
@@ -70,6 +93,8 @@ export class NewsAlertsComponent implements OnInit {
 
   loading = this.dataService.loading;
   error = this.dataService.error;
+
+  readonly ads = NEWS_ADS;
 
   activeSeverities = signal<Set<Severity>>(loadActiveSeverities());
 
