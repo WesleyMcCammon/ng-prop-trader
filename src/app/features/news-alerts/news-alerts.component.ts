@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, computed, signal } from '@angular/core';
+import { Component, inject, OnInit, computed, effect, signal } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
@@ -32,6 +32,31 @@ const COUNTRIES: Array<{ name: string; code: string }> = [
   { name: 'Singapore',      code: 'SG' },
 ];
 
+const STORAGE_ACTIVE_COUNTRIES = 'mw.newsAlerts.activeCountries';
+const STORAGE_ACTIVE_SEVERITIES = 'mw.newsAlerts.activeSeverities';
+const SEVERITY_VALUES: Severity[] = ['critical', 'high', 'medium'];
+
+function loadActiveCountries(): Set<string> {
+  try {
+    const raw = localStorage.getItem(STORAGE_ACTIVE_COUNTRIES);
+    return raw ? new Set<string>(JSON.parse(raw)) : new Set(COUNTRIES.map(c => c.code));
+  } catch {
+    return new Set(COUNTRIES.map(c => c.code));
+  }
+}
+
+function loadActiveSeverities(): Set<Severity> {
+  try {
+    const raw = localStorage.getItem(STORAGE_ACTIVE_SEVERITIES);
+    if (!raw) return new Set(SEVERITY_VALUES);
+    const parsed: string[] = JSON.parse(raw);
+    const valid = parsed.filter((v): v is Severity => (SEVERITY_VALUES as string[]).includes(v));
+    return valid.length ? new Set(valid) : new Set(SEVERITY_VALUES);
+  } catch {
+    return new Set(SEVERITY_VALUES);
+  }
+}
+
 @Component({
   selector: 'app-news-alerts',
   standalone: true,
@@ -46,7 +71,11 @@ export class NewsAlertsComponent implements OnInit {
   loading = this.dataService.loading;
   error = this.dataService.error;
 
-  filter = signal<Severity | 'all'>('all');
+  activeSeverities = signal<Set<Severity>>(loadActiveSeverities());
+
+  readonly countries = COUNTRIES;
+
+  activeCountries = signal<Set<string>>(loadActiveCountries());
 
   alerts = computed<Alert[]>(() =>
     this.dataService.posts().slice(0, 12).map((p, i) => ({
@@ -59,16 +88,29 @@ export class NewsAlertsComponent implements OnInit {
   );
 
   filtered = computed(() => {
-    const f = this.filter();
-    return f === 'all' ? this.alerts() : this.alerts().filter(a => a.severity === f);
+    const severities = this.activeSeverities();
+    const countries = this.activeCountries();
+    return this.alerts().filter(a =>
+      severities.has(a.severity) && countries.has(a.countryCode)
+    );
   });
 
-  readonly filters: Array<{ value: Severity | 'all'; label: string }> = [
-    { value: 'all',      label: 'All Alerts' },
+  isAllActive = computed(() => this.activeSeverities().size === SEVERITY_VALUES.length);
+
+  readonly filters: Array<{ value: Severity; label: string }> = [
     { value: 'critical', label: 'Critical' },
     { value: 'high',     label: 'High' },
     { value: 'medium',   label: 'Medium' }
   ];
+
+  constructor() {
+    effect(() => {
+      localStorage.setItem(STORAGE_ACTIVE_COUNTRIES, JSON.stringify([...this.activeCountries()]));
+    });
+    effect(() => {
+      localStorage.setItem(STORAGE_ACTIVE_SEVERITIES, JSON.stringify([...this.activeSeverities()]));
+    });
+  }
 
   ngOnInit(): void {
     this.title.setTitle('News Alerts – MarketWatch');
@@ -77,11 +119,45 @@ export class NewsAlertsComponent implements OnInit {
     }
   }
 
-  setFilter(f: Severity | 'all'): void {
-    this.filter.set(f);
+  selectAllSeverities(): void {
+    this.activeSeverities.set(new Set(SEVERITY_VALUES));
   }
 
-  countBySeverity(s: Severity | 'all'): number {
+  toggleSeverity(s: Severity): void {
+    this.activeSeverities.update(active => {
+      const next = new Set(active);
+      next.has(s) ? next.delete(s) : next.add(s);
+      return next;
+    });
+  }
+
+  isSeverityActive(s: Severity): boolean {
+    return this.activeSeverities().has(s);
+  }
+
+  countBySeverity(s: Severity): number {
     return this.alerts().filter(a => a.severity === s).length;
+  }
+
+  isCountryActive(code: string): boolean {
+    return this.activeCountries().has(code);
+  }
+
+  isCountryDisabled(code: string): boolean {
+    return this.countByCountry(code) === 0;
+  }
+
+  toggleCountry(code: string): void {
+    if (this.isCountryDisabled(code)) return;
+    this.activeCountries.update(active => {
+      const next = new Set(active);
+      next.has(code) ? next.delete(code) : next.add(code);
+      return next;
+    });
+  }
+
+  countByCountry(code: string): number {
+    const severities = this.activeSeverities();
+    return this.alerts().filter(a => a.countryCode === code && severities.has(a.severity)).length;
   }
 }

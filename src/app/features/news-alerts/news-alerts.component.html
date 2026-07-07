@@ -18,18 +18,40 @@
 
     <!-- Filter bar -->
     <div class="filter-bar">
+      <button
+        class="filter-btn"
+        [class.active]="isAllActive()"
+        data-severity="all"
+        (click)="selectAllSeverities()">
+        All Alerts
+      </button>
       @for (f of filters; track f.value) {
         <button
           class="filter-btn"
-          [class.active]="filter() === f.value"
+          [class.active]="isSeverityActive(f.value)"
           [attr.data-severity]="f.value"
-          (click)="setFilter(f.value)">
+          (click)="toggleSeverity(f.value)">
           {{ f.label }}
-          @if (f.value !== 'all') {
-            <span class="filter-count">
-              {{ countBySeverity(f.value) }}
-            </span>
-          }
+          <span class="filter-count">
+            {{ countBySeverity(f.value) }}
+          </span>
+        </button>
+      }
+    </div>
+
+    <!-- Country toggle bar -->
+    <div class="country-bar">
+      @for (c of countries; track c.code) {
+        <button
+          type="button"
+          class="country-btn"
+          [class.active]="isCountryActive(c.code)"
+          [disabled]="isCountryDisabled(c.code)"
+          [title]="isCountryDisabled(c.code) ? c.name + ' — no alerts at selected levels' : c.name"
+          (click)="toggleCountry(c.code)">
+          <span class="fi" [class]="'fi-' + c.code.toLowerCase()"></span>
+          {{ c.code }}
+          <span class="country-count">{{ countByCountry(c.code) }}</span>
         </button>
       }
     </div>
@@ -72,7 +94,7 @@
           <div class="empty-state">
             <span class="empty-icon">🔔</span>
             <p>No alerts match the selected filter.</p>
-            <button class="btn btn--ghost" (click)="setFilter('all')">Show all alerts</button>
+            <button class="btn btn--ghost" (click)="selectAllSeverities()">Show all alerts</button>
           </div>
         }
       </div>
