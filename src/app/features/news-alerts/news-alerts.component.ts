@@ -1,7 +1,6 @@
 import { Component, inject, OnInit, computed, effect, signal } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { CommonModule } from '@angular/common';
-import { RouterLink } from '@angular/router';
 import { DataService, Post } from '../../core/services/data.service';
 import { SpinnerComponent } from '../../shared/components/spinner/spinner.component';
 import { AdSidebarComponent } from '../../shared/components/ad-sidebar/ad-sidebar.component';
@@ -83,7 +82,7 @@ function loadActiveSeverities(): Set<Severity> {
 @Component({
   selector: 'app-news-alerts',
   standalone: true,
-  imports: [CommonModule, RouterLink, SpinnerComponent, AdSidebarComponent],
+  imports: [CommonModule, SpinnerComponent, AdSidebarComponent],
   templateUrl: './news-alerts.component.html',
   styleUrl: './news-alerts.component.scss'
 })

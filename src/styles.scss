@@ -115,6 +115,14 @@ img {
 /* pipe-compatible titlecase for display */
 .titlecase { text-transform: capitalize; }
 
+/* ── Page title (shared across all pages except Home) ── */
+.page-title {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--color-heading);
+  margin: 0;
+}
+
 /* ── Page layout with ad sidebar ────────────────────── */
 .page-layout {
   display: grid;
