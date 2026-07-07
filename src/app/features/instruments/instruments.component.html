@@ -323,7 +323,14 @@
                   <tr [class.row-expanded]="showAll && isExpanded(i.symbol)" [class.row-selectable]="!showAll" (click)="!showAll && toggleActive(i.symbol)">
                     @if (!showAll) { <td class="col-icon"><span class="status-icon" [class.status-icon--active]="isActive(i.symbol)">✓</span></td> }
                     @if (showAll)  { <td class="col-expand"><button class="expand-btn" (click)="toggleRow(i.symbol)">{{ isExpanded(i.symbol) ? '▼' : '▶' }}</button></td> }
-                    <td class="symbol">{{ i.symbol }}</td>
+                    <td class="symbol">
+                      {{ i.symbol }}
+                      <sub class="pair-flags">
+                        @for (code of pairFlags(i.symbol); track code) {
+                          <span class="fi" [class]="'fi-' + code"></span>
+                        }
+                      </sub>
+                    </td>
                     <td>{{ i.name }}</td>
                     <td class="num">{{ i.tickSize }}</td>
                     @if (!showAll && col('price'))     { <td class="num">{{ i.price | priceFormat:i.tickSize }}</td> }

@@ -51,6 +51,17 @@ interface CategoryGroup {
   items: FuturesContract[];
 }
 
+const CURRENCY_FLAGS: Record<string, string> = {
+  EUR: 'eu',
+  USD: 'us',
+  GBP: 'gb',
+  JPY: 'jp',
+  CHF: 'ch',
+  CAD: 'ca',
+  AUD: 'au',
+  NZD: 'nz',
+};
+
 const STORAGE_FILTERS: Record<Section, string> = {
   futures: 'mw.filters.futures',
   forex:   'mw.filters.forex',
@@ -255,6 +266,10 @@ export class InstrumentsComponent implements OnInit, OnDestroy {
       delete next[col];
       return next;
     });
+  }
+
+  pairFlags(symbol: string): string[] {
+    return symbol.split('/').map(code => CURRENCY_FLAGS[code]).filter((code): code is string => !!code);
   }
 
   uniqueVals(items: FuturesContract[], col: string): string[] {

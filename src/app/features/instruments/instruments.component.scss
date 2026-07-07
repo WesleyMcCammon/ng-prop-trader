@@ -420,6 +420,19 @@
   font-family: monospace;
 }
 
+.pair-flags {
+  display: inline-flex;
+  gap: 2px;
+  margin-left: 0.35rem;
+  font-size: 1.2em;
+  vertical-align: sub;
+
+  .fi {
+    border: 1px solid rgba(0, 0, 0, 0.12);
+    border-radius: 2px;
+  }
+}
+
 .type-badge {
   display: inline-block;
   padding: 0.1rem 0.5rem;
