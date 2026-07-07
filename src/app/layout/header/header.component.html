@@ -7,6 +7,7 @@
 
     <nav class="nav-desktop" aria-label="Main navigation">
       <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Home</a>
+      <a routerLink="/dashboard" routerLinkActive="active">Dashboard</a>
       <a routerLink="/market" routerLinkActive="active">Markets</a>
       <a routerLink="/instruments" routerLinkActive="active">Instruments</a>
       <a routerLink="/indicators" routerLinkActive="active">Indicators</a>
@@ -39,6 +40,7 @@
 
   <nav class="nav-mobile" [class.open]="menuOpen()" aria-label="Mobile navigation">
     <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" (click)="closeMenu()">Home</a>
+    <a routerLink="/dashboard" routerLinkActive="active" (click)="closeMenu()">Dashboard</a>
     <a routerLink="/market" routerLinkActive="active" (click)="closeMenu()">Markets</a>
     <a routerLink="/instruments" routerLinkActive="active" (click)="closeMenu()">Instruments</a>
     <a routerLink="/indicators" routerLinkActive="active" (click)="closeMenu()">Indicators</a>

@@ -1,0 +1,66 @@
+<main class="dashboard-page">
+  <div class="container">
+
+    <div class="page-header">
+      <h1 class="page-title">Dashboard</h1>
+      <span class="count">{{ rows().length }} markets</span>
+      <button
+        type="button"
+        class="toggle-btn"
+        [class.toggle-btn--active]="showSelectedOnly()"
+        (click)="toggleShowSelectedOnly()">
+        {{ showSelectedOnly() ? 'Showing Selected Only' : 'Show Selected Only' }}
+      </button>
+    </div>
+
+    @if (showSelectedOnly() && rows().length === 0) {
+      <p class="empty-state">No markets selected. Select instruments on the Market or Instruments page.</p>
+    } @else {
+      <div class="table-wrap">
+        <table class="dashboard-table">
+          <thead>
+            <tr>
+              <th class="sortable" (click)="toggleSort()">Instrument <span class="sort-arrow">{{ sortDir() === 'asc' ? '▲' : '▼' }}</span></th>
+              <th>Description</th>
+              <th class="num">Bid</th>
+              <th class="num">Ask</th>
+              <th class="num">Change</th>
+              <th>Top Levels</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (row of rows(); track row.symbol) {
+              <tr>
+                <td class="symbol">
+                  {{ row.symbol }}
+                  <span class="type-badge type-badge--{{ row.type }}">{{ row.type }}</span>
+                </td>
+                <td>{{ row.name }}</td>
+                <td class="num">{{ row.bid | priceFormat:row.tickSize }}</td>
+                <td class="num">{{ row.ask | priceFormat:row.tickSize }}</td>
+                <td class="num" [class.positive]="row.change >= 0" [class.negative]="row.change < 0">
+                  {{ row.change | priceFormat:row.tickSize }}
+                </td>
+                <td class="levels-cell">
+                  @if (row.levels.length > 0) {
+                    @for (lv of row.levels; track lv.levelId) {
+                      <span class="level-chip" [title]="lv.groupName + ': ' + (lv.description || lv.label)">
+                        <span class="level-chip-label">{{ lv.label }}</span>
+                        <span class="level-chip-delta" [class.positive]="lv.delta > 0" [class.negative]="lv.delta < 0">
+                          {{ lv.delta > 0 ? '+' : '' }}{{ lv.delta | priceFormat:row.tickSize }}
+                        </span>
+                      </span>
+                    }
+                  } @else {
+                    <span class="no-levels">—</span>
+                  }
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+
+  </div>
+</main>
