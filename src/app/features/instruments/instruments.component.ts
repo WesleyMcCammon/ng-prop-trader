@@ -1,4 +1,4 @@
-import { Component, HostListener, Input, OnDestroy, OnInit, WritableSignal, effect, inject, signal, computed } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit, WritableSignal, effect, inject, signal, computed } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { CommonModule } from '@angular/common';
 import { InstrumentService } from '../../core/services/instrument.service';
@@ -30,9 +30,8 @@ const INSTRUMENT_ADS: MockAd[] = [
   }
 ];
 
-type SortDir    = 'asc' | 'desc';
-type Section    = 'futures' | 'forex' | 'cfd';
-type ColFilters = Record<string, Set<string>>;
+type SortDir = 'asc' | 'desc';
+type Section = 'futures' | 'forex' | 'cfd';
 
 const SECTION_DEFS: Array<{ key: Section; label: string }> = [
   { key: 'futures', label: 'Futures' },
@@ -94,27 +93,6 @@ function loadActiveCountries(): Set<string> {
   }
 }
 
-const STORAGE_FILTERS: Record<Section, string> = {
-  futures: 'mw.filters.futures',
-  forex:   'mw.filters.forex',
-  cfd:     'mw.filters.cfd',
-};
-
-function loadFilters(key: string): ColFilters {
-  try {
-    const raw = localStorage.getItem(key);
-    if (!raw) return {};
-    const parsed: Record<string, string[]> = JSON.parse(raw);
-    return Object.fromEntries(Object.entries(parsed).map(([k, arr]) => [k, new Set(arr)]));
-  } catch { return {}; }
-}
-
-function saveFilters(key: string, f: ColFilters): void {
-  localStorage.setItem(key, JSON.stringify(
-    Object.fromEntries(Object.entries(f).map(([k, s]) => [k, [...s]]))
-  ));
-}
-
 export const TOGGLEABLE_COLS = [
   { key: 'price',     label: 'Price'    },
   { key: 'bid',       label: 'Bid'      },
@@ -148,12 +126,6 @@ export class InstrumentsComponent implements OnInit, OnDestroy {
 
   readonly toggleableCols = TOGGLEABLE_COLS;
 
-  // Column filter state per section — persisted to localStorage
-  futuresColFilters = signal<ColFilters>(loadFilters(STORAGE_FILTERS.futures));
-  forexColFilters   = signal<ColFilters>(loadFilters(STORAGE_FILTERS.forex));
-  cfdColFilters     = signal<ColFilters>(loadFilters(STORAGE_FILTERS.cfd));
-  openFilter        = signal<{ key: string; x: number; y: number } | null>(null);
-
   private sorted = computed(() => {
     const dir = this.sortDir();
     return [...this.instruments()].sort((a, b) =>
@@ -183,15 +155,13 @@ export class InstrumentsComponent implements OnInit, OnDestroy {
     return this.sorted().filter(i => i.type === 'cfd' && (!sel || sel.has(i.symbol)));
   });
 
-  // Final arrays: base + column filters applied
-  futuresInstruments = computed(() => this.applyColFilters(this.futuresBase(), this.futuresColFilters()));
-  cfdInstruments     = computed(() => this.applyColFilters(this.cfdBase(),     this.cfdColFilters()));
+  futuresInstruments = this.futuresBase;
+  cfdInstruments     = this.cfdBase;
 
-  // Forex: base + column filters, then country filter
-  private forexColFiltered = computed(() => this.applyColFilters(this.forexBase(), this.forexColFilters()));
+  // Forex: base filtered by country selection
   forexInstruments = computed(() => {
     const active = this.activeCountries();
-    return this.forexColFiltered().filter(i =>
+    return this.forexBase().filter(i =>
       this.isActive(i.symbol) || this.pairFlags(i.symbol).every(code => active.has(code.toUpperCase()))
     );
   });
@@ -242,9 +212,6 @@ export class InstrumentsComponent implements OnInit, OnDestroy {
 
   constructor() {
     inject(Title).setTitle('Instruments – MarketWatch');
-    effect(() => saveFilters(STORAGE_FILTERS.futures, this.futuresColFilters()));
-    effect(() => saveFilters(STORAGE_FILTERS.forex,   this.forexColFilters()));
-    effect(() => saveFilters(STORAGE_FILTERS.cfd,     this.cfdColFilters()));
     effect(() => localStorage.setItem(STORAGE_ACTIVE_COUNTRIES, JSON.stringify([...this.activeCountries()])));
   }
 
@@ -256,61 +223,6 @@ export class InstrumentsComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.priceFeed.stop();
-  }
-
-  @HostListener('document:click')
-  closeFilters(): void {
-    this.openFilter.set(null);
-  }
-
-  // ── Column filter ─────────────────────────────────────
-
-  isFilterOpen(section: Section, col: string): boolean {
-    return this.openFilter()?.key === `${section}:${col}`;
-  }
-
-  toggleFilterOpen(section: Section, col: string, event: Event): void {
-    event.stopPropagation();
-    const key = `${section}:${col}`;
-    if (this.openFilter()?.key === key) {
-      this.openFilter.set(null);
-      return;
-    }
-    const rect = (event.currentTarget as HTMLElement).getBoundingClientRect();
-    this.openFilter.set({ key, x: rect.left, y: rect.bottom + 4 });
-  }
-
-  colFilterCount(filters: ColFilters, col: string): number {
-    return filters[col]?.size ?? 0;
-  }
-
-  colFilterActive(filters: ColFilters, col: string): boolean {
-    return (filters[col]?.size ?? 0) > 0;
-  }
-
-  isFilterChecked(filters: ColFilters, col: string, val: string): boolean {
-    return filters[col]?.has(val) ?? false;
-  }
-
-  toggleColFilter(section: Section, col: string, val: string, event: Event): void {
-    event.stopPropagation();
-    this.getFilterSig(section).update(f => {
-      const next = { ...f };
-      const set = new Set(next[col] ?? []);
-      set.has(val) ? set.delete(val) : set.add(val);
-      if (set.size === 0) delete next[col];
-      else next[col] = set;
-      return next;
-    });
-  }
-
-  clearColFilter(section: Section, col: string, event: Event): void {
-    event.stopPropagation();
-    this.getFilterSig(section).update(f => {
-      const next = { ...f };
-      delete next[col];
-      return next;
-    });
   }
 
   pairFlags(symbol: string): string[] {
@@ -335,28 +247,7 @@ export class InstrumentsComponent implements OnInit, OnDestroy {
   }
 
   countByCountry(code: string): number {
-    return this.forexColFiltered().filter(i => this.pairFlags(i.symbol).includes(code.toLowerCase())).length;
-  }
-
-  uniqueVals(items: FuturesContract[], col: string): string[] {
-    return [...new Set(items.map(i => this.fieldVal(i, col)))].sort((a, b) =>
-      a.localeCompare(b, undefined, { numeric: true })
-    );
-  }
-
-  private fieldVal(i: FuturesContract, col: string): string {
-    return String((i as any)[col]);
-  }
-
-  private applyColFilters(items: FuturesContract[], filters: ColFilters): FuturesContract[] {
-    const entries = Object.entries(filters).filter(([, s]) => s.size > 0);
-    if (!entries.length) return items;
-    return items.filter(i => entries.every(([col, vals]) => vals.has(this.fieldVal(i, col))));
-  }
-
-  private getFilterSig(section: Section): WritableSignal<ColFilters> {
-    return section === 'futures' ? this.futuresColFilters :
-           section === 'forex'   ? this.forexColFilters   : this.cfdColFilters;
+    return this.forexBase().filter(i => this.pairFlags(i.symbol).includes(code.toLowerCase())).length;
   }
 
   private baseFor(type: Section): FuturesContract[] {
