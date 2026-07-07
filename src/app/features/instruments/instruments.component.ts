@@ -62,6 +62,38 @@ const CURRENCY_FLAGS: Record<string, string> = {
   NZD: 'nz',
 };
 
+const CURRENCY_NAMES: Record<string, string> = {
+  EUR: 'Eurozone',
+  USD: 'United States',
+  GBP: 'United Kingdom',
+  JPY: 'Japan',
+  CHF: 'Switzerland',
+  CAD: 'Canada',
+  AUD: 'Australia',
+  NZD: 'New Zealand',
+};
+
+interface InstrumentCountry {
+  code: string;
+  name: string;
+}
+
+const INSTRUMENT_COUNTRIES: InstrumentCountry[] = Object.entries(CURRENCY_FLAGS).map(([currency, flag]) => ({
+  code: flag.toUpperCase(),
+  name: CURRENCY_NAMES[currency],
+}));
+
+const STORAGE_ACTIVE_COUNTRIES = 'mw.instruments.activeCountries';
+
+function loadActiveCountries(): Set<string> {
+  try {
+    const raw = localStorage.getItem(STORAGE_ACTIVE_COUNTRIES);
+    return raw ? new Set<string>(JSON.parse(raw)) : new Set(INSTRUMENT_COUNTRIES.map(c => c.code));
+  } catch {
+    return new Set(INSTRUMENT_COUNTRIES.map(c => c.code));
+  }
+}
+
 const STORAGE_FILTERS: Record<Section, string> = {
   futures: 'mw.filters.futures',
   forex:   'mw.filters.forex',
@@ -153,8 +185,20 @@ export class InstrumentsComponent implements OnInit, OnDestroy {
 
   // Final arrays: base + column filters applied
   futuresInstruments = computed(() => this.applyColFilters(this.futuresBase(), this.futuresColFilters()));
-  forexInstruments   = computed(() => this.applyColFilters(this.forexBase(),   this.forexColFilters()));
   cfdInstruments     = computed(() => this.applyColFilters(this.cfdBase(),     this.cfdColFilters()));
+
+  // Forex: base + column filters, then country filter
+  private forexColFiltered = computed(() => this.applyColFilters(this.forexBase(), this.forexColFilters()));
+  forexInstruments = computed(() => {
+    const active = this.activeCountries();
+    return this.forexColFiltered().filter(i =>
+      this.isActive(i.symbol) || this.pairFlags(i.symbol).every(code => active.has(code.toUpperCase()))
+    );
+  });
+
+  // ── Country filter (forex only) ─────────────────────────
+  readonly countries = INSTRUMENT_COUNTRIES;
+  activeCountries = signal<Set<string>>(loadActiveCountries());
 
   // ── Category groups (per section) ──────────────────────
   collapsedFuturesGroups = signal<Set<string>>(new Set());
@@ -201,6 +245,7 @@ export class InstrumentsComponent implements OnInit, OnDestroy {
     effect(() => saveFilters(STORAGE_FILTERS.futures, this.futuresColFilters()));
     effect(() => saveFilters(STORAGE_FILTERS.forex,   this.forexColFilters()));
     effect(() => saveFilters(STORAGE_FILTERS.cfd,     this.cfdColFilters()));
+    effect(() => localStorage.setItem(STORAGE_ACTIVE_COUNTRIES, JSON.stringify([...this.activeCountries()])));
   }
 
   ngOnInit(): void {
@@ -270,6 +315,27 @@ export class InstrumentsComponent implements OnInit, OnDestroy {
 
   pairFlags(symbol: string): string[] {
     return symbol.split('/').map(code => CURRENCY_FLAGS[code]).filter((code): code is string => !!code);
+  }
+
+  isCountryActive(code: string): boolean {
+    return this.activeCountries().has(code);
+  }
+
+  isCountryDisabled(code: string): boolean {
+    return this.countByCountry(code) === 0;
+  }
+
+  toggleCountry(code: string): void {
+    if (this.isCountryDisabled(code)) return;
+    this.activeCountries.update(active => {
+      const next = new Set(active);
+      next.has(code) ? next.delete(code) : next.add(code);
+      return next;
+    });
+  }
+
+  countByCountry(code: string): number {
+    return this.forexColFiltered().filter(i => this.pairFlags(i.symbol).includes(code.toLowerCase())).length;
   }
 
   uniqueVals(items: FuturesContract[], col: string): string[] {

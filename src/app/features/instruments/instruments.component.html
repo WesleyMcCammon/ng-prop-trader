@@ -234,6 +234,24 @@
           {{ isAllGroupsExpanded('forex') ? 'Collapse All' : 'Expand All' }}
         </button>
       </div>
+
+      <!-- Country filter -->
+      <div class="country-bar">
+        @for (c of countries; track c.code) {
+          <button
+            type="button"
+            class="country-btn"
+            [class.active]="isCountryActive(c.code)"
+            [disabled]="isCountryDisabled(c.code)"
+            [title]="isCountryDisabled(c.code) ? c.name + ' — no pairs at current filters' : c.name"
+            (click)="toggleCountry(c.code)">
+            <span class="fi" [class]="'fi-' + c.code.toLowerCase()"></span>
+            {{ c.code }}
+            <span class="country-count">{{ countByCountry(c.code) }}</span>
+          </button>
+        }
+      </div>
+
       <div class="table-wrap">
         <table class="instruments-table">
           <thead>
