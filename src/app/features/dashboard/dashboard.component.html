@@ -21,40 +21,48 @@
           <thead>
             <tr>
               <th class="sortable" (click)="toggleSort()">Instrument <span class="sort-arrow">{{ sortDir() === 'asc' ? '▲' : '▼' }}</span></th>
-              <th>Description</th>
-              <th class="num">Bid</th>
-              <th class="num">Ask</th>
-              <th class="num">Change</th>
-              <th>Top Levels</th>
+              <th class="num">Bid / Ask</th>
+              @for (idx of levelSlots; track idx) {
+                <th></th>
+              }
             </tr>
           </thead>
           <tbody>
             @for (row of rows(); track row.symbol) {
               <tr>
-                <td class="symbol">
-                  {{ row.symbol }}
+                <td class="instrument-cell">
                   <span class="type-badge type-badge--{{ row.type }}">{{ row.type }}</span>
+                  <div class="instrument-symbol">{{ row.symbol }}</div>
+                  <div class="instrument-desc">{{ row.name }}</div>
                 </td>
-                <td>{{ row.name }}</td>
-                <td class="num">{{ row.bid | priceFormat:row.tickSize }}</td>
-                <td class="num">{{ row.ask | priceFormat:row.tickSize }}</td>
-                <td class="num" [class.positive]="row.change >= 0" [class.negative]="row.change < 0">
-                  {{ row.change | priceFormat:row.tickSize }}
+                <td class="num price-cell">
+                  <div class="price-line">
+                    {{ row.bid | priceFormat:row.tickSize }} / {{ row.ask | priceFormat:row.tickSize }}
+                  </div>
+                  <div class="change-line" [class.positive]="row.changePct >= 0" [class.negative]="row.changePct < 0">
+                    {{ row.changePct >= 0 ? '+' : '' }}{{ row.changePct | number:'1.2-2' }}%
+                  </div>
                 </td>
-                <td class="levels-cell">
-                  @if (row.levels.length > 0) {
-                    @for (lv of row.levels; track lv.levelId) {
-                      <span class="level-chip" [title]="lv.groupName + ': ' + (lv.description || lv.label)">
-                        <span class="level-chip-label">{{ lv.label }}</span>
-                        <span class="level-chip-delta" [class.positive]="lv.delta > 0" [class.negative]="lv.delta < 0">
-                          {{ lv.delta > 0 ? '+' : '' }}{{ lv.delta | priceFormat:row.tickSize }}
+                @for (idx of levelSlots; track idx) {
+                  <td class="level-cell">
+                    @if (row.levels[idx]; as lv) {
+                      <div class="level-row">
+                        <span class="level-line1">
+                          <span class="level-group" [title]="lv.groupDescription">{{ lv.groupName }}</span>
+                          <span class="level-name" [title]="lv.label">{{ lv.description || lv.label }}</span>
                         </span>
-                      </span>
+                        <span class="level-line2">
+                          <span class="level-value">{{ lv.value | priceFormat:row.tickSize }}</span>
+                          <span class="level-delta" [class.positive]="lv.delta > 0" [class.negative]="lv.delta < 0">
+                            {{ lv.delta > 0 ? '+' : '' }}{{ lv.delta | priceFormat:row.tickSize }}
+                          </span>
+                        </span>
+                      </div>
+                    } @else {
+                      <span class="no-levels">—</span>
                     }
-                  } @else {
-                    <span class="no-levels">—</span>
-                  }
-                </td>
+                  </td>
+                }
               </tr>
             }
           </tbody>

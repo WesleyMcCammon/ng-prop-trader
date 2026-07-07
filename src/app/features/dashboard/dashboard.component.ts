@@ -15,7 +15,7 @@ interface DashboardRow {
   name: string;
   bid: number;
   ask: number;
-  change: number;
+  changePct: number;
   tickSize: number;
   levels: ActiveLevelDisplay[];
 }
@@ -36,6 +36,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
   sortDir          = signal<SortDir>('asc');
   showSelectedOnly = signal(false);
 
+  readonly levelSlots = [0, 1, 2, 3, 4];
+
   rows = computed<DashboardRow[]>(() => {
     const dir = this.sortDir();
     const onlySelected = this.showSelectedOnly();
@@ -51,7 +53,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
       name: i.name,
       bid: i.bid,
       ask: i.ask,
-      change: i.change,
+      changePct: i.changePct,
       tickSize: i.tickSize,
       levels: this.indicatorService.getActiveLevelsForInstrument(i.symbol, i.bid).slice(0, 5),
     }));
