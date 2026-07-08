@@ -1,45 +1,43 @@
 import { Injectable, inject } from '@angular/core';
+import { Subscription } from 'rxjs';
 import { InstrumentService } from './instrument.service';
+import { QuoteFeedService, BidAskQuote } from './quote-feed.service';
 import { FuturesContract } from '../../shared/model/instrument.model';
 
 @Injectable({ providedIn: 'root' })
 export class PriceFeedService {
   private readonly instrumentService = inject(InstrumentService);
-  private intervalId: ReturnType<typeof setInterval> | null = null;
+  private readonly quoteFeed = inject(QuoteFeedService);
+  private subscription: Subscription | null = null;
 
   start(intervalMs = 800): void {
-    if (this.intervalId !== null) return;
-    this.intervalId = setInterval(() => this.tick(), intervalMs);
+    this.quoteFeed.start(intervalMs);
+    if (this.subscription) return;
+    this.subscription = this.quoteFeed.quotes$.subscribe(quotes => this.applyQuotes(quotes));
   }
 
   stop(): void {
-    if (this.intervalId !== null) {
-      clearInterval(this.intervalId);
-      this.intervalId = null;
-    }
+    this.quoteFeed.stop();
+    this.subscription?.unsubscribe();
+    this.subscription = null;
   }
 
-  private tick(): void {
-    const instruments = this.instrumentService.instruments();
+  private applyQuotes(quotes: BidAskQuote[]): void {
+    const bySymbol = new Map(this.instrumentService.instruments().map(i => [i.symbol, i]));
     const updates = new Map<string, Partial<FuturesContract>>();
 
-    for (const inst of instruments) {
-      if (Math.random() > 0.55) continue;
+    for (const quote of quotes) {
+      const inst = bySymbol.get(quote.symbol);
+      if (!inst) continue;
 
-      const { tickSize, bid, ask, open, high, low } = inst;
-      const spread = ask - bid;
-      const ticks = (Math.floor(Math.random() * 3) + 1) * (Math.random() < 0.5 ? 1 : -1);
-      const delta = ticks * tickSize;
+      const { open, high, low, tickSize } = inst;
+      const newPrice      = this.snap((quote.bid + quote.ask) / 2, tickSize);
+      const newChange      = parseFloat((newPrice - open).toPrecision(10));
+      const newChangePct   = parseFloat(((newChange / open) * 100).toPrecision(6));
 
-      const newBid   = this.snap(Math.max(tickSize, bid + delta), tickSize);
-      const newAsk   = this.snap(newBid + spread, tickSize);
-      const newPrice = this.snap((newBid + newAsk) / 2, tickSize);
-      const newChange    = parseFloat((newPrice - open).toPrecision(10));
-      const newChangePct = parseFloat(((newChange / open) * 100).toPrecision(6));
-
-      updates.set(inst.symbol, {
-        bid:       newBid,
-        ask:       newAsk,
+      updates.set(quote.symbol, {
+        bid:       quote.bid,
+        ask:       quote.ask,
         price:     newPrice,
         high:      Math.max(high, newPrice),
         low:       Math.min(low,  newPrice),

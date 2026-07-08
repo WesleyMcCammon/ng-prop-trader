@@ -1,6 +1,7 @@
-import { Injectable, computed, effect, signal } from '@angular/core';
-import { INDICATORS, INDICATORS_MAP, LEVEL_VALUES } from '../../data/indicators.data';
+import { Injectable, computed, effect, inject, signal } from '@angular/core';
+import { INDICATORS, INDICATORS_MAP } from '../../data/indicators.data';
 import { InstrumentIndicators } from '../../shared/model/indicator.model';
+import { IndicatorLevelFeedService } from './indicator-level-feed.service';
 
 export type { InstrumentIndicators, PivotLevels, VWAPLevels, VolumeProfile, OpeningRange, DayOHLC, WeekOHLC, OHLC } from '../../shared/model/indicator.model';
 
@@ -101,7 +102,10 @@ function loadSet(key: string): Set<string> {
 
 @Injectable({ providedIn: 'root' })
 export class IndicatorService {
+  private readonly levelFeed = inject(IndicatorLevelFeedService);
+
   private readonly _indicators = signal<InstrumentIndicators[]>(INDICATORS);
+  private readonly _levelValues = signal<Map<string, Record<string, number>>>(new Map());
 
   readonly indicators  = this._indicators.asReadonly();
   readonly dayDates:  string[] = INDICATORS[0]?.prevDayOHLC.map(d => d.date)  ?? [];
@@ -113,6 +117,9 @@ export class IndicatorService {
 
   constructor() {
     effect(() => localStorage.setItem(STORAGE_LEVELS, JSON.stringify([...this.activeLevels()])));
+    this.levelFeed.levelValues$.subscribe(updates => {
+      this._levelValues.set(new Map(updates.map(u => [u.symbol, u.values])));
+    });
   }
 
   // ── Selection methods ────────────────────────────────────────────────────────
@@ -153,15 +160,15 @@ export class IndicatorService {
   }
 
   getLevelValue(symbol: string, levelId: string): number | undefined {
-    return LEVEL_VALUES.get(symbol)?.[levelId];
+    return this._levelValues().get(symbol)?.[levelId];
   }
 
   getLevelValues(symbol: string): Record<string, number> | undefined {
-    return LEVEL_VALUES.get(symbol);
+    return this._levelValues().get(symbol);
   }
 
   getActiveLevelsForInstrument(symbol: string, bid: number): ActiveLevelDisplay[] {
-    const values = LEVEL_VALUES.get(symbol);
+    const values = this._levelValues().get(symbol);
     if (!values) return [];
     return [...this.activeLevels()]
       .map(levelId => {
