@@ -122,9 +122,9 @@
   &--chart {
     display: flex;
     flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    min-height: 220px;
+    align-items: stretch;
+    justify-content: flex-start;
+    text-align: left;
   }
 }
 
@@ -139,6 +139,11 @@
   font-size: 0.78rem;
   color: var(--color-text-muted);
   margin: 0;
+}
+
+.chart-canvas-wrap {
+  width: 100%;
+  height: 220px;
 }
 
 .card-header {

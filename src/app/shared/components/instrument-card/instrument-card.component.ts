@@ -4,6 +4,7 @@ import { FuturesContract } from '../../model/instrument.model';
 import { PriceFormatPipe } from '../../pipes/price-format.pipe';
 import { IndicatorService, ActiveLevelDisplay } from '../../../core/services/indicator.service';
 import { PinService } from '../../../core/services/pin.service';
+import { CandlestickChartComponent } from '../candlestick-chart/candlestick-chart.component';
 
 const EXPAND_MARGIN = 24;
 const EXPAND_TRANSITION =
@@ -13,7 +14,7 @@ const EXPAND_TRANSITION =
 @Component({
   selector: 'app-instrument-card',
   standalone: true,
-  imports: [CommonModule, PriceFormatPipe],
+  imports: [CommonModule, PriceFormatPipe, CandlestickChartComponent],
   templateUrl: './instrument-card.component.html',
   styleUrl: './instrument-card.component.scss'
 })
