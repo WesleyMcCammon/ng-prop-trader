@@ -8,10 +8,10 @@
     <nav class="nav-desktop" aria-label="Main navigation">
       <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Home</a>
       <a routerLink="/dashboard" routerLinkActive="active">Dashboard</a>
+      <a routerLink="/news-alerts" routerLinkActive="active">News Alerts</a>
       <a routerLink="/market" routerLinkActive="active">Markets</a>
       <a routerLink="/instruments" routerLinkActive="active">Instruments</a>
       <a routerLink="/indicators" routerLinkActive="active">Indicators</a>
-      <a routerLink="/news-alerts" routerLinkActive="active">News Alerts</a>
       @if (isAdmin()) {
         <a routerLink="/settings" routerLinkActive="active">Settings</a>
       }
