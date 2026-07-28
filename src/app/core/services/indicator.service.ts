@@ -1,7 +1,7 @@
 import { Injectable, computed, effect, inject, signal } from '@angular/core';
-import { INDICATORS, INDICATORS_MAP } from '../../data/indicators.data';
 import { InstrumentIndicators } from '../../shared/model/indicator.model';
 import { IndicatorLevelFeedService } from './indicator-level-feed.service';
+import { MarketApiService } from './market-api.service';
 
 export type { InstrumentIndicators, PivotLevels, VWAPLevels, VolumeProfile, OpeningRange, DayOHLC, WeekOHLC, OHLC } from '../../shared/model/indicator.model';
 
@@ -103,13 +103,17 @@ function loadSet(key: string): Set<string> {
 @Injectable({ providedIn: 'root' })
 export class IndicatorService {
   private readonly levelFeed = inject(IndicatorLevelFeedService);
+  private readonly marketApi = inject(MarketApiService);
 
-  private readonly _indicators = signal<InstrumentIndicators[]>(INDICATORS);
+  private readonly _indicators = signal<InstrumentIndicators[]>([]);
+  private readonly _indicatorsMap = computed(() =>
+    new Map(this._indicators().map(ind => [ind.symbol, ind]))
+  );
   private readonly _levelValues = signal<Map<string, Record<string, number>>>(new Map());
 
-  readonly indicators  = this._indicators.asReadonly();
-  readonly dayDates:  string[] = INDICATORS[0]?.prevDayOHLC.map(d => d.date)  ?? [];
-  readonly weekDates: string[] = INDICATORS[0]?.weeklyOHLC.map(w => w.weekOf) ?? [];
+  readonly indicators = this._indicators.asReadonly();
+  readonly dayDates  = computed(() => this._indicators()[0]?.prevDayOHLC?.map(d => d.date) ?? []);
+  readonly weekDates = computed(() => this._indicators()[0]?.weeklyOHLC.map(w => w.weekOf) ?? []);
 
   // ── Selection state (shared with indicators admin and market overview) ──────
   readonly activeLevels = signal<Set<string>>(loadSet(STORAGE_LEVELS));
@@ -119,6 +123,10 @@ export class IndicatorService {
     effect(() => localStorage.setItem(STORAGE_LEVELS, JSON.stringify([...this.activeLevels()])));
     this.levelFeed.levelValues$.subscribe(updates => {
       this._levelValues.set(new Map(updates.map(u => [u.symbol, u.values])));
+    });
+    this.marketApi.getIndicators().subscribe({
+      next: fetched => this._indicators.update(list => [...list, ...fetched]),
+      error: err => console.error('Failed to load indicators from MarketWatchAPI', err),
     });
   }
 
@@ -156,7 +164,7 @@ export class IndicatorService {
 
   // ── Lookup methods ───────────────────────────────────────────────────────────
   getBySymbol(symbol: string): InstrumentIndicators | undefined {
-    return INDICATORS_MAP.get(symbol);
+    return this._indicatorsMap().get(symbol);
   }
 
   getLevelValue(symbol: string, levelId: string): number | undefined {
@@ -171,6 +179,7 @@ export class IndicatorService {
     const values = this._levelValues().get(symbol);
     if (!values) return [];
     return [...this.activeLevels()]
+      .filter(levelId => levelId in values)
       .map(levelId => {
         const groupName = LEVEL_GROUPS[levelId] ?? '';
         return {
@@ -179,8 +188,8 @@ export class IndicatorService {
           groupDescription: GROUP_DESCRIPTIONS[groupName] ?? '',
           label: LEVEL_LABELS[levelId] ?? levelId,
           description: LEVEL_DESCRIPTIONS[levelId] ?? '',
-          value: values[levelId] ?? 0,
-          delta: (values[levelId] ?? 0) - bid,
+          value: values[levelId],
+          delta: values[levelId] - bid,
         };
       })
       .sort((a, b) => Math.abs(a.delta) - Math.abs(b.delta));
