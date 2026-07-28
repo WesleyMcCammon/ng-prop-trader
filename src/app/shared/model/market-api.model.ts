@@ -92,3 +92,13 @@ export interface ApiCfdInstrument {
   name: string;
   pricePrecision: number;
 }
+
+// Streamed over the /ws/quotes websocket. Serialized with the default (PascalCase) System.Text.Json
+// naming, unlike the controller responses above, since it bypasses ASP.NET's MVC JSON options.
+export interface ApiQuote {
+  Symbol: string;
+  Bid: number;
+  Ask: number;
+  Last: number;
+  Timestamp: string;
+}

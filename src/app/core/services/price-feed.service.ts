@@ -1,23 +1,23 @@
 import { Injectable, inject } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { InstrumentService } from './instrument.service';
-import { QuoteFeedService, BidAskQuote } from './quote-feed.service';
+import { QuoteSocketService, BidAskQuote } from './quote-socket.service';
 import { FuturesContract } from '../../shared/model/instrument.model';
 
 @Injectable({ providedIn: 'root' })
 export class PriceFeedService {
   private readonly instrumentService = inject(InstrumentService);
-  private readonly quoteFeed = inject(QuoteFeedService);
+  private readonly quoteSocket = inject(QuoteSocketService);
   private subscription: Subscription | null = null;
 
-  start(intervalMs = 800): void {
-    this.quoteFeed.start(intervalMs);
+  start(): void {
+    this.quoteSocket.start();
     if (this.subscription) return;
-    this.subscription = this.quoteFeed.quotes$.subscribe(quotes => this.applyQuotes(quotes));
+    this.subscription = this.quoteSocket.quotes$.subscribe(quotes => this.applyQuotes(quotes));
   }
 
   stop(): void {
-    this.quoteFeed.stop();
+    this.quoteSocket.stop();
     this.subscription?.unsubscribe();
     this.subscription = null;
   }
