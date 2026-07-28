@@ -50,9 +50,9 @@ export interface OpeningRange {
 export interface InstrumentIndicators {
   symbol:        string;
   pivots:        PivotLevels;
-  prevDayOHLC:   DayOHLC[];      // 5 days, index 0 = most recent
+  prevDayOHLC?:  DayOHLC[];      // 5 days, index 0 = most recent — not available for API-sourced instruments
   weeklyOHLC:    WeekOHLC[];     // 5 weeks, index 0 = most recent
   vwap:          VWAPLevels;
   volumeProfile: VolumeProfile;
-  openingRange:  OpeningRange;
+  openingRange?: OpeningRange;   // not available for API-sourced instruments
 }

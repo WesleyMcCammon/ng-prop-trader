@@ -33,7 +33,7 @@ export class PriceFeedService {
       const { open, high, low, tickSize } = inst;
       const newPrice      = this.snap((quote.bid + quote.ask) / 2, tickSize);
       const newChange      = parseFloat((newPrice - open).toPrecision(10));
-      const newChangePct   = parseFloat(((newChange / open) * 100).toPrecision(6));
+      const newChangePct   = open !== 0 ? parseFloat(((newChange / open) * 100).toPrecision(6)) : 0;
 
       updates.set(quote.symbol, {
         bid:       quote.bid,
